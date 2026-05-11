@@ -250,13 +250,13 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
   .tabs{gap:0}
   .tab{padding:8px 12px;font-size:12px}
 }
-
+ 
 </style>
 </head>
 <body>
-
+ 
 <div id="toast" class="toast"></div>
-
+ 
 <!-- ── AM Shell ── -->
 <div id="app-am" class="app" style="display:none">
   <aside class="sidebar" id="am-sidebar">
@@ -290,14 +290,14 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     <div id="am-content"></div>
   </main>
 </div>
-
+ 
 <!-- ── Client Shell ── -->
 <div id="app-client" style="display:none">
   <header class="client-topbar" id="client-topbar"></header>
   <div id="client-content"></div>
   <button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 </div>
-
+ 
 <!-- ── Landing ── -->
 <div id="app-landing" style="display:none;min-height:100vh;background:linear-gradient(135deg,#0B1929,#152236 50%,#0B1929);align-items:center;justify-content:center;position:relative;overflow:hidden">
   <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:rgba(26,110,255,.05);border-radius:50%;pointer-events:none"></div>
@@ -327,9 +327,9 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     </div>
   </div>
 </div>
-
+ 
 <!-- ════ MODALS ════ -->
-
+ 
 <!-- PIN -->
 <div class="modal-overlay" id="modal-pin">
   <div class="modal" style="max-width:380px">
@@ -343,7 +343,7 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     <div class="modal-footer"><button class="btn btn-primary" onclick="checkPin()">Login</button></div>
   </div>
 </div>
-
+ 
 <!-- New/Edit Client -->
 <div class="modal-overlay" id="modal-client">
   <div class="modal" style="max-width:700px">
@@ -453,7 +453,7 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     </div>
   </div>
 </div>
-
+ 
 <!-- Custom Step -->
 <div class="modal-overlay" id="modal-custom-step">
   <div class="modal" style="max-width:520px">
@@ -487,7 +487,7 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     </div>
   </div>
 </div>
-
+ 
 <!-- Step Edit -->
 <div class="modal-overlay" id="modal-step-note">
   <div class="modal" style="max-width:620px">
@@ -526,7 +526,7 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     </div>
   </div>
 </div>
-
+ 
 <!-- Q&A Respond -->
 <div class="modal-overlay" id="modal-response">
   <div class="modal" style="max-width:500px">
@@ -547,7 +547,7 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     </div>
   </div>
 </div>
-
+ 
 <!-- Plan Editor -->
 <div class="modal-overlay" id="modal-plan-editor">
   <div class="modal" style="max-width:640px">
@@ -586,189 +586,189 @@ desc:'Review and confirm the signed contract, commercial package, pricing assump
 clientWhat:'Your AM will walk you through the agreed contract terms, package scope, and your target go-live date.',
 clientWhy:'Aligning on scope and timeline upfront prevents surprises later and ensures both teams are working toward the same definition of success.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'}]},
-
+ 
 {id:'T02',owner:'duda',phase:'Phase 1 — Kickoff & Discovery',workstream:'Kickoff',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Run kickoff — align stakeholders, cadence, comms',
 desc:'Run the kickoff meeting. Align on meeting cadence, communication channels, and pre-kickoff checklist. Confirm executive sponsor and project champion.',
 clientWhat:'Join the kickoff call to meet the Duda team, agree on who owns what, set the meeting schedule, and confirm how you\'ll communicate.',
 clientWhy:'A structured kickoff prevents misalignment, sets clear expectations, and creates shared accountability from day one.',
 resources:[{label:'Kickoff Deck',url:'https://docs.google.com/presentation/d/1ZOZHrpJQhuFMxKKqReMXRRjr1IVzB6DdpiCGUEgZMrE/edit'},{label:'Support Portal',url:'https://support.duda.co/hc/en-us'}]},
-
+ 
 {id:'T03',owner:'both',phase:'Phase 1 — Kickoff & Discovery',workstream:'Discovery',priority:'Must',flows:['diy','difm','hybrid'],icps:['agency','saas','hosting','listing','pos'],
 title:'Map customer journey from purchase to publish',
 desc:'Document the end-to-end client journey: how SMBs move from purchase through onboarding to a published live site. Identify handoffs, decision points, and support paths.',
 clientWhat:'Walk through how your end-customers move from signing up to getting a live website — including all steps, handoffs, and decision points.',
 clientWhy:'Understanding your customer journey lets us configure Duda for your specific workflow, not a generic setup. This directly impacts activation rates.',
 resources:[{label:'Discovery Questions GPT',url:'https://chatgpt.com/g/g-694bbc3c97908191916cfcfa93ba9289'},{label:'Duda Academy',url:'https://academy.duda.co/'}]},
-
+ 
 {id:'T04',owner:'both',phase:'Phase 1 — Kickoff & Discovery',workstream:'Discovery',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Choose onboarding lane: DIY, DIFM, Hybrid, Migration, Marketplace',
 desc:'Select and lock the onboarding flow for this partner. Scope boundaries must be approved. Determines API architecture, template strategy, and support model.',
 clientWhat:'Work with your AM to decide how your customers will build their sites — self-serve, built by your team, a mix, or via migration from a legacy platform.',
 clientWhy:'The build flow decision determines everything: API design, templates, permissions, and your support model. Getting this right early saves weeks of rework.',
 resources:[{label:'DIY Onboarding Docs',url:'https://developer.duda.co/docs/diy-onboarding'},{label:'Duda Academy',url:'https://academy.duda.co/'}]},
-
+ 
 {id:'T05',owner:'client',phase:'Phase 1 — Kickoff & Discovery',workstream:'Solution Design',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Define MVP, packaging, plans, permissions & upgrade paths',
 desc:'Align on MVP scope: packaging tiers, custom plan configuration, editor permissions, and upgrade/upsell flows. Must be signed off before build begins.',
 clientWhat:'Define what each of your pricing tiers includes, what features clients in each plan can access, and how they upgrade to a higher plan.',
 clientWhy:'A clear plan structure is required before any technical build. It determines what every customer sees and can do in the editor — and how you monetize upgrades.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
-
+ 
 {id:'T06',owner:'both',phase:'Phase 1 — Kickoff & Discovery',workstream:'Solution Design',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Define segment-specific value prop and KPIs',
 desc:'Agree on KPIs: attach rate, time-to-publish (TTP), publish rate, ARPU, churn impact, support ticket volume.',
 clientWhat:'Agree with your AM on the specific metrics you\'ll use to measure success: publish rate, time-to-publish, revenue impact, and support volume.',
 clientWhy:'Shared KPIs create accountability and give both teams a clear definition of what a successful launch looks like.',
 resources:[{label:'Partners Onboarding Dashboard',url:'https://duda-co.domo.com/page/1847460602'}]},
-
+ 
 {id:'T07',owner:'duda',phase:'Phase 2 — Platform Setup & Build',workstream:'Platform Setup',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Configure account, white-label branding, domain, support portal',
 desc:'Configure the partner\'s white-label platform: custom domain, logo, brand colors, email sender, help center branding, and support URL.',
 clientWhat:'Your Duda TAM will configure your white-label setup: custom domain, your logo and branding, email sender, and branded support portal.',
 clientWhy:'Your customers should see your brand, not Duda\'s. This step ensures the platform is fully white-labelled before any clients are invited in.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'White-labeled Videos',url:'https://videos.multiscreensite.com/'}]},
-
+ 
 {id:'T08',owner:'duda',phase:'Phase 2 — Platform Setup & Build',workstream:'Platform Setup',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Set team access, client permissions, roles & plan restrictions',
 desc:'Configure roles: internal team (admin/designer/support), client users, and plan-based editor restrictions. Test with a sample client account.',
 clientWhat:'Your Duda TAM sets up your internal team access levels and configures what each client plan can access or edit in the website builder.',
 clientWhy:'Proper role configuration prevents clients from accidentally breaking sites and ensures your team has the right access levels for efficient operations.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
-
+ 
 {id:'T09',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Content / Template',priority:'Must',flows:['diy','difm','hybrid'],icps:['agency','saas','hosting','listing','pos'],
 title:'Build vertical templates, connected sections & default content',
 desc:'Build or adapt vertical templates with connected sections, mandatory/default sections, and theme configurations. Template library must be approved before build.',
 clientWhat:'Your design/ops team builds the vertical templates, sections, and default layouts that your end-clients will use as their starting point.',
 clientWhy:'Great templates are the foundation of fast site production. Strong templates reduce build time, QA cycles, and client revisions — directly improving margin per site.',
 resources:[{label:'Duda Academy',url:'https://academy.duda.co/'},{label:'Inspiration Board',url:'https://www.duda.co/inspiration'}]},
-
+ 
 {id:'T10',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Must',flows:['diy','difm','hybrid'],icps:['saas','hosting','listing','pos'],
 title:'Map business data fields to Content Library / Collections',
 desc:'Map CRM/POS/listing data fields to Duda Content Library, Collections, and Dynamic Pages. Sample content must populate a site successfully.',
 clientWhat:'Your engineering team maps your business data (from CRM, POS, or listing databases) to Duda\'s content system so it auto-populates into websites.',
 clientWhy:'Automating content injection eliminates manual data entry, reduces errors, and is the key to scaling to thousands of sites efficiently.',
 resources:[{label:'Collections & Dynamic Pages',url:'https://academy.duda.co/course/connected-data-collections-dynamic-pages'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
-
+ 
 {id:'T11',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Must',flows:['diy','difm','hybrid'],icps:['agency','saas','hosting','listing','pos'],
 title:'Implement create client/site flow via API or SOP',
 desc:'Build the core create client → create site flow. For DIY: via API. For DIFM: operational SOP. Must be repeatable before scaling.',
 clientWhat:'Your engineering team builds the automated flow to create a client account and website in Duda — either via API integration or a defined operational process.',
 clientWhy:'This is the core of your onboarding funnel. Until this flow works repeatably, you can\'t scale. This is the #1 priority in Phase 2.',
 resources:[{label:'Intro to Duda API',url:'https://academy.duda.co/course/integrate-duda-into-your-workflow'},{label:'DIY Onboarding Docs',url:'https://developer.duda.co/docs/diy-onboarding'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
-
+ 
 {id:'T12',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Must',flows:['diy','hybrid'],icps:['saas','hosting','pos'],
 title:'Implement SSO/login path from partner portal to Duda',
 desc:'Build SSO so SMB clients access the Duda editor directly from the partner portal without Duda-branded login friction.',
 clientWhat:'Your engineering team connects your portal to Duda so customers land directly in the website editor — no separate Duda login required.',
 clientWhy:'A seamless login experience is critical for self-serve adoption. SSO removes friction and keeps your brand front and center throughout the experience.',
 resources:[{label:'DIY Onboarding Docs',url:'https://developer.duda.co/docs/diy-onboarding'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
-
+ 
 {id:'T13',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'High',flows:['diy','hybrid'],icps:['saas','hosting','agency'],
 title:'Implement set-plan, permissions & upgrade messaging',
 desc:'Configure plan assignment via API, permission gating, and upgrade CTA/messaging within the editor.',
 clientWhat:'Your engineering team configures plan assignment via API and sets up upgrade prompts inside the editor when clients hit their plan limits.',
 clientWhy:'Upgrade flows are your monetisation engine. Without them, clients hit walls with no clear path forward — hurting conversion and ARPU.',
 resources:[{label:'Developer Docs',url:'https://developer.duda.co/'},{label:'Push Content via API',url:'https://academy.duda.co/course/push-content-into-sites-via-api'}]},
-
+ 
 {id:'T14',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Must',flows:['diy','difm','hybrid'],icps:['saas','hosting','listing','pos'],
 title:'Implement content upload/sync from CRM, form, listing or POS',
 desc:'Build content sync pipeline: CRM/form/listing/POS data → Duda Content API or Collections. End-to-end data sync must be tested.',
 clientWhat:'Your engineering team builds the data sync pipeline so your business data automatically populates into Duda websites at creation.',
 clientWhy:'Pre-populated sites dramatically improve client activation rates. Clients who see their own data immediately are far more likely to publish.',
 resources:[{label:'Push Content via API',url:'https://academy.duda.co/course/push-content-into-sites-via-api'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
-
+ 
 {id:'T15',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'High',flows:['diy','difm','hybrid'],icps:['pos','saas','agency'],
 title:'Implement eCommerce / POS integration scope',
 desc:'Configure Native eCommerce or composable eComm: catalog, inventory, orders, payment, shipping, tax settings.',
 clientWhat:'Your engineering team integrates your eCommerce or POS data with Duda\'s native store: catalog, payments, inventory, shipping, and tax.',
 clientWhy:'eCommerce is a major revenue driver. A broken checkout or missing product is a client-facing failure — this step validates the full commerce flow.',
 resources:[{label:'Native eCommerce',url:'https://www.duda.co/native-ecommerce'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
-
+ 
 {id:'T16',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Implement publish and domain connection flow',
 desc:'Configure the publish flow: publish API call, domain connection (Entri), and domain purchase path. Must be validated end-to-end.',
 clientWhat:'Your engineering team builds the publish flow and domain connection so customers can go live with their website and connect or buy a domain.',
 clientWhy:'Publishing is the finish line for every client. A smooth publish + domain flow is what turns builds into live, revenue-generating sites.',
 resources:[{label:'Developer Docs',url:'https://developer.duda.co/'},{label:'Support Portal',url:'https://support.duda.co/hc/en-us'}]},
-
+ 
 {id:'T17',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Implement analytics, reporting events & KPI dashboard feed',
 desc:'Configure analytics reporting: Analytics API, stats emails, and BI dashboard feed.',
 clientWhat:'Your engineering team configures site analytics, performance reporting, and the data feed into your business intelligence dashboard.',
 clientWhy:'Without analytics you can\'t measure publish rates, client engagement, or ROI — the data you need to grow and retain clients at scale.',
 resources:[{label:'Developer Docs',url:'https://developer.duda.co/'},{label:'Partners Onboarding Dashboard',url:'https://duda-co.domo.com/page/1847460602'}]},
-
+ 
 {id:'T18',owner:'duda',phase:'Phase 3 — Enablement & GTM',workstream:'Training',priority:'Must',flows:['difm','hybrid'],icps:['agency','listing','hosting','saas'],
 title:'Train design/ops/build team on Duda, templates, connected data, QA',
 desc:'Train the partner\'s ops/design team: Duda editor, template management, connected data, QA workflow. Must complete required Academy courses.',
 clientWhat:'Your ops and design team completes Duda University training on the editor, templates, connected data, and the QA and approval workflow.',
 clientWhy:'Trained teams build sites faster, make fewer mistakes, and escalate less — directly improving your margin per site and client satisfaction.',
 resources:[{label:'Duda Academy',url:'https://academy.duda.co/'},{label:'Collections & Dynamic Pages',url:'https://academy.duda.co/course/connected-data-collections-dynamic-pages'}]},
-
+ 
 {id:'T19',owner:'duda',phase:'Phase 3 — Enablement & GTM',workstream:'Training',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Train support/CS team on troubleshooting and escalation',
 desc:'Train the partner\'s support/CS team: client-facing troubleshooting, escalation path to Duda support, and FAQ handling.',
 clientWhat:'Your support and CS team trains on how to handle client questions, troubleshoot common issues, and escalate to Duda\'s support team when needed.',
 clientWhy:'Your clients call you first, not Duda. Your support team needs to handle tier-1 issues confidently to protect your client experience and your SLA.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'System Status',url:'https://status.duda.co/'},{label:'White-labeled Support',url:'https://support.multiscreensite.com/hc/en-us'}]},
-
+ 
 {id:'T20',owner:'both',phase:'Phase 3 — Enablement & GTM',workstream:'Training',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Train sales/marketing on value prop, packaging & objection handling',
 desc:'Train the partner\'s sales and marketing teams: Duda value prop, package positioning, objection handling, and demo skills.',
 clientWhat:'Your sales and marketing teams learn how to position, demo, and sell your web offering — including pricing, objection handling, and competitive differentiation.',
 clientWhy:'A sales team that can\'t articulate the web product\'s value will undersell it. This directly impacts attach rate and ARPU.',
 resources:[{label:'Inspiration Board',url:'https://www.duda.co/inspiration'},{label:'Product Updates',url:'https://resources.duda.co/product-updates'}]},
-
+ 
 {id:'T21',owner:'client',phase:'Phase 3 — Enablement & GTM',workstream:'GTM',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Prepare launch communications, PR, sales enablement, FAQs',
 desc:'Prepare launch comms: internal/external announcements, PR materials, sales enablement content, FAQs, and customer journey content.',
 clientWhat:'Your marketing team prepares launch communications: customer-facing announcements, internal enablement, FAQs, and onboarding journey content.',
 clientWhy:'A poorly communicated launch creates confusion, support spikes, and churn. Pre-prepared comms set expectations and drive early adoption.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'}]},
-
+ 
 {id:'T22',owner:'client',phase:'Phase 3 — Enablement & GTM',workstream:'GTM',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Define demand generation, pilot cohort & adoption plan',
 desc:'Define the GTM motion: demand gen channels, sales targeting, pilot cohort selection criteria, and adoption ramp plan.',
 clientWhat:'Your marketing and sales teams define how you\'ll acquire and activate your first cohort: who you\'re targeting, how you\'ll reach them, and your adoption ramp.',
 clientWhy:'A clear GTM plan prevents a soft launch that never gains momentum. You need a defined cohort and activation plan to generate early results.',
 resources:[{label:'Duda Academy',url:'https://academy.duda.co/'}]},
-
+ 
 {id:'T23',owner:'both',phase:'Phase 4 — Pilot, Launch & Scale',workstream:'Pilot',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Run pilot site creation for sample SMBs / use cases',
 desc:'Create pilot sites for a representative sample of SMBs. Review quality, flow, and experience. Pilot sites must be formally reviewed.',
 clientWhat:'Create your first pilot batch of websites using the live flow — covering a representative sample of your typical client types.',
 clientWhy:'The pilot is your final dress rehearsal. It surfaces real issues in a low-risk environment before you open to all clients.',
 resources:[{label:'Partners Onboarding Dashboard',url:'https://duda-co.domo.com/page/1847460602'},{label:'Support Portal',url:'https://support.duda.co/hc/en-us'}]},
-
+ 
 {id:'T24',owner:'both',phase:'Phase 4 — Pilot, Launch & Scale',workstream:'Pilot',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'QA: permissions, data sync, domain, SEO, accessibility, compliance',
 desc:'Full QA pass: permissions, data sync, domain connection, SEO tags, accessibility/EAA, cookie consent, and app integrations.',
 clientWhat:'Run a full QA pass across pilot sites: permissions, data sync, domain connection, SEO, accessibility compliance, and all integrations.',
 clientWhy:'QA before launch protects your clients, brand, and SLA. Known issues caught here cost minutes to fix; post-launch they cost clients.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'Termly Cookie Consent',url:'https://termly.io/'}]},
-
+ 
 {id:'T25',owner:'both',phase:'Phase 4 — Pilot, Launch & Scale',workstream:'Launch',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Approve go/no-go and production rollout plan',
 desc:'Formal go/no-go decision from executive sponsor. Scale plan approved and documented.',
 clientWhat:'Your executive sponsor formally reviews the launch checklist, reviews pilot results, and approves the go-live and scale plan.',
 clientWhy:'Executive sign-off creates accountability and ensures leadership is aligned on what done looks like before you open to all clients.',
 resources:[{label:'Partners Onboarding Dashboard',url:'https://duda-co.domo.com/page/1847460602'}]},
-
+ 
 {id:'T26',owner:'client',phase:'Phase 4 — Pilot, Launch & Scale',workstream:'Launch',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Launch production flow — publish first live cohort',
 desc:'Go live: launch production flow and publish first cohort of SMB sites. Track launch issues in real time.',
 clientWhat:'Launch your production flow to your first client cohort and monitor go-live in real time.',
 clientWhy:'This is the moment everything has been building toward. A controlled, monitored launch is the difference between a success story and a fire drill.',
 resources:[{label:'System Status',url:'https://status.duda.co/'},{label:'Support Portal',url:'https://support.duda.co/hc/en-us'}]},
-
+ 
 {id:'T27',owner:'both',phase:'Phase 4 — Pilot, Launch & Scale',workstream:'Optimization',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Review performance: publish rate, TTP, activation, revenue',
 desc:'30/60/90-day performance review: publish rate, time-to-publish, activation rate, support ticket volume, and revenue vs. KPI targets.',
 clientWhat:'Review your performance at 30/60/90 days: publish rate, time-to-publish, activation rate, support volume, and revenue versus agreed targets.',
 clientWhy:'What gets measured gets improved. This review identifies what\'s working, what\'s not, and what to optimise for Phase 2.',
 resources:[{label:'Partners Onboarding Dashboard',url:'https://duda-co.domo.com/page/1847460602'},{label:'Product Updates',url:'https://resources.duda.co/product-updates'}]},
-
+ 
 {id:'T28',owner:'both',phase:'Phase 4 — Pilot, Launch & Scale',workstream:'Optimization',priority:'Medium',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Plan scale-up: automation, apps/add-ons, new templates, Phase 2',
 desc:'Plan Phase 2: automation opportunities, App Market integrations, migration batch expansion, additional templates, and Editor 2.0 opportunities.',
@@ -782,7 +782,7 @@ var PHASE_ORDER=['Pre-Onboarding','Phase 1 — Kickoff & Discovery','Phase 2 —
 var PHASE_COLORS={'Pre-Onboarding':'#6B7280','Phase 1 — Kickoff & Discovery':'#7C3AED','Phase 2 — Platform Setup & Build':'#1A6EFF','Phase 3 — Enablement & GTM':'#0891B2','Phase 4 — Pilot, Launch & Scale':'#0F9960','Custom':'#D97706'};
 var PHASE_ICONS={'Pre-Onboarding':'🔖','Phase 1 — Kickoff & Discovery':'🚀','Phase 2 — Platform Setup & Build':'⚙️','Phase 3 — Enablement & GTM':'🎓','Phase 4 — Pilot, Launch & Scale':'🎯','Custom':'✨'};
 var PHASE_BY_ID={T01:'Pre-Onboarding',T02:'Phase 1 — Kickoff & Discovery',T03:'Phase 1 — Kickoff & Discovery',T04:'Phase 1 — Kickoff & Discovery',T05:'Phase 1 — Kickoff & Discovery',T06:'Phase 1 — Kickoff & Discovery',T07:'Phase 2 — Platform Setup & Build',T08:'Phase 2 — Platform Setup & Build',T09:'Phase 2 — Platform Setup & Build',T10:'Phase 2 — Platform Setup & Build',T11:'Phase 2 — Platform Setup & Build',T12:'Phase 2 — Platform Setup & Build',T13:'Phase 2 — Platform Setup & Build',T14:'Phase 2 — Platform Setup & Build',T15:'Phase 2 — Platform Setup & Build',T16:'Phase 2 — Platform Setup & Build',T17:'Phase 2 — Platform Setup & Build',T18:'Phase 3 — Enablement & GTM',T19:'Phase 3 — Enablement & GTM',T20:'Phase 3 — Enablement & GTM',T21:'Phase 3 — Enablement & GTM',T22:'Phase 3 — Enablement & GTM',T23:'Phase 4 — Pilot, Launch & Scale',T24:'Phase 4 — Pilot, Launch & Scale',T25:'Phase 4 — Pilot, Launch & Scale',T26:'Phase 4 — Pilot, Launch & Scale',T27:'Phase 4 — Pilot, Launch & Scale',T28:'Phase 4 — Pilot, Launch & Scale'};
-
+ 
 var state={clients:{},amPin:'1234',settings:{amName:'Account Manager'}};
 function save(){localStorage.setItem('duda_ob_v4',JSON.stringify(state));}
 function load(){var r=localStorage.getItem('duda_ob_v4');if(r)try{state=JSON.parse(r);}catch(e){}Object.values(state.clients||{}).forEach(function(c){(c.steps||[]).forEach(function(s){if(!s.phase&&PHASE_BY_ID[s.id])s.phase=PHASE_BY_ID[s.id];});});}
@@ -794,7 +794,7 @@ function pct(a,b){return b?Math.round(a/b*100):0;}
 function isDudaResource(url){if(!url)return false;var dd=['academy.duda.co','app.academy.duda.co','developer.duda.co','support.duda.co','support.multiscreensite.com','status.duda.co','videos.multiscreensite.com','duda-co.domo.com','termly.io','resources.duda.co','duda.co/app-market','duda.co/native-ecommerce'];try{var h=new URL(url).hostname+new URL(url).pathname;return dd.some(function(d){return h.includes(d);});}catch(e){return false;}}
 function patchPhases(steps){(steps||[]).forEach(function(s){if(!s.phase&&PHASE_BY_ID[s.id])s.phase=PHASE_BY_ID[s.id];});return steps||[];}
 function showToast(msg,type){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.style.background=type==='error'?'#DC2626':type==='success'?'#0F9960':'#0B1929';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2800);}
-
+ 
 load();
 (function(){
   var p=new URLSearchParams(window.location.search);
@@ -803,7 +803,7 @@ load();
   else if(mode==='am'){showAMView();}
   else{document.getElementById('app-landing').style.display='flex';}
 })();
-
+ 
 function enterAM(){document.getElementById('app-landing').style.display='none';openModal('modal-pin');}
 function checkPin(){
   var pin=document.getElementById('pin-input').value;
@@ -819,7 +819,7 @@ function openFromLink(){
 function showAMView(){document.getElementById('app-landing').style.display='none';document.getElementById('app-am').style.display='flex';document.getElementById('app-client').style.display='none';renderSidebar();showAMPage('dashboard');}
 function showClientView(id){document.getElementById('app-landing').style.display='none';document.getElementById('app-am').style.display='none';document.getElementById('app-client').style.display='block';renderClientView(id);}
 function toggleSidebar(){document.getElementById('am-sidebar').classList.toggle('open');}
-
+ 
 function renderSidebar(){
   var el=document.getElementById('sidebar-clients');
   var cs=Object.values(state.clients);
@@ -849,7 +849,7 @@ function showAMPage(page,clientId){
   else if(page==='client')renderAMClientPage(clientId);
 }
 function openClientAM(id){showAMPage('client',id);}
-
+ 
 function sc(label,val,color,delta){
   return '<div class="stat-card" style="--accent:'+color+'">'
     +'<div class="stat-label">'+label+'</div>'
@@ -970,7 +970,7 @@ function checkClass(st){
 function checkIcon(st){
   return st==='Done'?'✓':st==='In Progress'?'●':st==='Blocked'?'✕':st==='Skipped'?'—':st==='Deferred'?'⏸':'';
 }
-
+ 
 function renderStepsSection(c, isAM){
   var steps = c.steps||[];
   var lang = LANGS[c.lang||'en'];
@@ -1009,13 +1009,13 @@ function renderStepsSection(c, isAM){
   });
   return html;
 }
-
+ 
 function renderStep(s, c, isAM){
   var st = s.status||'Not Started';
   var owner = s.owner||'both';
   var skipStyle = st==='Skipped'?'opacity:.45;':'';
   var expandStyle = '';
-
+ 
   // Resources
   var allRes = s.resources||[];
   var visRes = isAM ? allRes : allRes.filter(function(r){ return isDudaResource(r.url); });
@@ -1024,17 +1024,17 @@ function renderStep(s, c, isAM){
     +'<div class="resource-list">'+visRes.map(function(r){
       return '<a class="resource-link" href="'+r.url+'" target="_blank">🔗 '+(r.label||r.l)+'</a>';
     }).join('')+'</div></div>' : '';
-
+ 
   // AM note
   var noteHtml = (s.note&&isAM) ? '<div class="step-note">📝 <strong>Note:</strong> '+s.note+(s.due?' · ETA: '+fmtDate(s.due):'')+'</div>' : '';
   // AM note visible to client if set
   var clientNoteHtml = (s.note&&!isAM) ? '<div class="am-note-box" style="margin-top:8px"><div style="font-size:10px;font-weight:700;color:var(--amber);margin-bottom:3px">📝 AM Note</div><div style="font-size:12px;color:var(--t2)">'+s.note+'</div></div>' : '';
-
+ 
   // Client explanation
   var explainHtml = (!isAM && (s.clientWhat||s.clientWhy)) ?
     (s.clientWhat?'<div class="explain-what"><div class="explain-label" style="color:var(--blue)">📋 What you need to do</div><div class="explain-text">'+s.clientWhat+'</div></div>':'')
     +(s.clientWhy?'<div class="explain-why" style="margin-top:8px"><div class="explain-label" style="color:var(--green)">💡 Why this matters</div><div class="explain-text">'+s.clientWhy+'</div></div>':'') : '';
-
+ 
   // AM context
   var amCtxHtml = isAM ? (
     '<div style="margin-bottom:12px">'
@@ -1053,7 +1053,7 @@ function renderStep(s, c, isAM){
       +((s.start||s.due)?'<div style="background:var(--s2);border-radius:6px;padding:8px 10px"><div style="font-size:10px;font-weight:600;color:var(--t3);margin-bottom:2px">📅 Dates</div><div style="font-size:12px;color:var(--t)">'+(s.start?'Start: '+fmtDate(s.start):'')+(s.start&&s.due?' · ':'')+(s.due?'Due: '+fmtDate(s.due):'')+'</div></div>':'')
       +'</div>':'')
   ) : '';
-
+ 
   // AM actions
   var isDone = st==='Done', isSkip = st==='Skipped';
   var amActions = isAM ?
@@ -1062,15 +1062,15 @@ function renderStep(s, c, isAM){
     +'<button class="btn btn-xs" style="background:'+(isSkip?'var(--s3)':'var(--amber-bg)')+';color:'+(isSkip?'var(--t2)':'var(--amber)')+';border:1px solid '+(isSkip?'var(--b)':'var(--amber-mid)')+'" onclick="setStepStatus(\''+c.id+'\',\''+s.id+'\',\''+(isSkip?'Not Started':'Skipped')+'\')">'+( isSkip?'↩ Restore':'⊘ Skip')+'</button>'
     +(s.due?'<span style="font-size:11px;color:var(--t3)">ETA: '+fmtDate(s.due)+'</span>':'')
     : '';
-
+ 
   // Client mark-done
   var canMark = !isAM && (owner==='client'||owner==='both') && !isSkip;
   var clientAction = canMark ?
     '<button class="btn btn-sm '+(isDone?'btn-secondary':'btn-primary')+'" style="margin-top:10px;'+(isDone?'':'background:var(--client-color,#1A6EFF)')+'" onclick="clientMarkDone(\''+c.id+'\',\''+s.id+'\')">'+( isDone?'✓ Completed — Undo':'✓ Mark as Complete')+'</button>'
     : '';
-
+ 
   var priBadge = s.priority==='Must'||s.priority==='must'?'badge-must':s.priority==='High'||s.priority==='high'?'badge-high':'badge-opt';
-
+ 
   return '<div class="step-item '+statusClass(st)+'" id="step-'+s.id+'" style="'+skipStyle+'">'
     +'<div class="step-header" onclick="toggleStep(\''+s.id+'\')">'
     +'<div class="step-check '+checkClass(st)+'" onclick="event.stopPropagation();'+(isAM?'setStepStatus(\''+c.id+'\',\''+s.id+'\',\''+(isDone?'Not Started':'Done')+'\')':canMark?'clientMarkDone(\''+c.id+'\',\''+s.id+'\')':'')+'">'
@@ -1092,7 +1092,7 @@ function renderStep(s, c, isAM){
     +(amActions||clientAction?'<div class="step-actions">'+amActions+clientAction+'</div>':'')
     +'</div></div>';
 }
-
+ 
 function toggleStep(id){
   var body = document.getElementById('body-'+id);
   var exp = document.getElementById('exp-'+id);
@@ -1101,7 +1101,7 @@ function toggleStep(id){
   body.style.display = open ? 'block' : 'none';
   if(exp) exp.style.transform = open ? 'rotate(180deg)' : '';
 }
-
+ 
 function setStepStatus(cid, sid, newStatus){
   var c = state.clients[cid]; if(!c) return;
   var s = c.steps.find(function(x){ return x.id===sid; }); if(!s) return;
@@ -1124,7 +1124,7 @@ function renderTimeline(c, isAM){
   var g60=plan.goal60||'10 sites in build or review';
   var g90=plan.goal90||'10 published live sites';
   var g180=plan.goal180||'30+ published sites, Phase 2 scoped';
-
+ 
   // Phase progress
   function phaseSteps(ids){
     return steps.filter(function(s){ return ids.some(function(ph){ return s.phase===ph; }); });
@@ -1133,9 +1133,9 @@ function renderTimeline(c, isAM){
   var mid=phaseSteps(['Phase 2 — Platform Setup & Build']);
   var late=phaseSteps(['Phase 3 — Enablement & GTM','Phase 4 — Pilot, Launch & Scale']);
   function pp(arr){ return pct(arr.filter(function(s){return s.status==='Done';}).length, arr.length); }
-
+ 
   var editBtn = isAM ? '<button class="btn btn-sm btn-secondary" style="margin-bottom:16px" onclick="openPlanEditor(\''+c.id+'\')">✏️ Edit Goals & Plan</button>' : '';
-
+ 
   var milestones=[
     ['Contract & commercial scope confirmed', steps.some(function(s){return s.id==='T01'&&s.status==='Done';})],
     ['Kickoff complete, stakeholders aligned', steps.some(function(s){return s.id==='T02'&&s.status==='Done';})],
@@ -1148,14 +1148,14 @@ function renderTimeline(c, isAM){
     ['Performance review complete (T27)', steps.some(function(s){return s.id==='T27'&&s.status==='Done';})],
     ['Phase 2 / scale roadmap agreed (T28)', steps.some(function(s){return s.id==='T28'&&s.status==='Done';})],
   ].concat((plan.customMilestones||[]).map(function(m){ return [m.label, m.done||false]; }));
-
+ 
   var msHtml = milestones.map(function(m){
     return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--b);font-size:13px">'
       +'<span style="font-size:15px">'+(m[1]?'✅':'⬜')+'</span>'
       +'<span style="'+(m[1]?'color:var(--green);font-weight:600':'color:var(--t2)')+'">'+m[0]+'</span>'
       +'</div>';
   }).join('');
-
+ 
   var approvalSection = !isAM ? (
     c.planApproved ?
     '<div class="card" style="margin-top:14px;border:2px solid var(--green)">'
@@ -1176,7 +1176,7 @@ function renderTimeline(c, isAM){
     +'<button class="btn btn-primary btn-sm" onclick="approvePlan(\''+c.id+'\')">✓ Approve Plan</button>'
     +'</div></div></div>'
   ) : '';
-
+ 
   return '<div>'+editBtn
     +'<div class="timeline-phases">'
     +'<div class="phase-card p60">'
@@ -1218,7 +1218,7 @@ function renderTimeline(c, isAM){
     +'</div></div>'
     +approvalSection+'</div>';
 }
-
+ 
 function approvePlan(cid){
   var chk = document.getElementById('plan-approve-check');
   if(!chk||!chk.checked){ showToast('Please check the approval box first.','error'); return; }
@@ -1246,7 +1246,7 @@ function renderQASection(c, isAM){
       +'</div>';
   }).join('');
 }
-
+ 
 function renderResourcesSection(c, isAM){
   var duda = [
     {cat:'📚 Duda Academy',items:[
@@ -1358,7 +1358,7 @@ function renderClientView(id){
   var color = c.brandColor||'#1A6EFF';
   // Store color as CSS var for step buttons
   document.documentElement.style.setProperty('--client-color', color);
-
+ 
   // Topbar
   document.getElementById('client-topbar').innerHTML =
     '<div style="display:flex;align-items:center;gap:12px">'
@@ -1369,7 +1369,7 @@ function renderClientView(id){
     +(c.lang&&c.lang!=='en'?'<button class="btn btn-xs btn-secondary" onclick="switchLang(\''+id+'\',\'en\')">EN</button><button class="btn btn-xs btn-primary">'+c.lang.toUpperCase()+'</button>':'')
     +'<span style="font-size:11px;color:var(--t3)">Powered by <strong>Duda</strong></span>'
     +'</div>';
-
+ 
   // Compute progress
   var steps=c.steps||[];
   var active=steps.filter(function(s){return s.status!=='Skipped';});
@@ -1378,7 +1378,7 @@ function renderClientView(id){
   var ko=c.kickoff?new Date(c.kickoff):new Date();
   var daysLeft=Math.max(0,Math.ceil((addDays(ko,90)-new Date())/86400000));
   var approved = c.planApproved;
-
+ 
   document.getElementById('client-content').innerHTML =
     '<div style="background:linear-gradient(135deg,'+color+' 0%,'+color+'dd 100%);padding:24px 24px 0;position:relative;overflow:hidden">'
     +'<div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%;pointer-events:none"></div>'
@@ -1407,7 +1407,7 @@ function renderClientView(id){
     +'<div class="tab" style="color:rgba(255,255,255,.55);font-weight:600" onclick="switchCVTab(3,\''+id+'\',this)">'+lang.qa+' '+(c.qa&&c.qa.filter(function(q){return q.status!=='Resolved';}).length?'🔔':'')+'</div>'
     +'</div></div></div>'
     +'<div style="max-width:780px;margin:0 auto;padding:22px 24px 80px" id="cv-body"></div>';
-
+ 
   renderCVTab(0,id);
   window.onscroll=function(){ document.getElementById('scroll-top').style.display=window.scrollY>300?'flex':'none'; };
 }
@@ -1453,7 +1453,7 @@ function switchLang(id, lang){
 }
 function openModal(id){ document.getElementById(id).classList.add('open'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-
+ 
 // ── Logo upload ──────────────────────────────────────────────────────
 var _logoDataUrl = null;
 function handleLogoFile(file){
@@ -1492,7 +1492,7 @@ function setBrandColor(hex,el){
   document.querySelectorAll('.color-swatch').forEach(function(s){ s.classList.remove('selected'); });
   if(el) el.classList.add('selected');
 }
-
+ 
 // ── Client modal tabs ────────────────────────────────────────────────
 var _clientModalTab = 0;
 var _editingClientId = null;
@@ -1520,7 +1520,7 @@ function onProfileChange(){
   else if(icp==='agency') { if(['diy','marketplace'].includes(document.getElementById('f-flow').value)) document.getElementById('f-flow').value='difm'; }
   if(_clientModalTab===2) renderStepBuilder();
 }
-
+ 
 function openNewClientModal(){
   _editingClientId=null; _pendingSteps=[];
   document.getElementById('modal-client-title').textContent='Add New Client';
@@ -1591,7 +1591,7 @@ function saveClient(){
   showAMPage('client',id);
   showToast((existing.name?'Client updated!':'Client created!'),'success');
 }
-
+ 
 // ── Step builder ─────────────────────────────────────────────────────
 function renderStepBuilder(){
   var icp=document.getElementById('f-icp')&&document.getElementById('f-icp').value||'agency';
@@ -1684,7 +1684,7 @@ function addCustomStep(){
   ['cs-title','cs-desc','cs-what','cs-why'].forEach(function(id){document.getElementById(id).value='';});
   renderStepBuilder(); showToast('Custom step added.','success');
 }
-
+ 
 // ── Step note / edit ──────────────────────────────────────────────────
 var _editingStep=null;
 function openStepNote(cid,sid){
@@ -1722,7 +1722,7 @@ function saveStepNote(){
   renderAMClientPage(cid); renderSidebar();
   showToast('Step saved.','success');
 }
-
+ 
 // ── QA response ───────────────────────────────────────────────────────
 var _respondingQA=null;
 function openResponseModal(cid,qid){
@@ -1744,7 +1744,7 @@ function saveResponse(){
   save(); closeModal('modal-response'); _respondingQA=null;
   renderAMClientPage(cid); showToast('Response saved.','success');
 }
-
+ 
 // ── Plan editor ───────────────────────────────────────────────────────
 var _planEditorCid=null;
 function openPlanEditor(cid){
