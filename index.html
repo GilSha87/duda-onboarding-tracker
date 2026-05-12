@@ -258,8 +258,8 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
 #exec-content{flex:1;overflow-y:auto}
 /* Team components */
 .team-avatar-sm{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
-.team-login-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid var(--b);border-radius:var(--rsm);cursor:pointer;transition:all .15s;margin-bottom:8px}
-.team-login-item:hover{border-color:var(--blue);background:var(--blue-bg)}
+.team-login-item{display:flex;align-items:center;gap:14px;padding:13px 16px;border:1.5px solid var(--b);border-radius:var(--r);cursor:pointer;transition:all .2s;margin-bottom:8px}
+.team-login-item:hover{border-color:var(--blue);background:var(--blue-bg);transform:translateX(3px)}
 .team-login-item.selected{border-color:var(--blue);background:var(--blue-bg)}
  
 </style>
@@ -1461,7 +1461,7 @@ function switchAMTab(i,id){
 function renderAMTab(i,id){
   var c=state.clients[id], el=document.getElementById('am-tab-body-'+id);
   if(!c||!el) return;
-  if(i===0) el.innerHTML=renderStepsSection(c,true);
+  if(i===0) el.innerHTML='<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn btn-sm btn-secondary" onclick="openEditClientModal(\''+id+'\');switchClientModalTab(2)">✏ Edit Step List</button><button class="btn btn-sm btn-secondary" style="margin-left:8px" onclick="openCustomStepModal()">+ Custom Step</button></div>'+renderStepsSection(c,true);
   else if(i===1) el.innerHTML=renderTimeline(c,true);
   else if(i===2){
     var qaHtml=renderQASection(c,true);
@@ -1807,9 +1807,7 @@ function updateGeoRecs(){
   if(langMap[c]) document.getElementById('f-lang').value=langMap[c];
 }
 function onProfileChange(){
-  var icp=document.getElementById('f-icp').value;
-  if(icp==='hosting'||icp==='saas') document.getElementById('f-flow').value='diy';
-  else if(icp==='agency') { if(['diy','marketplace'].includes(document.getElementById('f-flow').value)) document.getElementById('f-flow').value='difm'; }
+  // Any ICP can select any flow - no auto-forcing
   if(_clientModalTab===2) renderStepBuilder();
 }
  
@@ -1935,6 +1933,8 @@ function renderStepBuilder(){
       var checked=pendingIds.size>0?pendingIds.has(s.id):isRec;
       var pending=_pendingSteps.find(function(p){return p.id===s.id;});
       var curPri=pending?pending.priority:s.priority;
+      var curStatus=pending?pending.status||'Not Started':'Not Started';
+      var curDue=pending?pending.due||'':'';
       html+='<div class="step-builder-item">'
         +'<input type="checkbox" class="sb-check" id="sb-'+s.id+'" '+(checked?'checked':'')+' onchange="togglePendingStep(\''+s.id+'\')">'
         +'<div style="flex:1">'
@@ -1942,12 +1942,18 @@ function renderStepBuilder(){
         +'<span class="id-badge">'+s.id+'</span> <span style="font-size:13px;font-weight:500">'+s.title+'</span>'
         +'</label>'
         +'<div style="display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap">'
-        +'<select class="form-select" style="width:100px;padding:2px 6px;font-size:11px;height:24px" onchange="updatePri(\''+s.id+'\',this.value)">'
+        +'<select class="form-select" style="width:90px;padding:2px 6px;font-size:11px;height:24px" onchange="updatePri(\''+s.id+'\',this.value)">'
         +'<option '+(curPri==='Must'?'selected':'')+'>Must</option>'
         +'<option '+(curPri==='High'?'selected':'')+'>High</option>'
         +'<option '+(curPri==='Medium'?'selected':'')+'>Medium</option>'
         +'<option '+(curPri==='Optional'?'selected':'')+'>Optional</option>'
         +'</select>'
+        +'<select class="form-select" style="width:100px;padding:2px 6px;font-size:11px;height:24px" onchange="updateStepField(\''+s.id+'\',\'status\',this.value)">'
+        +'<option '+(curStatus==='Not Started'?'selected':'')+'>Not Started</option>'
+        +'<option '+(curStatus==='In Progress'?'selected':'')+'>In Progress</option>'
+        +'<option '+(curStatus==='Done'?'selected':'')+'>Done</option>'
+        +'</select>'
+        +'<input type="date" class="form-input" style="width:120px;padding:2px 6px;font-size:11px;height:24px" value="'+(curDue||'')+'" onchange="updateStepField(\''+s.id+'\',\'due\',this.value)">'
         +ownerBadge(s.owner)
         +(isRec?'<span class="badge badge-green" style="font-size:10px">Recommended</span>':'<span class="badge badge-gray" style="font-size:10px">Library</span>')
         +'</div></div></div>';
@@ -1980,6 +1986,18 @@ function updatePri(id,pri){
   var chk=document.getElementById('sb-'+id);
   if(chk&&!chk.checked){ chk.checked=true; togglePendingStep(id); }
 }
+function updateStepField(id,field,val){
+  var s=_pendingSteps.find(function(x){return x.id===id;});
+  if(s){ s[field]=val; }
+  else {
+    // Auto-check the step if user sets status or due
+    var chk=document.getElementById('sb-'+id);
+    if(chk&&!chk.checked){ chk.checked=true; togglePendingStep(id); }
+    s=_pendingSteps.find(function(x){return x.id===id;});
+    if(s) s[field]=val;
+  }
+}
+ 
 function removeCustomStep(id){ _pendingSteps=_pendingSteps.filter(function(s){return s.id!==id;}); }
 function openCustomStepModal(){ openModal('modal-custom-step'); }
 function addCustomStep(){
@@ -2126,35 +2144,50 @@ function memberInitials(name){ return (name||'?').split(' ').map(function(w){ret
 // ── Unified login ───────────────────────────────────────────────────────────
 function openTeamLogin(){
   document.getElementById('app-landing').style.display='none';
-  // Build member list for picker
-  var members = Object.values(state.team);
-  // Always add legacy AM access if no team set up
-  var legacyBtn = members.length===0?'<button class="btn btn-secondary" style="width:100%;margin-top:8px;font-size:12px" onclick="enterAM()">Legacy PIN Login (no team set up)</button>':'';
-  document.getElementById('team-login-list').innerHTML = members.length===0
-    ? '<div style="color:var(--t3);font-size:13px;padding:12px 0">No team members set up yet.<br>Use legacy login below or ask your admin.</div>'
-    : members.map(function(m){
-        return '<div class="team-login-item" onclick="selectTeamMember(this.dataset.id)" data-id="'+m.id+'">' 
-          +'<div class="team-avatar-sm" style="background:'+teamColor(m.role)+'">'+memberInitials(m.name)+'</div>'
-          +'<div><div style="font-size:13px;font-weight:600">'+m.name+'</div>'
-          +'<div style="font-size:11px;color:var(--t3)">'+teamRoleIcon(m.role)+' '+m.role+'</div></div>'
-          +'</div>';
-      }).join('');
-  document.getElementById('team-login-legacy').innerHTML = legacyBtn;
+  var members=Object.values(state.team).filter(function(m){return m.active!==false;});
+  var legacyBtn=members.length===0?'<div style="text-align:center;padding:20px 0"><div style="font-size:36px;margin-bottom:10px">👥</div><div style="font-size:14px;font-weight:600;margin-bottom:6px">No team set up yet</div><div style="font-size:12px;color:var(--t3);margin-bottom:16px">Set up your team from the AM dashboard.</div><button class="btn btn-primary" onclick="closeModal(\'modal-team-login\');_originalEnterAM()">Continue with Legacy PIN</button></div>':'';
+  var admins=members.filter(function(m){return m.role==='Admin';});
+  var staff=members.filter(function(m){return m.role==='Staff';});
+  var execs=members.filter(function(m){return m.role==='Executive';});
+  function mc(m){
+    var clr=teamColor(m.role), cc=amClients(m.id).length;
+    return '<div class="team-login-item" onclick="selectTeamMember(this.dataset.id)" data-id="'+m.id+'">'
+      +'<div style="width:40px;height:40px;border-radius:10px;background:'+clr+';display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0">'+memberInitials(m.name)+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">'+m.name+'</div>'
+      +'<div style="font-size:11px;color:var(--t3)">'+teamRoleIcon(m.role)+' '+m.role+(m.email?' · '+m.email:'')+(m.role!=='Executive'&&cc?' · '+cc+' client'+(cc===1?'':'s'):'')+'</div></div>'
+      +'<div style="color:var(--t4);font-size:16px;flex-shrink:0">&rarr;</div></div>';
+  }
+  function sec(label,arr){ if(!arr.length) return ''; return '<div style="margin-bottom:6px"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">'+label+'</div>'+arr.map(mc).join('')+'</div>'; }
+  document.getElementById('team-login-list').innerHTML=members.length?sec('Admins',admins)+sec('Account Managers',staff)+sec('Executives',execs):'';
+  document.getElementById('team-login-legacy').innerHTML=legacyBtn;
   document.getElementById('team-pin-section').style.display='none';
   openModal('modal-team-login');
 }
+ 
 function selectTeamMember(id){
-  document.querySelectorAll('.team-login-item').forEach(function(el){
-    el.classList.toggle('selected', el.dataset.id===id);
-  });
+  var m=state.team[id]; if(!m) return;
+  document.querySelectorAll('.team-login-item').forEach(function(el){ el.classList.toggle('selected',el.dataset.id===id); });
   document.getElementById('team-login-selected-id').value=id;
+  document.getElementById('team-login-list').style.display='none';
+  document.getElementById('team-login-legacy').style.display='none';
   document.getElementById('team-pin-section').style.display='block';
   document.getElementById('team-pin-input').value='';
-  document.getElementById('team-pin-input').focus();
-  var m=state.team[id];
-  document.getElementById('team-pin-label').textContent='Enter PIN for '+m.name;
+  var clr=teamColor(m.role);
+  var avatar=document.getElementById('team-pin-avatar');
+  if(avatar){ avatar.style.background=clr; avatar.textContent=memberInitials(m.name); }
+  document.getElementById('team-pin-label').textContent=m.name;
+  var roleEl=document.getElementById('team-pin-role');
+  if(roleEl) roleEl.textContent=teamRoleIcon(m.role)+' '+m.role+(m.email?' · '+m.email:'');
   document.getElementById('team-pin-error').style.display='none';
+  setTimeout(function(){ document.getElementById('team-pin-input').focus(); },100);
 }
+function deselectTeamMember(){
+  document.getElementById('team-login-list').style.display='';
+  document.getElementById('team-login-legacy').style.display='';
+  document.getElementById('team-pin-section').style.display='none';
+  document.querySelectorAll('.team-login-item').forEach(function(el){ el.classList.remove('selected'); });
+}
+ 
 function checkTeamPin(){
   var id=document.getElementById('team-login-selected-id').value;
   var pin=document.getElementById('team-pin-input').value;
@@ -2480,30 +2513,47 @@ function showTeamManager(){
  
 function renderTeamList(){
   var members=Object.values(state.team);
-  if(!members.length) return '<div class="empty-state"><div class="empty-icon">👥</div><div>No team members yet. Add your first member above.</div></div>';
-  return '<div style="background:var(--s);border:1.5px solid var(--b);border-radius:var(--r);overflow:hidden">'
-    +'<table style="width:100%;border-collapse:collapse">'
-    +'<thead><tr style="background:var(--s2)">'
-    +['Member','Role','PIN','Clients','Actions'].map(function(h){ return '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--b)">'+h+'</th>'; }).join('')
-    +'</tr></thead><tbody>'
-    +members.map(function(m){
-      var cc=amClients(m.id).length;
-      return '<tr style="border-bottom:1px solid var(--b)">'
-        +'<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:10px">'
-        +'<div style="width:34px;height:34px;border-radius:9px;background:'+teamColor(m.role)+';display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:12px">'+memberInitials(m.name)+'</div>'
-        +'<div><div style="font-weight:600;font-size:13px">'+m.name+'</div><div style="font-size:11px;color:var(--t3)">'+m.email+'</div></div></div></td>'
-        +'<td style="padding:12px 16px"><span class="badge" style="background:'+teamColor(m.role)+'20;color:'+teamColor(m.role)+'">'+teamRoleIcon(m.role)+' '+m.role+'</span>'+(m.active===false?' <span class="badge badge-red" style="font-size:9px">Inactive</span>':'')+'</td>'
-        +'<td style="padding:12px 16px;font-family:var(--mono);font-size:12px;color:var(--t3)">'+m.pin+'</td>'
-        +'<td style="padding:12px 16px;font-size:13px;font-weight:600">'+cc+'</td>'
-        +'<td style="padding:12px 16px;display:flex;gap:6px">'
-        +'<button class="btn btn-xs btn-secondary" data-mid="'+m.id+'" onclick="openEditMemberModal(this.dataset.mid)">Edit</button>'
-        +'<button class="btn btn-xs '+(m.active===false?'btn-success':'btn-secondary')+'" data-mid="'+m.id+'" onclick="toggleMemberAccess(this.dataset.mid)">'+(m.active===false?'Enable':'Disable')+'</button>'
-        +'<button class="btn btn-xs btn-danger" data-mid="'+m.id+'" onclick="deleteMember(this.dataset.mid)">Remove</button>'
-        +'</td></tr>';
-    }).join('')
-    +'</tbody></table></div>';
+  if(!members.length) return '<div class="empty-state"><div class="empty-icon">👥</div><div style="font-size:16px;font-weight:700;margin-bottom:8px">No team members yet</div><div style="color:var(--t3);margin-bottom:16px">Add your first member to get started.</div><button class="btn btn-primary" onclick="openAddMemberModal()">+ Add First Member</button></div>';
+  var admins=members.filter(function(m){return m.role==='Admin';});
+  var staff=members.filter(function(m){return m.role==='Staff';});
+  var execs=members.filter(function(m){return m.role==='Executive';});
+  function mr(m){
+    var cc=amClients(m.id).length, clr=teamColor(m.role), inactive=m.active===false;
+    return '<div class="card card-sm" style="margin-bottom:8px;display:flex;align-items:center;gap:14px;'+(inactive?'opacity:.5;':'')+'border-left:3px solid '+clr+'">'
+      +'<div style="width:42px;height:42px;border-radius:10px;background:'+clr+';display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0">'+memberInitials(m.name)+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+      +'<span style="font-size:14px;font-weight:700">'+m.name+'</span>'
+      +'<span class="badge" style="background:'+clr+'18;color:'+clr+'">'+teamRoleIcon(m.role)+' '+m.role+'</span>'
+      +(inactive?'<span class="badge badge-red" style="font-size:9px">Inactive</span>':'')
+      +'</div>'
+      +'<div style="font-size:12px;color:var(--t3);margin-top:2px;display:flex;gap:12px;flex-wrap:wrap">'
+      +(m.email?'<span>'+m.email+'</span>':'')
+      +'<span style="font-family:var(--mono);font-size:11px">PIN: '+m.pin+'</span>'
+      +(m.role!=='Executive'?'<span>'+cc+' client'+(cc===1?'':'s')+'</span>':'')
+      +'</div></div>'
+      +'<div style="display:flex;gap:6px;flex-shrink:0">'
+      +'<button class="btn btn-xs btn-secondary" data-mid="'+m.id+'" onclick="openEditMemberModal(this.dataset.mid)">Edit</button>'
+      +'<button class="btn btn-xs '+(inactive?'btn-success':'btn-secondary')+'" data-mid="'+m.id+'" onclick="toggleMemberAccess(this.dataset.mid)">'+(inactive?'Enable':'Disable')+'</button>'
+      +'<button class="btn btn-xs btn-danger" data-mid="'+m.id+'" onclick="deleteMember(this.dataset.mid)">Remove</button>'
+      +'</div></div>';
+  }
+  function sec(label,arr){ if(!arr.length) return ''; return '<div style="margin-bottom:20px"><div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:8px">'+label+' ('+arr.length+')<span style="flex:1;height:1px;background:var(--b)"></span></div>'+arr.map(mr).join('')+'</div>'; }
+  return '<div style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap">'
+    +'<div class="stat-card" style="--accent:#DC2626;flex:1;min-width:100px"><div class="stat-label">Admins</div><div class="stat-value">'+admins.length+'</div></div>'
+    +'<div class="stat-card" style="--accent:#1A6EFF;flex:1;min-width:100px"><div class="stat-label">Staff</div><div class="stat-value">'+staff.length+'</div></div>'
+    +'<div class="stat-card" style="--accent:#7C3AED;flex:1;min-width:100px"><div class="stat-label">Executives</div><div class="stat-value">'+execs.length+'</div></div>'
+    +'<div class="stat-card" style="--accent:var(--t3);flex:1;min-width:100px"><div class="stat-label">Total</div><div class="stat-value">'+members.length+'</div></div>'
+    +'</div>'
+    +sec('Admins',admins)+sec('Account Managers',staff)+sec('Executives',execs);
 }
  
+function previewMemberRole(){
+  var role=(document.getElementById('m-role')||{}).value||'Staff';
+  var descs={Staff:'Sees own clients only. Can create, edit, manage assigned clients. No exec dashboard or team management.',Executive:'Read-only Executive Dashboard. Sees all AM portfolios, health scores, progress. Can leave comments on any client for the AM. Cannot create or edit clients.',Admin:'Full access: AM Dashboard, Executive Dashboard, Team Management. Sees all clients across all AMs. Can manage team members and disable/remove access.'};
+  var el=document.getElementById('member-role-desc');
+  if(el) el.innerHTML=descs[role]||'';
+}
 function openAddMemberModal(){
   document.getElementById('member-modal-title').textContent='Add Team Member';
   document.getElementById('member-editing-id').value='';
@@ -2511,6 +2561,7 @@ function openAddMemberModal(){
   document.getElementById('m-email').value='';
   document.getElementById('m-pin').value='';
   document.getElementById('m-role').value='Staff';
+  previewMemberRole();
   openModal('modal-member');
 }
 function openEditMemberModal(id){
@@ -2521,6 +2572,7 @@ function openEditMemberModal(id){
   document.getElementById('m-email').value=m.email||'';
   document.getElementById('m-pin').value=m.pin||'';
   document.getElementById('m-role').value=m.role||'Staff';
+  previewMemberRole();
   openModal('modal-member');
 }
 function saveMember(){
@@ -2563,22 +2615,31 @@ function deleteMember(id){
 <div class="modal-overlay" id="modal-team-login">
   <div class="modal" style="max-width:420px">
     <div class="modal-header">
-      <div><div class="modal-title">🔐 Duda Team Login</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Select your name then enter your PIN</div></div>
+      <div><div class="modal-title">🔐 Duda Team Login</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Select your account to continue</div></div>
       <button class="modal-close" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'">✕</button>
     </div>
     <div class="modal-body">
       <div id="team-login-list" style="margin-bottom:4px"></div>
       <div id="team-login-legacy"></div>
-      <div id="team-pin-section" style="display:none;margin-top:14px;border-top:1px solid var(--b);padding-top:14px">
-        <label class="form-label" id="team-pin-label">Enter PIN</label>
-        <input class="form-input" id="team-pin-input" type="password" placeholder="PIN" onkeydown="if(event.key==='Enter')checkTeamPin()" style="margin-top:5px">
-        <div id="team-pin-error" style="color:var(--red);font-size:12px;display:none;margin-top:5px">Incorrect PIN. Try again.</div>
+      <div id="team-pin-section" style="display:none;margin-top:16px;background:var(--s2);border-radius:var(--r);padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div id="team-pin-avatar" style="width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;flex-shrink:0"></div>
+          <div>
+            <div id="team-pin-label" style="font-size:14px;font-weight:600"></div>
+            <div id="team-pin-role" style="font-size:11px;color:var(--t3)"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="team-pin-input" type="password" placeholder="Enter your PIN" onkeydown="if(event.key==='Enter')checkTeamPin()" style="flex:1">
+          <button class="btn btn-primary" onclick="checkTeamPin()" style="flex-shrink:0">Login &rarr;</button>
+        </div>
+        <div id="team-pin-error" style="color:var(--red);font-size:12px;display:none;margin-top:8px">Incorrect PIN. Please try again.</div>
         <input type="hidden" id="team-login-selected-id">
+        <button class="btn btn-ghost btn-xs" style="margin-top:10px;width:100%;color:var(--t3)" onclick="deselectTeamMember()">Choose a different account</button>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'">Cancel</button>
-      <button class="btn btn-primary" onclick="checkTeamPin()" id="team-pin-btn">Login</button>
+    <div class="modal-footer" style="justify-content:center;background:transparent;border-top:none;padding-top:0">
+      <button class="btn btn-ghost" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'" style="font-size:12px;color:var(--t3)">&larr; Back to home</button>
     </div>
   </div>
 </div>
@@ -2593,19 +2654,24 @@ function deleteMember(id){
     </div>
     <div class="modal-body">
       <input type="hidden" id="member-editing-id">
-      <div class="form-row"><label class="form-label">Full Name <span class="req">*</span></label><input class="form-input" id="m-name" placeholder="e.g. Sara Cohen"></div>
-      <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="m-email" type="email" placeholder="sara@duda.co"></div>
+      <div class="form-grid">
+        <div class="form-row"><label class="form-label">Full Name <span class="req">*</span></label><input class="form-input" id="m-name" placeholder="e.g. Sara Cohen"></div>
+        <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="m-email" type="email" placeholder="sara@duda.co"></div>
+      </div>
       <div class="form-grid">
         <div class="form-row"><label class="form-label">Role <span class="req">*</span></label>
-          <select class="form-select" id="m-role">
+          <select class="form-select" id="m-role" onchange="previewMemberRole()">
             <option value="Staff">👤 Staff (AM)</option>
             <option value="Executive">👔 Executive</option>
             <option value="Admin">🛡️ Admin</option>
           </select>
         </div>
-        <div class="form-row"><label class="form-label">PIN <span class="req">*</span></label><input class="form-input" id="m-pin" type="text" placeholder="e.g. 4321" maxlength="8"></div>
+        <div class="form-row"><label class="form-label">PIN <span class="req">*</span></label><input class="form-input" id="m-pin" type="password" placeholder="4-digit PIN" maxlength="8">
+          <div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="btn btn-xs btn-ghost" onclick="var p=document.getElementById('m-pin');p.type=p.type==='password'?'text':'password'" style="font-size:11px">👁 Show</button><button type="button" class="btn btn-xs btn-ghost" onclick="document.getElementById('m-pin').value=String(1000+Math.floor(Math.random()*9000));document.getElementById('m-pin').type='text'" style="font-size:11px">🎲 Generate</button></div>
+        </div>
       </div>
-      <div class="form-hint">📌 <strong>Role guide:</strong> Staff = AM (sees own clients only) · Executive = read-only org view, comments · Admin = full access + team management</div>
+      <div id="member-role-preview" style="background:var(--s2);border-radius:var(--rsm);padding:12px 14px;margin-top:4px"><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Role Permissions</div><div id="member-role-desc" style="font-size:12px;color:var(--t2);line-height:1.7"></div></div>
+      <div class="form-hint" style="margin-top:8px">📌 <strong>Role guide:</strong> Staff = AM (sees own clients only) · Executive = read-only org view, comments · Admin = full access + team management</div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-member')">Cancel</button>
