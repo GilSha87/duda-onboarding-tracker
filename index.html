@@ -251,6 +251,17 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
   .tab{padding:8px 12px;font-size:12px}
 }
  
+ 
+/* Exec view */
+.app-exec{display:flex;flex-direction:column;min-height:100vh}
+#exec-topbar{background:var(--s);border-bottom:1px solid var(--b);padding:0 24px;height:var(--th);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+#exec-content{flex:1;overflow-y:auto}
+/* Team components */
+.team-avatar-sm{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.team-login-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid var(--b);border-radius:var(--rsm);cursor:pointer;transition:all .15s;margin-bottom:8px}
+.team-login-item:hover{border-color:var(--blue);background:var(--blue-bg)}
+.team-login-item.selected{border-color:var(--blue);background:var(--blue-bg)}
+ 
 </style>
 </head>
 <body>
@@ -274,6 +285,7 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     </nav>
     <div class="sb-bottom">
       <button class="btn-add" onclick="openNewClientModal()">+ Add New Client</button>
+      <div id="am-user-info" style="margin-top:8px;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.05);font-size:11px;color:rgba(255,255,255,.45);display:flex;align-items:center;justify-content:space-between"><span id="am-user-name"></span><button onclick="logout()" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:10px;font-family:var(--font)">Logout</button></div>
     </div>
   </aside>
   <main class="main">
@@ -309,7 +321,7 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
     <h1 style="font-size:26px;font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:-.03em;font-family:var(--font)">Duda Onboarding</h1>
     <p style="font-size:14px;color:rgba(255,255,255,.45);margin-bottom:32px;line-height:1.6;font-family:var(--font)">Your guided path from contract to scale — every step, milestone, and resource in one place.</p>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <button onclick="enterAM()" style="width:100%;padding:13px 24px;background:var(--blue);color:#fff;border:none;border-radius:var(--rsm);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(26,110,255,.45);transition:all .2s">🔐 Account Manager Login</button>
+      <button onclick="openTeamLogin()" style="width:100%;padding:13px 24px;background:var(--blue);color:#fff;border:none;border-radius:var(--rsm);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 4px 16px rgba(26,110,255,.45);transition:all .2s">🔐 Duda Team Login</button>
       <div style="font-size:11px;color:rgba(255,255,255,.28);font-family:var(--font)">Enter your PIN on the next screen</div>
       <div style="display:flex;align-items:center;gap:10px;margin:4px 0">
         <div style="flex:1;height:1px;background:rgba(255,255,255,.1)"></div>
@@ -329,6 +341,14 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
 </div>
  
 <!-- ════ MODALS ════ -->
+ 
+ 
+<!-- ── Duda Executive Shell ── -->
+<div id="app-exec" class="app-exec" style="display:none">
+  <header id="exec-topbar"></header>
+  <div id="exec-content"></div>
+  <div id="exec-drilldown"></div>
+</div>
  
 <!-- PIN -->
 <div class="modal-overlay" id="modal-pin">
@@ -361,10 +381,10 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
       <div id="ct-0">
         <div class="form-grid">
           <div class="form-row"><label class="form-label">Company Name <span class="req">*</span></label><input class="form-input" id="f-name" placeholder="e.g. Acme Agency"></div>
-          <div class="form-row"><label class="form-label">Contact Name</label><input class="form-input" id="f-contact" placeholder="e.g. Jane Smith"></div>
+          <div class="form-row"><label class="form-label">Client Contacts</label><div id="contacts-list"></div><button type="button" class="btn btn-xs btn-secondary" style="margin-top:6px" onclick="addContactRow()">+ Add Contact</button></div>
         </div>
         <div class="form-grid">
-          <div class="form-row"><label class="form-label">Contact Email</label><input class="form-input" id="f-email" type="email" placeholder="jane@acme.com"></div>
+          <div class="form-row" style="display:none"><label class="form-label">Contact Email</label><input class="form-input" id="f-email" type="email" placeholder=""></div>
           <div class="form-row"><label class="form-label">Country / Region</label>
             <select class="form-select" id="f-country" onchange="updateGeoRecs()">
               <option value="us">🇺🇸 United States</option><option value="eu">🇪🇺 European Union</option>
@@ -580,6 +600,13 @@ body{font-family:var(--font);background:var(--s2);color:var(--t);font-size:14px;
 </div>
 <script>
 var STEP_LIBRARY = [
+{id:'T00',owner:'duda',phase:'Pre-Onboarding',workstream:'Commercial',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
+title:'Review AE → AM handoff — deal context, ICP brief, commercial assumptions',
+desc:'Before engaging the client, AM reviews the full AE handoff: deal notes, ICP classification, discovery summary, commercial assumptions, pricing, known risks, and pre-sales commitments. Use the AE→AM Handoff GPT.',
+clientWhat:'No client action required. Your Duda AM is reviewing your deal context and preparing for the kickoff.',
+clientWhy:'A well-prepared AM means your kickoff call is focused on strategy, not re-discovery.',
+resources:[{label:'AE→AM Handoff GPT',url:'https://chatgpt.com/g/g-6924533130008191b5d9d86f695d5965-am-sales-handoff-summary'}]},
+ 
 {id:'T01',owner:'duda',phase:'Pre-Onboarding',workstream:'Commercial',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Confirm contract, launch date & commercial assumptions',
 desc:'Review and confirm the signed contract, commercial package, pricing assumptions, and target launch date before any onboarding work begins.',
@@ -608,14 +635,21 @@ clientWhat:'Work with your AM to decide how your customers will build their site
 clientWhy:'The build flow decision determines everything: API design, templates, permissions, and your support model. Getting this right early saves weeks of rework.',
 resources:[{label:'DIY Onboarding Docs',url:'https://developer.duda.co/docs/diy-onboarding'},{label:'Duda Academy',url:'https://academy.duda.co/'}]},
  
-{id:'T05',owner:'client',phase:'Phase 1 — Kickoff & Discovery',workstream:'Solution Design',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
+{id:'T05',owner:'both',phase:'Phase 1 — Kickoff & Discovery',workstream:'Solution Design',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Define MVP, packaging, plans, permissions & upgrade paths',
 desc:'Align on MVP scope: packaging tiers, custom plan configuration, editor permissions, and upgrade/upsell flows. Must be signed off before build begins.',
 clientWhat:'Define what each of your pricing tiers includes, what features clients in each plan can access, and how they upgrade to a higher plan.',
 clientWhy:'A clear plan structure is required before any technical build. It determines what every customer sees and can do in the editor — and how you monetize upgrades.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
  
-{id:'T06',owner:'both',phase:'Phase 1 — Kickoff & Discovery',workstream:'Solution Design',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
+{id:'T05b',owner:'both',phase:'Phase 1 — Kickoff & Discovery',workstream:'Solution Design',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
+title:'Define support model, escalation paths & SLA expectations',
+desc:'Align on how end-client support will work: who handles tier-1 and tier-2, escalation path to Duda, SLA commitments, and how the white-label support portal is positioned to end clients.',
+clientWhat:'Define with your AM how your customers will get help: your support team handles first-contact, Duda handles technical escalations. Agree on SLAs and the escalation path.',
+clientWhy:'Support model ambiguity is one of the top causes of post-launch friction. Agreeing on this now protects your client experience and your team\'s time.',
+resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'White-labeled Support',url:'https://support.multiscreensite.com/hc/en-us'}]},
+ 
+{id:'T06',owner:'both',phase:'Phase 1 — Kickoff & Discovery',workstream:'Solution Design',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Define segment-specific value prop and KPIs',
 desc:'Agree on KPIs: attach rate, time-to-publish (TTP), publish rate, ARPU, churn impact, support ticket volume.',
 clientWhat:'Agree with your AM on the specific metrics you\'ll use to measure success: publish rate, time-to-publish, revenue impact, and support volume.',
@@ -636,12 +670,26 @@ clientWhat:'Your Duda TAM sets up your internal team access levels and configure
 clientWhy:'Proper role configuration prevents clients from accidentally breaking sites and ensures your team has the right access levels for efficient operations.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
  
-{id:'T09',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Content / Template',priority:'Must',flows:['diy','difm','hybrid'],icps:['agency','saas','hosting','listing','pos'],
-title:'Build vertical templates, connected sections & default content',
-desc:'Build or adapt vertical templates with connected sections, mandatory/default sections, and theme configurations. Template library must be approved before build.',
-clientWhat:'Your design/ops team builds the vertical templates, sections, and default layouts that your end-clients will use as their starting point.',
-clientWhy:'Great templates are the foundation of fast site production. Strong templates reduce build time, QA cycles, and client revisions — directly improving margin per site.',
+{id:'T09',owner:'both',phase:'Phase 2 — Platform Setup & Build',workstream:'Content / Template',priority:'Must',flows:['diy','difm','hybrid'],icps:['agency','saas','hosting','listing','pos'],
+title:'Define template brief — verticals, sections, content model',
+desc:'Align on template strategy: vertical scope, connected sections, mandatory/default sections, content model, and brand structure. AM and client sign off before any build starts.',
+clientWhat:'Work with your Duda AM to define which verticals you need templates for, what sections are mandatory, and how your brand and content model maps to the Duda template structure.',
+clientWhy:'Starting a template build without an approved brief is the single biggest cause of rework. This step prevents that.',
 resources:[{label:'Duda Academy',url:'https://academy.duda.co/'},{label:'Inspiration Board',url:'https://www.duda.co/inspiration'}]},
+ 
+{id:'T09b',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Content / Template',priority:'Must',flows:['diy','difm','hybrid'],icps:['agency','saas','hosting','listing','pos'],
+title:'Build vertical templates, connected sections & default content',
+desc:'Build or adapt vertical templates per the approved brief from T09. Must include connected sections, mandatory/default sections, and theme configurations. Build only after T09 brief is approved.',
+clientWhat:'Your design/ops team builds the vertical templates, sections, and default layouts that your end-clients will use as their starting point, following the approved brief from T09.',
+clientWhy:'Great templates reduce build time, QA cycles, and client revisions — directly improving margin per site.',
+resources:[{label:'Duda Academy',url:'https://academy.duda.co/'},{label:'Inspiration Board',url:'https://www.duda.co/inspiration'}]},
+ 
+{id:'T09c',owner:'duda',phase:'Phase 2 — Platform Setup & Build',workstream:'Content / Template',priority:'Must',flows:['diy','difm','hybrid'],icps:['agency','saas','hosting','listing','pos'],
+title:'AM template review & sign-off — quality gate before pilot',
+desc:'AM reviews all built templates against the approved brief. Check: brand alignment, connected data, mandatory sections, mobile responsiveness, SEO defaults. Must sign off before pilot (T23).',
+clientWhat:'Your Duda AM will review all built templates and provide feedback before any pilot sites are created. This is a quality gate, not a courtesy review.',
+clientWhy:'Catching template issues here — not after 50 sites are built — is the difference between a smooth pilot and a crisis.',
+resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'Duda Academy',url:'https://academy.duda.co/'}]},
  
 {id:'T10',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Must',flows:['diy','difm','hybrid'],icps:['saas','hosting','listing','pos'],
 title:'Map business data fields to Content Library / Collections',
@@ -656,6 +704,13 @@ desc:'Build the core create client → create site flow. For DIY: via API. For D
 clientWhat:'Your engineering team builds the automated flow to create a client account and website in Duda — either via API integration or a defined operational process.',
 clientWhy:'This is the core of your onboarding funnel. Until this flow works repeatably, you can\'t scale. This is the #1 priority in Phase 2.',
 resources:[{label:'Intro to Duda API',url:'https://academy.duda.co/course/integrate-duda-into-your-workflow'},{label:'DIY Onboarding Docs',url:'https://developer.duda.co/docs/diy-onboarding'},{label:'Developer Docs',url:'https://developer.duda.co/'}]},
+ 
+{id:'T11b',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
+title:'UAT — client signs off on full end-to-end build flow',
+desc:'Client technical team runs full end-to-end UAT: account creation, SSO, site creation, content population, permissions, publish, and domain. Must produce a written sign-off before proceeding to pilot.',
+clientWhat:'Your technical team runs through the complete flow as if you were a real end-customer: sign up, log in, get a site, edit it, publish it, connect a domain. Document any issues found.',
+clientWhy:'UAT is the last line of defence before real clients hit your platform. Issues found here cost hours to fix. Issues found post-launch cost clients.',
+resources:[{label:'Developer Docs',url:'https://developer.duda.co/'},{label:'Support Portal',url:'https://support.duda.co/hc/en-us'}]},
  
 {id:'T12',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Must',flows:['diy','hybrid'],icps:['saas','hosting','pos'],
 title:'Implement SSO/login path from partner portal to Duda',
@@ -692,9 +747,9 @@ clientWhat:'Your engineering team builds the publish flow and domain connection 
 clientWhy:'Publishing is the finish line for every client. A smooth publish + domain flow is what turns builds into live, revenue-generating sites.',
 resources:[{label:'Developer Docs',url:'https://developer.duda.co/'},{label:'Support Portal',url:'https://support.duda.co/hc/en-us'}]},
  
-{id:'T17',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'High',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
+{id:'T17',owner:'client',phase:'Phase 2 — Platform Setup & Build',workstream:'Technical Build',priority:'Medium',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Implement analytics, reporting events & KPI dashboard feed',
-desc:'Configure analytics reporting: Analytics API, stats emails, and BI dashboard feed.',
+desc:'Configure analytics reporting: Analytics API, stats emails, and BI dashboard feed. Note: often only actionable post-launch — can be deferred to Phase 4 for DIY/SaaS flows where reporting needs live traffic data.',
 clientWhat:'Your engineering team configures site analytics, performance reporting, and the data feed into your business intelligence dashboard.',
 clientWhy:'Without analytics you can\'t measure publish rates, client engagement, or ROI — the data you need to grow and retain clients at scale.',
 resources:[{label:'Developer Docs',url:'https://developer.duda.co/'},{label:'Partners Onboarding Dashboard',url:'https://duda-co.domo.com/page/1847460602'}]},
@@ -748,6 +803,13 @@ clientWhat:'Run a full QA pass across pilot sites: permissions, data sync, domai
 clientWhy:'QA before launch protects your clients, brand, and SLA. Known issues caught here cost minutes to fix; post-launch they cost clients.',
 resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'Termly Cookie Consent',url:'https://termly.io/'}]},
  
+{id:'T24b',owner:'client',phase:'Phase 4 — Pilot, Launch & Scale',workstream:'Pilot',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
+title:'Client UAT sign-off on pilot sites',
+desc:'Client stakeholders (product/ops lead) formally review pilot sites, test the end-customer experience, and sign off that the platform is ready for production launch. Blockers must be resolved before go/no-go (T25).',
+clientWhat:'Your product or ops lead reviews the pilot sites from an end-customer perspective. Walk through the full journey: site quality, content accuracy, mobile experience, publish flow, domain. Provide written sign-off or log blockers.',
+clientWhy:'Pilot sign-off is the safest moment to catch experience gaps. Post-launch, the same issues become client complaints and churn risk.',
+resources:[{label:'Support Portal',url:'https://support.duda.co/hc/en-us'},{label:'System Status',url:'https://status.duda.co/'}]},
+ 
 {id:'T25',owner:'both',phase:'Phase 4 — Pilot, Launch & Scale',workstream:'Launch',priority:'Must',flows:['diy','difm','hybrid','migration','marketplace'],icps:['agency','saas','hosting','listing','pos'],
 title:'Approve go/no-go and production rollout plan',
 desc:'Formal go/no-go decision from executive sponsor. Scale plan approved and documented.',
@@ -783,9 +845,16 @@ var PHASE_COLORS={'Pre-Onboarding':'#6B7280','Phase 1 — Kickoff & Discovery':'
 var PHASE_ICONS={'Pre-Onboarding':'🔖','Phase 1 — Kickoff & Discovery':'🚀','Phase 2 — Platform Setup & Build':'⚙️','Phase 3 — Enablement & GTM':'🎓','Phase 4 — Pilot, Launch & Scale':'🎯','Custom':'✨'};
 var PHASE_BY_ID={T01:'Pre-Onboarding',T02:'Phase 1 — Kickoff & Discovery',T03:'Phase 1 — Kickoff & Discovery',T04:'Phase 1 — Kickoff & Discovery',T05:'Phase 1 — Kickoff & Discovery',T06:'Phase 1 — Kickoff & Discovery',T07:'Phase 2 — Platform Setup & Build',T08:'Phase 2 — Platform Setup & Build',T09:'Phase 2 — Platform Setup & Build',T10:'Phase 2 — Platform Setup & Build',T11:'Phase 2 — Platform Setup & Build',T12:'Phase 2 — Platform Setup & Build',T13:'Phase 2 — Platform Setup & Build',T14:'Phase 2 — Platform Setup & Build',T15:'Phase 2 — Platform Setup & Build',T16:'Phase 2 — Platform Setup & Build',T17:'Phase 2 — Platform Setup & Build',T18:'Phase 3 — Enablement & GTM',T19:'Phase 3 — Enablement & GTM',T20:'Phase 3 — Enablement & GTM',T21:'Phase 3 — Enablement & GTM',T22:'Phase 3 — Enablement & GTM',T23:'Phase 4 — Pilot, Launch & Scale',T24:'Phase 4 — Pilot, Launch & Scale',T25:'Phase 4 — Pilot, Launch & Scale',T26:'Phase 4 — Pilot, Launch & Scale',T27:'Phase 4 — Pilot, Launch & Scale',T28:'Phase 4 — Pilot, Launch & Scale'};
  
-var state={clients:{},amPin:'1234',settings:{amName:'Account Manager'}};
-function save(){localStorage.setItem('duda_ob_v4',JSON.stringify(state));}
-function load(){var r=localStorage.getItem('duda_ob_v4');if(r)try{state=JSON.parse(r);}catch(e){}Object.values(state.clients||{}).forEach(function(c){(c.steps||[]).forEach(function(s){if(!s.phase&&PHASE_BY_ID[s.id])s.phase=PHASE_BY_ID[s.id];});});}
+var state={clients:{},amPin:'1234',settings:{amName:'Account Manager'},team:{},_session:null};
+// team member schema: {id, name, email, role:'Admin'|'Staff'|'Executive', pin, color, initials}
+ 
+function save(){localStorage.setItem('duda_ob_v5',JSON.stringify(state));}
+function load(){
+  // migrate v4 → v5
+  var r=localStorage.getItem('duda_ob_v5')||localStorage.getItem('duda_ob_v4');
+  if(r)try{state=JSON.parse(r);}catch(e){}
+  if(!state.team) state.team={};
+  if(!state._session) state._session=null;{}Object.values(state.clients||{}).forEach(function(c){(c.steps||[]).forEach(function(s){if(!s.phase&&PHASE_BY_ID[s.id])s.phase=PHASE_BY_ID[s.id];});});}
 function uid(){return Math.random().toString(36).substr(2,9);}
 function todayStr(){return new Date().toISOString().split('T')[0];}
 function addDays(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
@@ -816,7 +885,16 @@ function openFromLink(){
   try{var u=new URL(val);id=u.searchParams.get('client')||val;}catch(e){}
   if(state.clients[id]){showClientView(id);}else{showToast('Client tracker not found. Check the link or ID.','error');}
 }
-function showAMView(){document.getElementById('app-landing').style.display='none';document.getElementById('app-am').style.display='flex';document.getElementById('app-client').style.display='none';renderSidebar();showAMPage('dashboard');}
+function showAMView(){
+  document.getElementById('app-landing').style.display='none';
+  document.getElementById('app-am').style.display='flex';
+  document.getElementById('app-client').style.display='none';
+  document.getElementById('app-exec').style.display='none';
+  var u=currentUser();
+  var nameEl=document.getElementById('am-user-name');
+  if(nameEl) nameEl.textContent=u?u.name:'';
+  renderSidebar();showAMPage('dashboard');
+}
 function showClientView(id){document.getElementById('app-landing').style.display='none';document.getElementById('app-am').style.display='none';document.getElementById('app-client').style.display='block';renderClientView(id);}
 function toggleSidebar(){document.getElementById('am-sidebar').classList.toggle('open');}
  
@@ -834,7 +912,14 @@ function renderSidebar(){
       +(openQ?'<span class="nav-alert"></span>':'')
       +'<span class="nav-badge">'+done+'/'+steps.length+'</span>'
       +'</div>';
-  }).join('');
+  }).join('')
+    +(function(){var u=currentUser();return (u&&u.role==='Admin')||(!u&&Object.keys(state.team).length===0)?'<div class="nav-item" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.07);padding-top:10px" onclick="showAMTeamManager()"><div class="nav-dot" style="background:#7C3AED"></div><span class="nav-name" style="color:rgba(255,255,255,.55)">⚙ Manage Team</span></div>':'';})();
+}
+ 
+function showAMTeamManager(){
+  var el=document.getElementById('am-content');
+  setTopbar('Team Management','','<button class="btn btn-primary btn-sm" onclick="openAddMemberModal()">+ Add Member</button>');
+  el.innerHTML='<div class="page" style="max-width:800px"><div id="team-list-container">'+renderTeamList()+'</div></div>';
 }
 function setTopbar(title,sub,actions){
   document.getElementById('tb-title').innerHTML=title;
@@ -886,6 +971,38 @@ function ownerBadge(owner,p){
   var map={duda:{cls:'badge-blue',l:'Duda Team'},client:{cls:'badge-green',l:'Client Team'},both:{cls:'badge-amber',l:'Both Teams'}};
   var o=map[owner]||map.both;
   return '<span class="badge '+o.cls+'">'+o.l+'</span>';
+}
+ 
+function calcHealth(c){
+  // Returns 0-100 score + grade + color
+  var steps=(c.steps||[]).filter(function(s){return s.status!=='Skipped';});
+  var done=steps.filter(function(s){return s.status==='Done';}).length;
+  var total=steps.length||1;
+  var progress=pct(done,total);
+  var ko=c.kickoff?new Date(c.kickoff):new Date();
+  var d90=addDays(ko,90);
+  var now=new Date();
+  var daysElapsed=Math.max(0,Math.ceil((now-ko)/86400000));
+  var daysLeft=Math.ceil((d90-now)/86400000);
+  var openQ=(c.qa||[]).filter(function(q){return q.status==='Open';}).length;
+  // Expected progress based on time elapsed
+  var expectedPct=Math.min(100,Math.round(daysElapsed/90*100));
+  var pctDiff=progress-expectedPct;
+  // Score: base from progress, adjust for pace and open Q
+  var score=progress;
+  if(pctDiff<-20) score-=15;
+  else if(pctDiff<-10) score-=8;
+  if(openQ>3) score-=10;
+  else if(openQ>1) score-=5;
+  if(c.planApproved) score+=5;
+  if(daysLeft<0&&progress<100) score-=20;
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  var grade,color;
+  if(score>=80){grade='A';color='#0F9960';}
+  else if(score>=65){grade='B';color='#0891B2';}
+  else if(score>=45){grade='C';color='#D97706';}
+  else{grade='D';color='#DC2626';}
+  return {score:score,grade:grade,color:color,progress:progress,openQ:openQ,daysLeft:Math.max(0,daysLeft)};
 }
 function renderDashboard(){
   setTopbar('Dashboard','','<button class="btn btn-primary btn-sm" onclick="openNewClientModal()">+ Add Client</button>');
@@ -991,6 +1108,7 @@ function renderStepsSection(c, isAM){
   PHASE_ORDER.forEach(function(phase){
     var ps = byPhase[phase];
     if(!ps||!ps.length) return;
+    if(!isAM && phase==='Pre-Onboarding') return;
     var color = PHASE_COLORS[phase]||'#6B7280';
     var icon = PHASE_ICONS[phase]||'📌';
     var active = ps.filter(function(s){ return s.status!=='Skipped'; });
@@ -1235,7 +1353,7 @@ function renderQASection(c, isAM){
     return '<div class="qa-item">'
       +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px">'
       +'<div><div style="font-size:14px;font-weight:600;color:var(--t)">'+q.question+'</div>'
-      +'<div style="font-size:12px;color:var(--t3);margin-top:2px">'+(q.category||'')+' · '+( q.date||'')+(q.eta?' · ETA: '+fmtDate(q.eta):'')+'</div></div>'
+      +'<div style="font-size:12px;color:var(--t3);margin-top:2px">'+(q.askerName?'<strong>'+q.askerName+'</strong>'+(q.askerEmail?' ('+q.askerEmail+')':'')+' · ':'')+(q.category||'')+' · '+( q.date||'')+(q.eta?' · ETA: '+fmtDate(q.eta):'')+'</div></div>'
       +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'
       +'<span class="badge '+stBadge+'">'+q.status+'</span>'
       +(isAM?'<button class="btn btn-xs btn-secondary" onclick="openResponseModal(\''+c.id+'\',\''+q.id+'\')">Respond</button>':'')
@@ -1307,9 +1425,11 @@ function renderAMClientPage(id){
     '<span class="tag">'+(c.flow||'').toUpperCase()+'</span> <span class="tag">'+(c.icp||'')+'</span>',
     '<button class="btn btn-sm btn-secondary" onclick="openEditClientModal(\''+id+'\')">⚙ Edit</button>'
     +'<button class="btn btn-sm btn-secondary" onclick="copyClientLink(\''+id+'\')">🔗 Link</button>'
+    +'<button class="btn btn-sm btn-secondary" onclick="copyExecLink(\''+id+'\')" style="color:#6D28D9;border-color:#C4B5FD">👔 Exec</button>'
     +'<button class="btn btn-sm btn-primary" onclick="showClientView(\''+id+'\')">👁 Preview</button>'
   );
   var link = window.location.origin+window.location.pathname+'?client='+id;
+  var execLink = window.location.origin+window.location.pathname+'?client='+id+'&view=exec';
   var geo = GEO[c.country||'us']||GEO.other;
   var geoHtml = geo.tips.length ?
     '<div class="geo-rec"><span style="font-size:16px">'+geo.flag+'</span><div><strong>Geo:</strong> '+geo.tips.join(' · ')+'</div></div>' : '';
@@ -1318,9 +1438,10 @@ function renderAMClientPage(id){
   document.getElementById('am-content').innerHTML =
     '<div class="page">'
     +'<div class="share-bar">'
-    +'<div style="font-size:12px;font-weight:600;color:var(--t2)">🔗 Client link:</div>'
-    +'<div class="link-copy"><a href="'+link+'" target="_blank">'+link+'</a></div>'
-    +'<button class="btn btn-xs btn-secondary" onclick="copyClientLink(\''+id+'\')">Copy</button>'
+    +'<div style="flex:1">'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:11px;font-weight:600;color:var(--t2);white-space:nowrap">🔗 Client:</span><div class="link-copy" style="flex:1"><a href="'+link+'" target="_blank">'+link+'</a></div><button class="btn btn-xs btn-secondary" onclick="copyClientLink(\''+id+'\')" >Copy</button></div>'
+    +'<div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;font-weight:600;color:#6D28D9;white-space:nowrap">👔 Exec:</span><div class="link-copy" style="flex:1"><a href="'+execLink+'" target="_blank" style="color:#6D28D9">'+execLink+'</a></div><button class="btn btn-xs" style="background:#F5F3FF;color:#6D28D9;border:1px solid #C4B5FD" onclick="copyExecLink(\''+id+'\')" >Copy</button></div>'
+    +'</div>'
     +'</div>'
     +geoHtml
     +'<div class="tabs" id="am-tabs-'+id+'">'
@@ -1352,6 +1473,171 @@ function copyClientLink(id){
   var link = window.location.origin+window.location.pathname+'?client='+id;
   navigator.clipboard.writeText(link).then(function(){ showToast('Client link copied!','success'); });
 }
+ 
+function copyExecLink(id){
+  var link=window.location.origin+window.location.pathname+'?client='+id+'&view=exec';
+  navigator.clipboard.writeText(link).then(function(){showToast('Executive link copied!','success');});
+}
+function showExecView(id){
+  document.getElementById('app-landing').style.display='none';
+  document.getElementById('app-am').style.display='none';
+  document.getElementById('app-client').style.display='block';
+  renderExecView(id);
+}
+function execStatCard(label,val,color,sz){
+  return '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden">'
+    +'<div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:'+color+'"></div>'
+    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">'+label+'</div>'
+    +'<div style="'+sz+';font-weight:800;color:'+color+';letter-spacing:-.03em;line-height:1">'+val+'</div>'
+    +'</div>';
+}
+function execPlanCard(day,label,date,goal,rag){
+  return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px">'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
+    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em">'+day+'</div>'
+    +'<span style="font-size:13px">'+rag.icon+'</span>'
+    +'</div>'
+    +'<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px">'+label+'</div>'
+    +'<div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:8px">'+fmtDate(date.toISOString().split("T")[0])+'</div>'
+    +'<div style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:8px">'+goal+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:'+rag.color+'">'+rag.label+'</div>'
+    +'</div>';
+}
+function renderExecView(id){
+  var c=state.clients[id]; if(!c) return;
+  var color=c.brandColor||'#1A6EFF';
+  var steps=(c.steps||[]).filter(function(s){return s.status!=='Skipped';});
+  var done=steps.filter(function(s){return s.status==='Done';}).length;
+  var total=steps.length, p=pct(done,total);
+  var plan=c.plan||{};
+  var ko=c.kickoff?new Date(c.kickoff):new Date();
+  var d60=addDays(ko,60),d90=addDays(ko,90),d180=addDays(ko,180);
+  var now=new Date();
+  var daysLeft=Math.max(0,Math.ceil((d90-now)/86400000));
+  var openQ=(c.qa||[]).filter(function(q){return q.status==='Open';}).length;
+ 
+  var phases=[
+    {name:'Pre-Onboarding',color:'#6B7280',icon:'🔖'},
+    {name:'Phase 1 — Kickoff & Discovery',color:'#7C3AED',icon:'🚀'},
+    {name:'Phase 2 — Platform Setup & Build',color:'#1A6EFF',icon:'⚙️'},
+    {name:'Phase 3 — Enablement & GTM',color:'#0891B2',icon:'🎓'},
+    {name:'Phase 4 — Pilot, Launch & Scale',color:'#0F9960',icon:'🎯'},
+  ];
+  function phSt(ph){
+    var ps=steps.filter(function(s){return s.phase===ph;});
+    var d=ps.filter(function(s){return s.status==='Done';}).length;
+    return {done:d,total:ps.length,p:pct(d,ps.length)};
+  }
+  function ragStatus(date,pp){
+    var days=Math.ceil((new Date(date+' 00:00:00')-now)/86400000);
+    if(pp>=100) return {color:'#0F9960',label:'On Track',icon:'🟢'};
+    if(days<0) return {color:'#DC2626',label:'Overdue',icon:'🔴'};
+    if(days<14||pp<25) return {color:'#D97706',label:'At Risk',icon:'🟡'};
+    return {color:'#0F9960',label:'On Track',icon:'🟢'};
+  }
+  var r60=ragStatus(d60.toISOString().split('T')[0],phSt('Phase 1 — Kickoff & Discovery').p);
+  var r90=ragStatus(d90.toISOString().split('T')[0],p);
+  var r180=ragStatus(d180.toISOString().split('T')[0],phSt('Phase 4 — Pilot, Launch & Scale').p);
+ 
+  var milestones=[
+    ['Handoff reviewed & kickoff complete',(c.steps||[]).some(function(s){return s.id==='T02'&&s.status==='Done';})],
+    ['Onboarding lane locked (T04)',(c.steps||[]).some(function(s){return s.id==='T04'&&s.status==='Done';})],
+    ['Support model agreed (T05b)',(c.steps||[]).some(function(s){return s.id==='T05b'&&s.status==='Done';})],
+    ['Platform branded & configured (T07)',(c.steps||[]).some(function(s){return s.id==='T07'&&s.status==='Done';})],
+    ['Template brief approved (T09)',(c.steps||[]).some(function(s){return s.id==='T09'&&s.status==='Done';})],
+    ['Core API / build flow live (T11)',(c.steps||[]).some(function(s){return s.id==='T11'&&s.status==='Done';})],
+    ['Technical UAT signed off (T11b)',(c.steps||[]).some(function(s){return s.id==='T11b'&&s.status==='Done';})],
+    ['AM template sign-off complete (T09c)',(c.steps||[]).some(function(s){return s.id==='T09c'&&s.status==='Done';})],
+    ['Pilot UAT approved (T24b)',(c.steps||[]).some(function(s){return s.id==='T24b'&&s.status==='Done';})],
+    ['Production launch live (T26)',(c.steps||[]).some(function(s){return s.id==='T26'&&s.status==='Done';})],
+    ['Performance review complete (T27)',(c.steps||[]).some(function(s){return s.id==='T27'&&s.status==='Done';})],
+  ].concat((plan.customMilestones||[]).map(function(m){return [m.label,m.done||false];}));
+ 
+  var phaseHtml=phases.map(function(ph){
+    var st=phSt(ph.name); if(!st.total) return '';
+    return '<div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:8px;border-left:3px solid '+ph.color+'">'
+      +'<span style="font-size:16px">'+ph.icon+'</span>'
+      +'<div style="flex:1"><div style="font-size:11px;font-weight:700;color:'+ph.color+';margin-bottom:5px">'+ph.name+'</div>'
+      +'<div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+st.p+'%;background:'+ph.color+';border-radius:3px"></div></div></div>'
+      +'<span style="font-size:15px;font-weight:800;color:'+ph.color+'">'+st.p+'%</span>'
+      +'<span style="font-size:11px;color:rgba(255,255,255,.3)">'+st.done+'/'+st.total+'</span>'
+      +'</div>';
+  }).join('');
+ 
+  var msHtml=milestones.map(function(m){
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)">'
+      +'<span style="font-size:15px">'+(m[1]?'✅':'⬜')+'</span>'
+      +'<span style="font-size:13px;'+(m[1]?'color:#6EE7B7;font-weight:600':'color:rgba(255,255,255,.55)')+'">'+m[0]+'</span>'
+      +'</div>';
+  }).join('');
+ 
+  var hasRisk=(!c.planApproved)||(p<25&&daysLeft<21)||(openQ>2);
+ 
+  document.getElementById('client-topbar').innerHTML=
+    '<div style="display:flex;align-items:center;gap:10px">'
+    +(c.logoUrl?'<img src="'+c.logoUrl+'" style="max-height:28px;max-width:110px;object-fit:contain">':'<div style="width:28px;height:28px;background:'+color+';border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:11px">'+(c.name||'?')[0]+'</div>')
+    +'<span style="font-size:15px;font-weight:700;color:var(--t)">'+c.name+'</span>'
+    +'<span style="font-size:10px;padding:2px 8px;background:#F5F3FF;border:1px solid #C4B5FD;border-radius:20px;color:#6D28D9;font-weight:700">Executive Summary</span>'
+    +'</div>'
+    +'<span style="font-size:11px;color:var(--t3)">Powered by <strong>Duda</strong></span>';
+ 
+  document.getElementById('client-content').innerHTML=
+    '<div style="background:linear-gradient(160deg,#0B1929 0%,#111F35 60%,#0B1929 100%);min-height:calc(100vh - 64px);color:#fff">'
+    +'<div style="max-width:820px;margin:0 auto;padding:32px 24px 60px">'
+ 
+    // Headline
+    +'<div style="margin-bottom:24px">'
+    +'<div style="font-size:22px;font-weight:800;letter-spacing:-.03em;margin-bottom:6px">'+c.name+' — Onboarding Status</div>'
+    +'<div style="font-size:13px;color:rgba(255,255,255,.45)">Kickoff: '+(c.kickoff?fmtDate(c.kickoff):'TBD')+' · 90-day target: '+fmtDate(d90.toISOString().split('T')[0])+'</div>'
+    +'</div>'
+ 
+    // Stat row
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">'
+    +execStatCard('Overall Progress',p+'%',color,'font-size:28px')
+    +execStatCard('Steps Done',done+'/'+total,'#0891B2','font-size:22px')
+    +execStatCard('Days to Go-Live',daysLeft,daysLeft<14?'#DC2626':daysLeft<30?'#D97706':'#0F9960','font-size:28px')
+    +execStatCard('Open Questions',openQ,openQ>0?'#D97706':'#4B5563','font-size:28px')
+    +'</div>'
+ 
+    // Phase breakdown
+    +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;margin-bottom:16px">'
+    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.09em;margin-bottom:14px">Phase Breakdown</div>'
+    +phaseHtml
+    +'</div>'
+ 
+    // Plan RAG
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">'
+    +execPlanCard('Day 60','Foundation',d60,plan.goal60||'Platform ready & configured',r60)
+    +execPlanCard('Day 90','Go-Live',d90,plan.goal90||'First live client sites published',r90)
+    +execPlanCard('Day 180','Scale',d180,plan.goal180||'Full rollout & Phase 2 scope agreed',r180)
+    +'</div>'
+ 
+    // Milestone tracker
+    +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;margin-bottom:16px">'
+    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px">Key Milestones</div>'
+    +msHtml
+    +'</div>'
+ 
+    // At-risk / flags
+    +(hasRisk?'<div style="background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);border-radius:14px;padding:18px;margin-bottom:16px">'
+      +'<div style="font-size:13px;font-weight:700;color:#FCA5A5;margin-bottom:10px">🚩 Items Requiring Attention</div>'
+      +'<div style="font-size:13px;color:rgba(255,255,255,.6);line-height:2">'
+      +(!c.planApproved?'• Onboarding plan not yet approved by client team<br>':'')
+      +(p<25&&daysLeft<21?'• Progress is below 25% with fewer than 21 days to go-live target<br>':'')
+      +(openQ>2?'• '+openQ+' open questions pending AM response<br>':'')
+      +'</div></div>':'')
+ 
+    // Plan approval
+    +'<div style="'+(c.planApproved?'background:rgba(15,153,96,.07);border:1px solid rgba(15,153,96,.2)':'background:rgba(217,119,6,.07);border:1px solid rgba(217,119,6,.2)')+';border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px">'
+    +'<span style="font-size:20px">'+(c.planApproved?'✅':'⏳')+'</span>'
+    +'<div>'
+    +'<div style="font-size:13px;font-weight:700;color:'+(c.planApproved?'#6EE7B7':'#FCD34D')+'">'+(c.planApproved?'Onboarding plan approved':'Plan approval pending')+'</div>'
+    +'<div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px">'+(c.planApproved?'Approved on '+fmtDate(c.planApprovedDate):'Awaiting sign-off from client team')+'</div>'
+    +'</div></div>'
+ 
+    +'</div></div>';
+}
+ 
 function renderClientView(id){
   var c = state.clients[id]; if(!c) return;
   var lang = LANGS[c.lang||'en'];
@@ -1430,6 +1716,10 @@ function renderCVTab(i,id){
     el.innerHTML='<div>'+qaHtml
       +'<div class="qa-form" id="qf-'+id+'">'
       +'<div style="font-size:13px;font-weight:700;margin-bottom:12px">💬 '+lang.askQ+'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">'
+      +'<input class="form-input" id="qa-name-'+id+'" placeholder="Your name" style="font-size:12px;padding:8px 10px">'
+      +'<input class="form-input" id="qa-email-'+id+'" placeholder="Your email" style="font-size:12px;padding:8px 10px">'
+      +'</div>'
       +'<div class="form-row"><select class="form-select" id="qcat-'+id+'">'
       +'<option>General Question</option><option>Technical Issue</option><option>Feature / Capability</option>'
       +'<option>Timeline / Scheduling</option><option>Billing / Contract</option><option>Other</option>'
@@ -1445,7 +1735,9 @@ function submitQA(cid){
   var cat=document.getElementById('qcat-'+cid).value;
   if(!q){ showToast('Please enter your question.','error'); return; }
   if(!c.qa) c.qa=[];
-  c.qa.push({id:uid(),question:q,category:cat,date:todayStr(),status:'Open',response:'',eta:''});
+  var askerName=(document.getElementById('qa-name-'+cid)||{}).value||'';
+  var askerEmail=(document.getElementById('qa-email-'+cid)||{}).value||'';
+  c.qa.push({id:uid(),question:q,category:cat,date:todayStr(),status:'Open',response:'',eta:'',askerName:askerName,askerEmail:askerEmail});
   save(); renderCVTab(3,cid); showToast('Question submitted!','success');
 }
 function switchLang(id, lang){
@@ -1521,12 +1813,34 @@ function onProfileChange(){
   if(_clientModalTab===2) renderStepBuilder();
 }
  
+ 
+var _pendingContacts=[];
+function renderContactRows(){
+  var el=document.getElementById('contacts-list'); if(!el) return;
+  el.innerHTML=_pendingContacts.map(function(ct,i){
+    return '<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:8px;margin-bottom:6px;align-items:center">'
+      +'<input class="form-input" style="padding:7px 10px;font-size:12px" placeholder="Name" value="'+(ct.name||'')+'" onchange="updateContact('+i+',\'name\',this.value)">'
+      +'<input class="form-input" style="padding:7px 10px;font-size:12px" placeholder="Email" value="'+(ct.email||'')+'" onchange="updateContact('+i+',\'email\',this.value)">'
+      +'<select class="form-select" style="width:110px;padding:4px 6px;font-size:11px" onchange="updateContact('+i+',\'role\',this.value)">'
+      +'<option'+(ct.role==='Champion'?' selected':'')+'>Champion</option>'
+      +'<option'+(ct.role==='Exec Sponsor'?' selected':'')+'>Exec Sponsor</option>'
+      +'<option'+(ct.role==='Technical'?' selected':'')+'>Technical</option>'
+      +'<option'+(ct.role==='Ops / Design'?' selected':'')+'>Ops / Design</option>'
+      +'<option'+(ct.role==='Other'?' selected':'')+'>Other</option>'
+      +'</select>'
+      +'<button class="btn btn-xs btn-danger" onclick="removeContact('+i+')">✕</button>'
+      +'</div>';
+  }).join('');
+}
+function addContactRow(){ _pendingContacts.push({name:'',email:'',role:'Champion'}); renderContactRows(); }
+function updateContact(idx,field,val){ if(_pendingContacts[idx]) _pendingContacts[idx][field]=val; }
+function removeContact(idx){ _pendingContacts.splice(idx,1); renderContactRows(); }
 function openNewClientModal(){
   _editingClientId=null; _pendingSteps=[];
   document.getElementById('modal-client-title').textContent='Add New Client';
   document.getElementById('f-name').value='';
-  document.getElementById('f-contact').value='';
-  document.getElementById('f-email').value='';
+  _pendingContacts=[{name:'',email:'',role:'Champion'}];
+  setTimeout(renderContactRows,50);
   document.getElementById('f-country').value='us';
   document.getElementById('f-lang').value='en';
   document.getElementById('f-kickoff').value=todayStr();
@@ -1543,8 +1857,8 @@ function openEditClientModal(id){
   _editingClientId=id; var c=state.clients[id];
   document.getElementById('modal-client-title').textContent='Edit — '+c.name;
   document.getElementById('f-name').value=c.name||'';
-  document.getElementById('f-contact').value=c.contact||'';
-  document.getElementById('f-email').value=c.email||'';
+  _pendingContacts=JSON.parse(JSON.stringify(c.contacts||[{name:c.contact||'',email:c.email||'',role:'Champion'}]));
+  setTimeout(renderContactRows,50);
   document.getElementById('f-country').value=c.country||'us';
   document.getElementById('f-lang').value=c.lang||'en';
   document.getElementById('f-kickoff').value=c.kickoff||todayStr();
@@ -1572,9 +1886,11 @@ function saveClient(){
   patchPhases(finalSteps);
   var id=_editingClientId||uid();
   var existing=state.clients[id]||{};
-  state.clients[id]={id,name,
-    contact:document.getElementById('f-contact').value,
-    email:document.getElementById('f-email').value,
+  var sessionUser=currentUser();
+  state.clients[id]={id,name,amId:sessionUser&&(sessionUser.role==='Staff'||sessionUser.role==='Admin')?sessionUser.id:(state.clients[id]&&state.clients[id].amId)||null,
+    contacts:_pendingContacts.filter(function(ct){return ct.name||ct.email;}),
+    contact:(_pendingContacts[0]||{}).name||'',
+    email:(_pendingContacts[0]||{}).email||'',
     country:document.getElementById('f-country').value,
     lang:document.getElementById('f-lang').value,
     kickoff:document.getElementById('f-kickoff').value,
@@ -1728,7 +2044,7 @@ var _respondingQA=null;
 function openResponseModal(cid,qid){
   _respondingQA={cid,qid};
   var c=state.clients[cid]; var q=(c.qa||[]).find(function(x){return x.id===qid;}); if(!q) return;
-  document.getElementById('resp-question').textContent=q.question;
+  document.getElementById('resp-question').innerHTML='<div style="font-size:14px;font-weight:600;margin-bottom:6px">'+q.question+'</div>'+(q.askerName?'<div style="font-size:12px;color:var(--t3)">Asked by: <strong>'+q.askerName+'</strong>'+(q.askerEmail?' ('+q.askerEmail+')':'')+' · '+q.date+'</div>':'<div style="font-size:12px;color:var(--t3)">'+q.date+'</div>');
   document.getElementById('resp-text').value=q.response||'';
   document.getElementById('resp-eta').value=q.eta||'';
   document.getElementById('resp-status').value=q.status||'Open';
@@ -1794,6 +2110,509 @@ function addCustomMilestone(){
   div.innerHTML='<input class="form-input cm-lbl" placeholder="Milestone label..."><button class="btn btn-xs btn-danger" onclick="this.parentElement.remove()">✕</button>';
   el.appendChild(div);
 }
+ 
+// ── Team helpers ────────────────────────────────────────────────────────────
+function getTeamMember(id){ return state.team[id]; }
+function getAMs(){ return Object.values(state.team).filter(function(m){ return m.role==='Staff'||m.role==='Admin'; }); }
+function getExecs(){ return Object.values(state.team).filter(function(m){ return m.role==='Executive'||m.role==='Admin'; }); }
+function currentUser(){ return state._session?state.team[state._session]:null; }
+function isAdmin(){ var u=currentUser(); return u&&u.role==='Admin'; }
+function isExec(){ var u=currentUser(); return u&&(u.role==='Executive'||u.role==='Admin'); }
+function amClients(amId){ return Object.values(state.clients).filter(function(c){ return c.amId===amId; }); }
+function teamColor(role){ return role==='Admin'?'#DC2626':role==='Executive'?'#7C3AED':'#1A6EFF'; }
+function teamRoleIcon(role){ return role==='Admin'?'🛡️':role==='Executive'?'👔':'👤'; }
+function memberInitials(name){ return (name||'?').split(' ').map(function(w){return w[0];}).join('').toUpperCase().slice(0,2); }
+ 
+// ── Unified login ───────────────────────────────────────────────────────────
+function openTeamLogin(){
+  document.getElementById('app-landing').style.display='none';
+  // Build member list for picker
+  var members = Object.values(state.team);
+  // Always add legacy AM access if no team set up
+  var legacyBtn = members.length===0?'<button class="btn btn-secondary" style="width:100%;margin-top:8px;font-size:12px" onclick="enterAM()">Legacy PIN Login (no team set up)</button>':'';
+  document.getElementById('team-login-list').innerHTML = members.length===0
+    ? '<div style="color:var(--t3);font-size:13px;padding:12px 0">No team members set up yet.<br>Use legacy login below or ask your admin.</div>'
+    : members.map(function(m){
+        return '<div class="team-login-item" onclick="selectTeamMember(this.dataset.id)" data-id="'+m.id+'">' 
+          +'<div class="team-avatar-sm" style="background:'+teamColor(m.role)+'">'+memberInitials(m.name)+'</div>'
+          +'<div><div style="font-size:13px;font-weight:600">'+m.name+'</div>'
+          +'<div style="font-size:11px;color:var(--t3)">'+teamRoleIcon(m.role)+' '+m.role+'</div></div>'
+          +'</div>';
+      }).join('');
+  document.getElementById('team-login-legacy').innerHTML = legacyBtn;
+  document.getElementById('team-pin-section').style.display='none';
+  openModal('modal-team-login');
+}
+function selectTeamMember(id){
+  document.querySelectorAll('.team-login-item').forEach(function(el){
+    el.classList.toggle('selected', el.dataset.id===id);
+  });
+  document.getElementById('team-login-selected-id').value=id;
+  document.getElementById('team-pin-section').style.display='block';
+  document.getElementById('team-pin-input').value='';
+  document.getElementById('team-pin-input').focus();
+  var m=state.team[id];
+  document.getElementById('team-pin-label').textContent='Enter PIN for '+m.name;
+  document.getElementById('team-pin-error').style.display='none';
+}
+function checkTeamPin(){
+  var id=document.getElementById('team-login-selected-id').value;
+  var pin=document.getElementById('team-pin-input').value;
+  var m=state.team[id]; if(!m) return;
+  if(pin===m.pin){
+    state._session=id; save();
+    closeModal('modal-team-login');
+    document.getElementById('team-pin-input').value='';
+    if(m.role==='Executive'||m.role==='Admin'){ showDudaExecView(); }
+    else{ showAMView(); }
+  } else {
+    document.getElementById('team-pin-error').style.display='block';
+    document.getElementById('team-pin-input').value='';
+  }
+}
+function logout(){
+  state._session=null; save();
+  document.getElementById('app-landing').style.display='flex';
+  document.getElementById('app-am').style.display='none';
+  document.getElementById('app-client').style.display='none';
+  document.getElementById('app-exec').style.display='none';
+}
+ 
+function clearDrilldown(){ document.getElementById('exec-drilldown').innerHTML=''; }
+function backToExec(){ clearDrilldown(); renderExecDashboard(); }
+function backToAM(amId){ clearDrilldown(); openAMDrilldown(amId); }
+ 
+ 
+// ── Override enterAM to use team login when team exists ─────────────────────
+var _originalEnterAM = enterAM;
+enterAM = function(){
+  if(Object.keys(state.team).length>0){ openTeamLogin(); }
+  else { _originalEnterAM(); }
+};
+ 
+function showDudaExecView(){
+  document.getElementById('app-landing').style.display='none';
+  document.getElementById('app-am').style.display='none';
+  document.getElementById('app-client').style.display='none';
+  document.getElementById('app-exec').style.display='flex';
+  renderExecDashboard();
+}
+function renderExecDashboard(){
+  var user=currentUser();
+  var ams=Object.values(state.team).filter(function(m){return m.role==='Staff'||m.role==='Admin';});
+  var allClients=Object.values(state.clients);
+ 
+  // Org-level stats
+  var totalClients=allClients.length;
+  var activeClients=allClients.filter(function(c){ return (c.steps||[]).some(function(s){return s.status!=='Not Started'&&s.status!=='Skipped';}); }).length;
+  var totalOpenQ=allClients.reduce(function(a,c){ return a+(c.qa||[]).filter(function(q){return q.status==='Open';}).length; },0);
+  var avgHealth=totalClients?Math.round(allClients.map(function(c){return calcHealth(c).score;}).reduce(function(a,b){return a+b;},0)/totalClients):0;
+ 
+  // Exec topbar
+  document.getElementById('exec-topbar').innerHTML=
+    '<div style="display:flex;align-items:center;gap:14px">'
+    +'<div style="width:30px;height:30px;background:#7C3AED;border-radius:8px;display:flex;align-items:center;justify-content:center">'
+    +'<svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 4h8C15.3 4 18 6.7 18 10s-2.7 6-6 6H4V4z" fill="white"/></svg></div>'
+    +'<div><div style="font-size:15px;font-weight:800;color:var(--t)">Duda Executive View</div>'
+    +'<div style="font-size:11px;color:var(--t3)">'+(user?user.name+' · '+user.role:'')+'</div></div>'
+    +'</div>'
+    +'<div style="display:flex;gap:8px">'
+    +(isAdmin()?'<button class="btn btn-sm btn-secondary" onclick="showTeamManager()">⚙ Team</button>':'')
+    +'<button class="btn btn-sm btn-ghost" onclick="logout()">Logout</button>'
+    +'</div>';
+ 
+  // Org stat cards
+  var statRow='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px">'
+    +execOrgStat('Active Onboardings',activeClients+'/'+totalClients,'#1A6EFF')
+    +execOrgStat('Avg Health Score',avgHealth+'%',avgHealth>=70?'#0F9960':avgHealth>=45?'#D97706':'#DC2626')
+    +execOrgStat('Open Q&A (Org)',totalOpenQ,totalOpenQ>0?'#D97706':'#4B5563')
+    +execOrgStat('AMs on Roster',ams.length,'#6D28D9')
+    +'</div>';
+ 
+  // AM portfolio cards
+  var amCards=ams.length===0
+    ?'<div class="empty-state"><div class="empty-icon">👥</div><div style="font-size:16px;font-weight:700;margin-bottom:8px">No AMs set up</div><div style="color:var(--t3)">Add team members from Team Management.</div>'+(isAdmin()?'<button class="btn btn-primary" style="margin-top:16px" onclick="showTeamManager()">⚙ Manage Team</button>':'')+'</div>'
+    :ams.map(function(am){ return renderAMPortfolioCard(am); }).join('');
+ 
+  document.getElementById('exec-content').innerHTML=
+    '<div class="page" style="max-width:1100px">'
+    +statRow
+    +'<div class="section-title">Account Manager Portfolios</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:32px">'+amCards+'</div>'
+    +'</div>'
+    +'<div id="exec-drilldown"></div>';
+}
+ 
+function execOrgStat(label,val,color){
+  return '<div class="stat-card" style="--accent:'+color+'">'
+    +'<div class="stat-label">'+label+'</div>'
+    +'<div class="stat-value">'+val+'</div>'
+    +'</div>';
+}
+ 
+function renderAMPortfolioCard(am){
+  var clients=amClients(am.id);
+  var active=clients.filter(function(c){return (c.steps||[]).some(function(s){return s.status!=='Not Started'&&s.status!=='Skipped';});}).length;
+  var openQ=clients.reduce(function(a,c){return a+(c.qa||[]).filter(function(q){return q.status==='Open';}).length;},0);
+  var scores=clients.map(function(c){return calcHealth(c);});
+  var avgScore=clients.length?Math.round(scores.reduce(function(a,h){return a+h.score;},0)/clients.length):0;
+  var scoreColor=avgScore>=70?'#0F9960':avgScore>=45?'#D97706':'#DC2626';
+  var scoreGrade=avgScore>=80?'A':avgScore>=65?'B':avgScore>=45?'C':'D';
+  var clr=teamColor(am.role);
+ 
+  return '<div class="card card-hover" onclick="openAMDrilldown(this.dataset.amid)" data-amid="'+am.id+'">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+    +'<div style="width:46px;height:46px;border-radius:12px;background:'+clr+';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0">'+memberInitials(am.name)+'</div>'
+    +'<div style="flex:1"><div style="font-size:15px;font-weight:700">'+am.name+'</div>'
+    +'<div style="font-size:11px;color:var(--t3)">'+teamRoleIcon(am.role)+' '+am.role+(am.email?' · '+am.email:'')+'</div></div>'
+    +'<div style="text-align:center;background:'+scoreColor+'18;border:1.5px solid '+scoreColor+'44;border-radius:10px;padding:6px 12px">'
+    +'<div style="font-size:20px;font-weight:900;color:'+scoreColor+'">'+scoreGrade+'</div>'
+    +'<div style="font-size:10px;font-weight:700;color:'+scoreColor+'">'+avgScore+'</div>'
+    +'</div></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">'
+    +amMiniStat('Clients',clients.length,'#1A6EFF')
+    +amMiniStat('Active',active,'#0F9960')
+    +amMiniStat('Open Q&A',openQ,openQ>0?'#D97706':'#8A97A8')
+    +'</div>'
+    // Mini health bars per client
+    +(clients.length?'<div style="display:flex;gap:5px;flex-wrap:wrap">'
+      +clients.slice(0,8).map(function(c){
+        var h=calcHealth(c);
+        return '<div title="'+c.name+' — '+h.score+'" style="flex:1;min-width:28px;height:5px;background:'+h.color+';border-radius:3px;opacity:.75"></div>';
+      }).join('')
+      +(clients.length>8?'<div style="font-size:10px;color:var(--t3);line-height:5px;padding-left:2px">+'+( clients.length-8)+'</div>':'')
+      +'</div>':'<div style="font-size:12px;color:var(--t3)">No clients assigned yet</div>')
+    +'</div>';
+}
+function amMiniStat(label,val,color){
+  return '<div style="background:var(--s2);border-radius:6px;padding:6px 8px;text-align:center">'
+    +'<div style="font-size:16px;font-weight:800;color:'+color+'">'+val+'</div>'
+    +'<div style="font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">'+label+'</div>'
+    +'</div>';
+}
+ 
+function openAMDrilldown(amId){
+  var am=state.team[amId]; if(!am) return;
+  var clients=amClients(amId);
+  var el=document.getElementById('exec-drilldown');
+ 
+  var clientRows=clients.length===0
+    ?'<div style="padding:24px;text-align:center;color:var(--t3)">No clients assigned to this AM yet.</div>'
+    :clients.map(function(c){
+        var h=calcHealth(c);
+        var steps=c.steps||[];
+        var done=steps.filter(function(s){return s.status==='Done';}).length;
+        var total=steps.filter(function(s){return s.status!=='Skipped';}).length;
+        var openQ=(c.qa||[]).filter(function(q){return q.status==='Open';}).length;
+        return '<tr style="border-bottom:1px solid var(--b);cursor:pointer" onclick="openExecClientDetail(this.dataset.cid)" data-cid="'+c.id+'">'
+          +'<td style="padding:12px 16px"><div style="font-weight:600;font-size:13px">'+c.name+'</div>'
+          +'<div style="font-size:11px;color:var(--t3)">'+c.icp+' · '+(c.flow||'').toUpperCase()+'</div></td>'
+          +'<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:8px">'
+          +'<div style="flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden;min-width:60px"><div style="height:100%;width:'+h.progress+'%;background:'+h.color+';border-radius:3px"></div></div>'
+          +'<span style="font-size:12px;font-weight:700;color:'+h.color+'">'+h.progress+'%</span></div></td>'
+          +'<td style="padding:12px 16px"><div style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:'+h.color+'20;font-size:14px;font-weight:900;color:'+h.color+'">'+h.grade+'</div></td>'
+          +'<td style="padding:12px 16px"><span style="font-size:12px;color:var(--t2)">'+done+'/'+total+'</span></td>'
+          +'<td style="padding:12px 16px">'+(openQ?'<span class="badge badge-amber">'+openQ+' open</span>':'<span class="badge badge-gray">0</span>')+'</td>'
+          +'<td style="padding:12px 16px"><span style="font-size:12px;color:var(--t3)">'+(c.kickoff?fmtDate(c.kickoff):'—')+'</span></td>'
+          +'<td style="padding:12px 16px"><button class="btn btn-xs btn-primary" data-cid="'+c.id+'" onclick="event.stopPropagation();openExecClientDetail(this.dataset.cid)">View →</button></td>'
+          +'</tr>';
+      }).join('');
+ 
+  el.innerHTML='<div class="page" style="max-width:1100px;padding-top:0">'
+    +'<div style="display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-top:4px">'
+    +'<button class="btn btn-ghost btn-sm" onclick="backToExec()">← Back</button>'
+    +'<div style="width:40px;height:40px;border-radius:10px;background:'+teamColor(am.role)+';display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff">'+memberInitials(am.name)+'</div>'
+    +'<div><div style="font-size:17px;font-weight:700">'+am.name+'\'s Portfolio</div>'
+    +'<div style="font-size:12px;color:var(--t3)">'+clients.length+' client'+(clients.length===1?'':'s')+' · '+teamRoleIcon(am.role)+' '+am.role+'</div></div>'
+    +'</div>'
+    +(clients.length?'<div style="background:var(--s);border:1.5px solid var(--b);border-radius:var(--r);overflow:hidden">'
+      +'<table style="width:100%;border-collapse:collapse">'
+      +'<thead><tr style="background:var(--s2)">'
+      +['Client','Progress','Health','Steps Done','Open Q&A','Kickoff',''].map(function(h){ return '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--b)">'+h+'</th>'; }).join('')
+      +'</tr></thead>'
+      +'<tbody>'+clientRows+'</tbody></table></div>'
+      :'<div class="empty-state"><div class="empty-icon">📋</div><div>No clients assigned yet.</div></div>')
+    +'</div>';
+}
+ 
+function openExecClientDetail(cid){
+  var c=state.clients[cid]; if(!c) return;
+  var user=currentUser();
+  var h=calcHealth(c);
+  var steps=c.steps||[];
+  var plan=c.plan||{};
+  var ko=c.kickoff?new Date(c.kickoff):new Date();
+  var d90=addDays(ko,90);
+  var openQ=(c.qa||[]).filter(function(q){return q.status==='Open';}).length;
+  var am=c.amId?state.team[c.amId]:null;
+  var execComments=c.execComments||[];
+ 
+  var phases=[
+    {name:'Pre-Onboarding',color:'#6B7280',icon:'🔖'},
+    {name:'Phase 1 — Kickoff & Discovery',color:'#7C3AED',icon:'🚀'},
+    {name:'Phase 2 — Platform Setup & Build',color:'#1A6EFF',icon:'⚙️'},
+    {name:'Phase 3 — Enablement & GTM',color:'#0891B2',icon:'🎓'},
+    {name:'Phase 4 — Pilot, Launch & Scale',color:'#0F9960',icon:'🎯'},
+  ];
+  function phSt(ph){
+    var ps=steps.filter(function(s){return s.phase===ph&&s.status!=='Skipped';});
+    var d=ps.filter(function(s){return s.status==='Done';}).length;
+    return {done:d,total:ps.length,p:pct(d,ps.length)};
+  }
+ 
+  var phaseHtml=phases.map(function(ph){
+    var st=phSt(ph.name); if(!st.total) return '';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--s2);border-radius:8px;margin-bottom:6px;border-left:3px solid '+ph.color+'">'
+      +'<span style="font-size:15px">'+ph.icon+'</span>'
+      +'<span style="font-size:12px;font-weight:600;color:'+ph.color+';flex:1">'+ph.name+'</span>'
+      +'<div style="width:80px;height:5px;background:var(--b);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+st.p+'%;background:'+ph.color+';border-radius:3px"></div></div>'
+      +'<span style="font-size:12px;font-weight:700;color:'+ph.color+';min-width:28px;text-align:right">'+st.p+'%</span>'
+      +'</div>';
+  }).join('');
+ 
+  // Step list (read-only for exec)
+  var stepHtml=steps.filter(function(s){return s.status!=='Skipped';}).slice(0,15).map(function(s){
+    var stColor=s.status==='Done'?'var(--green)':s.status==='In Progress'?'var(--amber)':s.status==='Blocked'?'var(--red)':'var(--b2)';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--b)">'
+      +'<div style="width:18px;height:18px;border-radius:50%;background:'+stColor+';flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:800">'+(s.status==='Done'?'✓':'')+'</div>'
+      +'<span class="id-badge" style="flex-shrink:0">'+s.id+'</span>'
+      +'<span style="font-size:12px;color:var(--t);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.title+'</span>'
+      +'<span style="font-size:11px;color:var(--t3);flex-shrink:0">'+s.status+'</span>'
+      +'</div>';
+  }).join('');
+ 
+  // Exec comments thread
+  var commentsHtml=execComments.length===0
+    ?'<div style="color:var(--t3);font-size:13px;padding:12px 0">No comments yet. Add a question or note for the AM below.</div>'
+    :execComments.map(function(ec){
+        var isMe=user&&ec.authorId===user.id;
+        return '<div style="padding:12px 14px;background:'+(isMe?'var(--blue-bg)':'var(--s2)')+';border-radius:10px;margin-bottom:8px;border-left:3px solid '+(isMe?'var(--blue)':'var(--b2)')+'">'
+          +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
+          +'<div style="width:24px;height:24px;border-radius:50%;background:'+(isMe?'var(--blue)':'var(--b2)')+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">'+memberInitials(ec.authorName)+'</div>'
+          +'<span style="font-size:12px;font-weight:600">'+ec.authorName+'</span>'
+          +'<span style="font-size:10px;color:var(--t3)">'+fmtDate(ec.date)+'</span>'
+          +(ec.resolved?'<span class="badge badge-green" style="margin-left:auto;font-size:10px">Resolved</span>':'<span class="badge badge-amber" style="margin-left:auto;font-size:10px">Open</span>')
+          +'</div>'
+          +'<div style="font-size:13px;color:var(--t2);line-height:1.6">'+ec.text+'</div>'
+          +(isMe&&!ec.resolved?'<button class="btn btn-xs btn-success" style="margin-top:8px" data-cid="'+cid+'" data-eid="'+ec.id+'" onclick="resolveExecComment(this.dataset.cid,this.dataset.eid)">✓ Mark Resolved</button>':'')
+          +'</div>';
+      }).join('');
+ 
+  document.getElementById('exec-drilldown').innerHTML='<div class="page" style="max-width:1000px;padding-top:0">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;padding-top:4px;flex-wrap:wrap">'
+    +'<button class="btn btn-ghost btn-sm" onclick="clearDrilldown();c&&c.amId?backToAM('+JSON.stringify(c.amId)+'):backToExec()">← Back</button>'
+    +(c.logoUrl?'<img src="'+c.logoUrl+'" style="max-height:32px;object-fit:contain">':'')
+    +'<div><div style="font-size:17px;font-weight:700">'+c.name+'</div>'
+    +'<div style="font-size:12px;color:var(--t3)">'+c.icp+' · '+(c.flow||'').toUpperCase()+(am?' · AM: '+am.name:'')+'</div></div>'
+    +'<div style="margin-left:auto;display:flex;align-items:center;gap:10px">'
+    +'<div style="text-align:center;background:'+h.color+'15;border:1.5px solid '+h.color+'44;border-radius:10px;padding:8px 14px">'
+    +'<div style="font-size:24px;font-weight:900;color:'+h.color+'">'+h.grade+'</div>'
+    +'<div style="font-size:10px;color:'+h.color+';font-weight:700">'+h.score+'/100</div>'
+    +'</div></div></div>'
+    // 4-stat row
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">'
+    +execOrgStat('Overall Progress',h.progress+'%',h.color)
+    +execOrgStat('Steps Done',steps.filter(function(s){return s.status==='Done';}).length+'/'+steps.filter(function(s){return s.status!=='Skipped';}).length,'#0891B2')
+    +execOrgStat('Days to 90-Day',h.daysLeft,h.daysLeft<14?'#DC2626':h.daysLeft<30?'#D97706':'#0F9960')
+    +execOrgStat('Open Client Q&A',openQ,openQ>0?'#D97706':'#4B5563')
+    +'</div>'
+    // Two-col layout
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">'
+    // Left: phase breakdown
+    +'<div class="card">'
+    +'<div class="section-title">Phase Progress</div>'
+    +phaseHtml
+    +'</div>'
+    // Right: plan + step list
+    +'<div class="card">'
+    +'<div class="section-title">Goals</div>'
+    +'<div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Day 60</div>'
+    +'<div style="font-size:13px;color:var(--t2);margin-bottom:10px">'+( plan.goal60||'Not set')+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Day 90</div>'
+    +'<div style="font-size:13px;color:var(--t2);margin-bottom:10px">'+( plan.goal90||'Not set')+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Day 180</div>'
+    +'<div style="font-size:13px;color:var(--t2)">'+( plan.goal180||'Not set')+'</div>'
+    +'</div>'
+    +'</div>'
+    // Steps snapshot
+    +'<div class="card" style="margin-bottom:16px">'
+    +'<div class="section-title">Steps Snapshot (latest 15)</div>'
+    +stepHtml
+    +(steps.length>15?'<div style="font-size:11px;color:var(--t3);margin-top:8px">+ '+(steps.length-15)+' more steps not shown</div>':'')
+    +'</div>'
+    // Exec comments
+    +'<div class="card">'
+    +'<div class="section-title">Executive Comments & Questions for AM</div>'
+    +commentsHtml
+    +'<div style="margin-top:14px;border-top:1px solid var(--b);padding-top:14px">'
+    +'<textarea class="form-textarea" id="exec-comment-input-'+cid+'" placeholder="Ask the AM a question or leave a note…" style="min-height:80px;margin-bottom:8px"></textarea>'
+    +'<button class="btn btn-primary btn-sm" data-cid="'+cid+'" onclick="addExecComment(this.dataset.cid)">💬 Add Comment</button>'
+    +'</div></div>'
+    +'</div>';
+}
+ 
+function addExecComment(cid){
+  var user=currentUser(); if(!user) return;
+  var text=document.getElementById('exec-comment-input-'+cid).value.trim();
+  if(!text){ showToast('Please enter a comment.','error'); return; }
+  var c=state.clients[cid]; if(!c) return;
+  if(!c.execComments) c.execComments=[];
+  c.execComments.push({id:uid(),authorId:user.id,authorName:user.name,date:todayStr(),text:text,resolved:false});
+  save(); openExecClientDetail(cid); showToast('Comment added.','success');
+}
+function resolveExecComment(cid,commentId){
+  var c=state.clients[cid]; if(!c) return;
+  var cm=(c.execComments||[]).find(function(x){return x.id===commentId;}); if(!cm) return;
+  cm.resolved=true; save(); openExecClientDetail(cid); showToast('Marked resolved.','success');
+}
+ 
+function showTeamManager(){
+  document.getElementById('exec-content').innerHTML='<div class="page" style="max-width:800px">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:22px">'
+    +'<button class="btn btn-ghost btn-sm" onclick="renderExecDashboard()">← Back</button>'
+    +'<div style="font-size:17px;font-weight:700">Team Management</div>'
+    +'<button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="openAddMemberModal()">+ Add Member</button>'
+    +'</div>'
+    +'<div id="team-list-container">'+renderTeamList()+'</div>'
+    +'</div>';
+  document.getElementById('exec-drilldown').innerHTML='';
+}
+ 
+function renderTeamList(){
+  var members=Object.values(state.team);
+  if(!members.length) return '<div class="empty-state"><div class="empty-icon">👥</div><div>No team members yet. Add your first member above.</div></div>';
+  return '<div style="background:var(--s);border:1.5px solid var(--b);border-radius:var(--r);overflow:hidden">'
+    +'<table style="width:100%;border-collapse:collapse">'
+    +'<thead><tr style="background:var(--s2)">'
+    +['Member','Role','PIN','Clients','Actions'].map(function(h){ return '<th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--b)">'+h+'</th>'; }).join('')
+    +'</tr></thead><tbody>'
+    +members.map(function(m){
+      var cc=amClients(m.id).length;
+      return '<tr style="border-bottom:1px solid var(--b)">'
+        +'<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:10px">'
+        +'<div style="width:34px;height:34px;border-radius:9px;background:'+teamColor(m.role)+';display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:12px">'+memberInitials(m.name)+'</div>'
+        +'<div><div style="font-weight:600;font-size:13px">'+m.name+'</div><div style="font-size:11px;color:var(--t3)">'+m.email+'</div></div></div></td>'
+        +'<td style="padding:12px 16px"><span class="badge" style="background:'+teamColor(m.role)+'20;color:'+teamColor(m.role)+'">'+teamRoleIcon(m.role)+' '+m.role+'</span>'+(m.active===false?' <span class="badge badge-red" style="font-size:9px">Inactive</span>':'')+'</td>'
+        +'<td style="padding:12px 16px;font-family:var(--mono);font-size:12px;color:var(--t3)">'+m.pin+'</td>'
+        +'<td style="padding:12px 16px;font-size:13px;font-weight:600">'+cc+'</td>'
+        +'<td style="padding:12px 16px;display:flex;gap:6px">'
+        +'<button class="btn btn-xs btn-secondary" data-mid="'+m.id+'" onclick="openEditMemberModal(this.dataset.mid)">Edit</button>'
+        +'<button class="btn btn-xs '+(m.active===false?'btn-success':'btn-secondary')+'" data-mid="'+m.id+'" onclick="toggleMemberAccess(this.dataset.mid)">'+(m.active===false?'Enable':'Disable')+'</button>'
+        +'<button class="btn btn-xs btn-danger" data-mid="'+m.id+'" onclick="deleteMember(this.dataset.mid)">Remove</button>'
+        +'</td></tr>';
+    }).join('')
+    +'</tbody></table></div>';
+}
+ 
+function openAddMemberModal(){
+  document.getElementById('member-modal-title').textContent='Add Team Member';
+  document.getElementById('member-editing-id').value='';
+  document.getElementById('m-name').value='';
+  document.getElementById('m-email').value='';
+  document.getElementById('m-pin').value='';
+  document.getElementById('m-role').value='Staff';
+  openModal('modal-member');
+}
+function openEditMemberModal(id){
+  var m=state.team[id]; if(!m) return;
+  document.getElementById('member-modal-title').textContent='Edit '+m.name;
+  document.getElementById('member-editing-id').value=id;
+  document.getElementById('m-name').value=m.name||'';
+  document.getElementById('m-email').value=m.email||'';
+  document.getElementById('m-pin').value=m.pin||'';
+  document.getElementById('m-role').value=m.role||'Staff';
+  openModal('modal-member');
+}
+function saveMember(){
+  var name=document.getElementById('m-name').value.trim();
+  var email=document.getElementById('m-email').value.trim();
+  var pin=document.getElementById('m-pin').value.trim();
+  var role=document.getElementById('m-role').value;
+  if(!name||!pin){ showToast('Name and PIN are required.','error'); return; }
+  var id=document.getElementById('member-editing-id').value||uid();
+  var existing=state.team[id]||{};
+  state.team[id]={id:id,name:name,email:email,role:role,pin:pin,active:existing.active!==false};
+  save(); closeModal('modal-member');
+  if(document.getElementById('team-list-container'))
+    document.getElementById('team-list-container').innerHTML=renderTeamList();
+  showToast((document.getElementById('member-editing-id').value?'Member updated':'Member added')+'!','success');
+}
+ 
+function toggleMemberAccess(id){
+  var m=state.team[id]; if(!m) return;
+  m.active = m.active===false ? true : false;
+  save();
+  if(document.getElementById('team-list-container'))
+    document.getElementById('team-list-container').innerHTML=renderTeamList();
+  showToast(m.name+(m.active===false?' access disabled':' access enabled')+'.','success');
+}
+function deleteMember(id){
+  var m=state.team[id]; if(!m) return;
+  if(!confirm('Remove '+m.name+' from the team? Clients assigned to them will be unassigned.')) return;
+  delete state.team[id];
+  // unassign clients
+  Object.values(state.clients).forEach(function(c){ if(c.amId===id) c.amId=null; });
+  save();
+  if(document.getElementById('team-list-container'))
+    document.getElementById('team-list-container').innerHTML=renderTeamList();
+  showToast('Member removed.','success');
+}
 </script>
+ 
+<!-- Team Login Modal -->
+<div class="modal-overlay" id="modal-team-login">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div><div class="modal-title">🔐 Duda Team Login</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Select your name then enter your PIN</div></div>
+      <button class="modal-close" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="team-login-list" style="margin-bottom:4px"></div>
+      <div id="team-login-legacy"></div>
+      <div id="team-pin-section" style="display:none;margin-top:14px;border-top:1px solid var(--b);padding-top:14px">
+        <label class="form-label" id="team-pin-label">Enter PIN</label>
+        <input class="form-input" id="team-pin-input" type="password" placeholder="PIN" onkeydown="if(event.key==='Enter')checkTeamPin()" style="margin-top:5px">
+        <div id="team-pin-error" style="color:var(--red);font-size:12px;display:none;margin-top:5px">Incorrect PIN. Try again.</div>
+        <input type="hidden" id="team-login-selected-id">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'">Cancel</button>
+      <button class="btn btn-primary" onclick="checkTeamPin()" id="team-pin-btn">Login</button>
+    </div>
+  </div>
+</div>
+ 
+ 
+<!-- Add/Edit Team Member Modal -->
+<div class="modal-overlay" id="modal-member">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-title" id="member-modal-title">Add Team Member</div>
+      <button class="modal-close" onclick="closeModal('modal-member')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="member-editing-id">
+      <div class="form-row"><label class="form-label">Full Name <span class="req">*</span></label><input class="form-input" id="m-name" placeholder="e.g. Sara Cohen"></div>
+      <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="m-email" type="email" placeholder="sara@duda.co"></div>
+      <div class="form-grid">
+        <div class="form-row"><label class="form-label">Role <span class="req">*</span></label>
+          <select class="form-select" id="m-role">
+            <option value="Staff">👤 Staff (AM)</option>
+            <option value="Executive">👔 Executive</option>
+            <option value="Admin">🛡️ Admin</option>
+          </select>
+        </div>
+        <div class="form-row"><label class="form-label">PIN <span class="req">*</span></label><input class="form-input" id="m-pin" type="text" placeholder="e.g. 4321" maxlength="8"></div>
+      </div>
+      <div class="form-hint">📌 <strong>Role guide:</strong> Staff = AM (sees own clients only) · Executive = read-only org view, comments · Admin = full access + team management</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-member')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMember()">Save Member</button>
+    </div>
+  </div>
+</div>
+ 
 </body>
 </html>
