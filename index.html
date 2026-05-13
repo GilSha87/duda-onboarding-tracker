@@ -1034,7 +1034,7 @@ function closeSidebar(){
 function renderSidebar(){
   var el=document.getElementById('sidebar-clients');
   var cs=Object.values(state.clients);
-  if(!cs.length){el.innerHTML='<div style="padding:6px 16px;font-size:11px;color:rgba(255,255,255,.25)">No clients yet</div>';return;}
+  if(!cs.length){el.innerHTML='<div style="padding:6px 16px;font-size:12px;color:var(--ink-muted)">No clients yet</div>';return;}
   el.innerHTML=cs.map(function(c){
     var steps=c.steps||[],done=steps.filter(function(s){return s.status==='Done';}).length;
     var openQ=(c.qa||[]).filter(function(q){return q.status==='Open';}).length;
@@ -1046,7 +1046,7 @@ function renderSidebar(){
       +'<span class="nav-badge">'+done+'/'+steps.length+'</span>'
       +'</div>';
   }).join('')
-    +(function(){var u=currentUser();return (u&&u.role==='Admin')||(!u&&Object.keys(state.team).length===0)?'<div class="nav-item" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.07);padding-top:10px" onclick="closeSidebar();showAMTeamManager()"><div class="nav-dot" style="background:#7C3AED"></div><span class="nav-name" style="color:rgba(255,255,255,.55)">⚙ Manage Team</span></div>':'';})();
+    +(function(){var u=currentUser();return (u&&u.role==='Admin')||(!u&&Object.keys(state.team).length===0)?'<div class="nav-item" style="margin-top:8px;border-top:1px solid var(--hairline);padding-top:10px" onclick="closeSidebar();showAMTeamManager()"><div class="nav-dot" style="background:#7C3AED"></div><span class="nav-name" style="color:var(--ink-muted)">⚙ Manage Team</span></div>':'';})();
 }
  
 function showAMTeamManager(){
