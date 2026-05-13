@@ -66,7 +66,7 @@ body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:
 .sb-mark{width:14px;height:14px;background:var(--ink);border-radius:999px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;top:1px}
 .sb-mark svg{display:none}
 .sb-title{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
-.sb-sub{font-size:9px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.12em;margin-top:2px;font-weight:500}
+.sb-sub{font-size:11px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.12em;margin-top:2px;font-weight:500}
 .sb-label{font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--ink-muted);text-transform:uppercase;padding:18px 20px 6px}
 .sb-nav{flex:1;overflow-y:auto;padding:0 0 8px}
 .nav-item{display:flex;align-items:center;gap:10px;padding:7px 20px;color:var(--ink-2);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;position:relative;text-decoration:none;border-radius:0}
@@ -103,7 +103,7 @@ body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:
 .btn-ghost:hover{background:var(--paper-soft);color:var(--ink)}
 .btn-success{background:var(--green-bg);color:var(--done);border:1px solid var(--green-mid)}
 .btn-sm{padding:5px 11px;font-size:12px}
-.btn-xs{padding:3px 9px;font-size:11px}
+.btn-xs{padding:5px 10px;font-size:11px;min-height:28px}
 
 /* ── Cards ─────────────────────────────────────────────────── */
 .card{background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;padding:22px}
@@ -349,6 +349,9 @@ body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:
   .journey-track{grid-template-columns:repeat(5,minmax(80px,1fr));overflow-x:auto}
 }
 
+
+/* Sidebar overlay for mobile */
+@media(min-width:901px){#sidebar-overlay{display:none !important}}
 </style>
 </head>
 <body>
@@ -362,7 +365,7 @@ body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:
       <div class="sb-mark"></div>
       <div><div class="sb-title">Onward</div><div class="sb-sub">by Duda</div></div>
     </div>
-    <nav class="sb-nav">
+    <nav class="sb-nav" aria-label="Main navigation">
       <div class="sb-label">Navigation</div>
       <div class="nav-item active" id="nav-dashboard" onclick="showAMPage('dashboard')">
         <div class="nav-dot"></div><span class="nav-name">Dashboard</span>
@@ -378,7 +381,7 @@ body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:
   <main class="main">
     <div class="topbar">
       <div class="tb-left">
-        <button class="btn btn-ghost btn-xs" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar" style="padding:6px">☰</button>
+        <button class="btn btn-ghost btn-xs" id="sidebar-toggle" aria-label="Toggle sidebar menu" onclick="toggleSidebar()" aria-label="Toggle sidebar" style="padding:6px">☰</button>
         <div>
           <div class="tb-title" id="tb-title">Dashboard</div>
           <div class="tb-sub" id="tb-sub"></div>
@@ -394,7 +397,7 @@ body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:
 <div id="app-client" style="display:none">
   <header class="client-topbar" id="client-topbar"></header>
   <div id="client-content"></div>
-  <button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  <button class="scroll-top" id="scroll-top" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 </div>
  
 <!-- ── Landing ── -->
@@ -965,6 +968,12 @@ function fmtDate(d){if(!d)return'';try{return new Date(d+'T00:00:00').toLocaleDa
 function pct(a,b){return b?Math.round(a/b*100):0;}
 function isDudaResource(url){if(!url)return false;var dd=['academy.duda.co','app.academy.duda.co','developer.duda.co','support.duda.co','support.multiscreensite.com','status.duda.co','videos.multiscreensite.com','duda-co.domo.com','termly.io','resources.duda.co','duda.co/app-market','duda.co/native-ecommerce'];try{var h=new URL(url).hostname+new URL(url).pathname;return dd.some(function(d){return h.includes(d);});}catch(e){return false;}}
 function patchPhases(steps){(steps||[]).forEach(function(s){if(!s.phase&&PHASE_BY_ID[s.id])s.phase=PHASE_BY_ID[s.id];});return steps||[];}
+
+function focusMain(){
+  var el=document.querySelector('[role="main"]:not([style*="display:none"])');
+  if(el){el.setAttribute('tabindex','-1');el.focus({preventScroll:true});}
+  window.scrollTo(0,0);
+}
 function showToast(msg,type){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.style.background=type==='error'?'#DC2626':type==='success'?'#0F9960':'#0B1929';t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2800);}
  
 load();
@@ -997,9 +1006,30 @@ function showAMView(){
   var nameEl=document.getElementById('am-user-name');
   if(nameEl) nameEl.textContent=u?u.name:'';
   renderSidebar();showAMPage('dashboard');
+  focusMain();
 }
 function showClientView(id){document.getElementById('app-landing').style.display='none';document.getElementById('app-am').style.display='none';document.getElementById('app-client').style.display='block';renderClientView(id);}
-function toggleSidebar(){document.getElementById('am-sidebar').classList.toggle('open');}
+function toggleSidebar(){
+  var sb=document.getElementById('am-sidebar');
+  var ov=document.getElementById('sidebar-overlay');
+  if(sb.classList.contains('open')){
+    sb.classList.remove('open');
+    if(ov) ov.style.display='none';
+  } else {
+    sb.classList.add('open');
+    if(ov) ov.style.display='block';
+  }
+  var btn=document.getElementById('sidebar-toggle');
+  if(btn) btn.textContent=sb.classList.contains('open')?'\u2715':'\u2630';
+}
+function closeSidebar(){
+  var sb=document.getElementById('am-sidebar');
+  var ov=document.getElementById('sidebar-overlay');
+  sb.classList.remove('open');
+  if(ov) ov.style.display='none';
+  var btn=document.getElementById('sidebar-toggle');
+  if(btn) btn.textContent='\u2630';
+}
  
 function renderSidebar(){
   var el=document.getElementById('sidebar-clients');
@@ -1016,12 +1046,12 @@ function renderSidebar(){
       +'<span class="nav-badge">'+done+'/'+steps.length+'</span>'
       +'</div>';
   }).join('')
-    +(function(){var u=currentUser();return (u&&u.role==='Admin')||(!u&&Object.keys(state.team).length===0)?'<div class="nav-item" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.07);padding-top:10px" onclick="showAMTeamManager()"><div class="nav-dot" style="background:#7C3AED"></div><span class="nav-name" style="color:rgba(255,255,255,.55)">⚙ Manage Team</span></div>':'';})();
+    +(function(){var u=currentUser();return (u&&u.role==='Admin')||(!u&&Object.keys(state.team).length===0)?'<div class="nav-item" style="margin-top:8px;border-top:1px solid rgba(255,255,255,.07);padding-top:10px" onclick="closeSidebar();showAMTeamManager()"><div class="nav-dot" style="background:#7C3AED"></div><span class="nav-name" style="color:rgba(255,255,255,.55)">⚙ Manage Team</span></div>':'';})();
 }
  
 function showAMTeamManager(){
   var el=document.getElementById('am-content');
-  setTopbar('Team Management','','<button class="btn btn-primary btn-sm" onclick="openAddMemberModal()">+ Add Member</button>');
+  setTopbar('<button class="btn btn-ghost btn-xs" onclick="showAMPage(\'dashboard\')" style="margin-right:8px" aria-label="Back to dashboard">&larr;</button>Team Management','','<button class="btn btn-primary btn-sm" onclick="openAddMemberModal()">+ Add Member</button>');
   el.innerHTML='<div class="page" style="max-width:800px"><div id="team-list-container">'+renderTeamList()+'</div></div>';
 }
 function setTopbar(title,sub,actions){
@@ -1241,7 +1271,7 @@ function renderStep(s, c, isAM){
   var allRes = s.resources||[];
   var visRes = isAM ? allRes : allRes.filter(function(r){ return isDudaResource(r.url); });
   var resHtml = visRes.length ? '<div style="margin-top:10px">'
-    +'<div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">'+(isAM?'Resources':'📚 Duda Resources')+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">'+(isAM?'Resources':'📚 Duda Resources')+'</div>'
     +'<div class="resource-list">'+visRes.map(function(r){
       return '<a class="resource-link" href="'+r.url+'" target="_blank">🔗 '+(r.label||r.l)+'</a>';
     }).join('')+'</div></div>' : '';
@@ -1524,7 +1554,7 @@ function renderAMClientPage(id){
   if(!c) return;
   state._activeClientId = id;
   renderSidebar();
-  setTopbar(c.name,
+  setTopbar('<button class="btn btn-ghost btn-xs" onclick="showAMPage(\'dashboard\')" style="margin-right:8px" aria-label="Back to dashboard">&larr;</button>'+c.name,
     '<span class="tag">'+(c.flow||'').toUpperCase()+'</span> <span class="tag">'+(c.icp||'')+'</span>',
     '<button class="btn btn-sm btn-secondary" onclick="openEditClientModal(\''+id+'\')">⚙ Edit</button>'
     +'<button class="btn btn-sm btn-secondary" onclick="copyClientLink(\''+id+'\')">🔗 Link</button>'
@@ -1590,14 +1620,14 @@ function showExecView(id){
 function execStatCard(label,val,color,sz){
   return '<div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden">'
     +'<div style="position:absolute;top:0;left:0;right:0;height:2.5px;background:'+color+'"></div>'
-    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">'+label+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">'+label+'</div>'
     +'<div style="'+sz+';font-weight:800;color:'+color+';letter-spacing:-.03em;line-height:1">'+val+'</div>'
     +'</div>';
 }
 function execPlanCard(day,label,date,goal,rag){
   return '<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px">'
     +'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
-    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em">'+day+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em">'+day+'</div>'
     +'<span style="font-size:13px">'+rag.icon+'</span>'
     +'</div>'
     +'<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:3px">'+label+'</div>'
@@ -1704,7 +1734,7 @@ function renderExecView(id){
  
     // Phase breakdown
     +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;margin-bottom:16px">'
-    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.09em;margin-bottom:14px">Phase Breakdown</div>'
+    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.09em;margin-bottom:14px">Phase Breakdown</div>'
     +phaseHtml
     +'</div>'
  
@@ -1717,7 +1747,7 @@ function renderExecView(id){
  
     // Milestone tracker
     +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;margin-bottom:16px">'
-    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px">Key Milestones</div>'
+    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.09em;margin-bottom:12px">Key Milestones</div>'
     +msHtml
     +'</div>'
  
@@ -1774,7 +1804,7 @@ function renderClientView(id){
     +'<div style="max-width:780px;margin:0 auto;position:relative">'
     +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px">'
     +'<div>'
-    +'<div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">'+lang.progress+'</div>'
+    +'<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">'+lang.progress+'</div>'
     +'<div style="display:flex;align-items:baseline;gap:10px">'
     +'<div style="font-size:40px;font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1">'+p+'%</div>'
     +'<div style="color:rgba(255,255,255,.65);font-size:12px;line-height:1.45">'+done+' of '+active.length+' steps<br>completed</div>'
@@ -1782,9 +1812,9 @@ function renderClientView(id){
     +'<div style="text-align:right;flex-shrink:0">'
     +'<div style="background:rgba(255,255,255,.14);border-radius:10px;padding:10px 14px">'
     +'<div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em">'+daysLeft+'</div>'
-    +'<div style="font-size:10px;color:rgba(255,255,255,.65);font-weight:700;white-space:nowrap">days to go-live</div>'
+    +'<div style="font-size:11px;color:rgba(255,255,255,.65);font-weight:700;white-space:nowrap">days to go-live</div>'
     +'</div>'
-    +(approved?'<div style="margin-top:6px;font-size:10px;color:rgba(255,255,255,.7);font-weight:600">✅ Plan approved</div>':'')
+    +(approved?'<div style="margin-top:6px;font-size:11px;color:rgba(255,255,255,.7);font-weight:600">✅ Plan approved</div>':'')
     +'</div></div>'
     +'<div style="height:7px;background:rgba(255,255,255,.2);border-radius:4px;margin-bottom:18px;overflow:hidden">'
     +'<div style="height:100%;width:'+p+'%;background:#fff;border-radius:4px;transition:width .6s;box-shadow:0 0 10px rgba(255,255,255,.35)"></div>'
@@ -2260,7 +2290,7 @@ function openTeamLogin(){
       +'<div style="font-size:11px;color:var(--t3)">'+teamRoleIcon(m.role)+' '+m.role+(m.email?' · '+m.email:'')+(m.role!=='Executive'&&cc?' · '+cc+' client'+(cc===1?'':'s'):'')+'</div></div>'
       +'<div style="color:var(--t4);font-size:16px;flex-shrink:0">&rarr;</div></div>';
   }
-  function sec(label,arr){ if(!arr.length) return ''; return '<div style="margin-bottom:6px"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">'+label+'</div>'+arr.map(mc).join('')+'</div>'; }
+  function sec(label,arr){ if(!arr.length) return ''; return '<div style="margin-bottom:6px"><div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">'+label+'</div>'+arr.map(mc).join('')+'</div>'; }
   document.getElementById('team-login-list').innerHTML=members.length?sec('Admins',admins)+sec('Account Managers',staff)+sec('Executives',execs):'';
   document.getElementById('team-login-legacy').innerHTML=legacyBtn;
   document.getElementById('team-pin-section').style.display='none';
@@ -2332,6 +2362,7 @@ function showDudaExecView(){
   document.getElementById('app-client').style.display='none';
   document.getElementById('app-exec').style.display='flex';
   renderExecDashboard();
+  focusMain();
 }
 function renderExecDashboard(){
   var user=currentUser();
@@ -2416,14 +2447,14 @@ function renderAMPortfolioCard(am){
         var h=calcHealth(c);
         return '<div title="'+c.name+' — '+h.score+'" style="flex:1;min-width:28px;height:5px;background:'+h.color+';border-radius:3px;opacity:.75"></div>';
       }).join('')
-      +(clients.length>8?'<div style="font-size:10px;color:var(--t3);line-height:5px;padding-left:2px">+'+( clients.length-8)+'</div>':'')
+      +(clients.length>8?'<div style="font-size:12px;color:var(--t3);line-height:5px;padding-left:2px">+'+( clients.length-8)+'</div>':'')
       +'</div>':'<div style="font-size:12px;color:var(--t3)">No clients assigned yet</div>')
     +'</div>';
 }
 function amMiniStat(label,val,color){
   return '<div style="background:var(--s2);border-radius:6px;padding:6px 8px;text-align:center">'
     +'<div style="font-size:16px;font-weight:800;color:'+color+'">'+val+'</div>'
-    +'<div style="font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">'+label+'</div>'
+    +'<div style="font-size:12px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.06em">'+label+'</div>'
     +'</div>';
 }
  
@@ -2510,7 +2541,7 @@ function openExecClientDetail(cid){
   var stepHtml=steps.filter(function(s){return s.status!=='Skipped';}).slice(0,15).map(function(s){
     var stColor=s.status==='Done'?'var(--green)':s.status==='In Progress'?'var(--amber)':s.status==='Blocked'?'var(--red)':'var(--b2)';
     return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--b)">'
-      +'<div style="width:18px;height:18px;border-radius:50%;background:'+stColor+';flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:800">'+(s.status==='Done'?'✓':'')+'</div>'
+      +'<div style="width:18px;height:18px;border-radius:50%;background:'+stColor+';flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:800">'+(s.status==='Done'?'✓':'')+'</div>'
       +'<span class="id-badge" style="flex-shrink:0">'+s.id+'</span>'
       +'<span style="font-size:12px;color:var(--t);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+s.title+'</span>'
       +'<span style="font-size:11px;color:var(--t3);flex-shrink:0">'+s.status+'</span>'
@@ -2524,9 +2555,9 @@ function openExecClientDetail(cid){
         var isMe=user&&ec.authorId===user.id;
         return '<div style="padding:12px 14px;background:'+(isMe?'var(--blue-bg)':'var(--s2)')+';border-radius:10px;margin-bottom:8px;border-left:3px solid '+(isMe?'var(--blue)':'var(--b2)')+'">'
           +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'
-          +'<div style="width:24px;height:24px;border-radius:50%;background:'+(isMe?'var(--blue)':'var(--b2)')+';display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff">'+memberInitials(ec.authorName)+'</div>'
+          +'<div style="width:24px;height:24px;border-radius:50%;background:'+(isMe?'var(--blue)':'var(--b2)')+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff">'+memberInitials(ec.authorName)+'</div>'
           +'<span style="font-size:12px;font-weight:600">'+ec.authorName+'</span>'
-          +'<span style="font-size:10px;color:var(--t3)">'+fmtDate(ec.date)+'</span>'
+          +'<span style="font-size:12px;color:var(--t3)">'+fmtDate(ec.date)+'</span>'
           +(ec.resolved?'<span class="badge badge-green" style="margin-left:auto;font-size:10px">Resolved</span>':'<span class="badge badge-amber" style="margin-left:auto;font-size:10px">Open</span>')
           +'</div>'
           +'<div style="font-size:13px;color:var(--t2);line-height:1.6">'+ec.text+'</div>'
@@ -2628,7 +2659,7 @@ function renderTeamList(){
       +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
       +'<span style="font-size:14px;font-weight:700">'+m.name+'</span>'
       +'<span class="badge" style="background:'+clr+'18;color:'+clr+'">'+teamRoleIcon(m.role)+' '+m.role+'</span>'
-      +(inactive?'<span class="badge badge-red" style="font-size:9px">Inactive</span>':'')
+      +(inactive?'<span class="badge badge-red" style="font-size:12px">Inactive</span>':'')
       +'</div>'
       +'<div style="font-size:12px;color:var(--t3);margin-top:2px;display:flex;gap:12px;flex-wrap:wrap">'
       +(m.email?'<span>'+m.email+'</span>':'')
@@ -2712,78 +2743,9 @@ function deleteMember(id){
     document.getElementById('team-list-container').innerHTML=renderTeamList();
   showToast('Member removed.','success');
 }
-</script>
- 
-<!-- Team Login Modal -->
-<div class="modal-overlay" id="modal-team-login">
-  <div class="modal" style="max-width:420px">
-    <div class="modal-header">
-      <div><div class="modal-title">🔐 Duda Team Login</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Select your account to continue</div></div>
-      <button class="modal-close" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="team-login-list" style="margin-bottom:4px"></div>
-      <div id="team-login-legacy"></div>
-      <div id="team-pin-section" style="display:none;margin-top:16px;background:var(--s2);border-radius:var(--r);padding:16px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-          <div id="team-pin-avatar" style="width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;flex-shrink:0"></div>
-          <div>
-            <div id="team-pin-label" style="font-size:14px;font-weight:600"></div>
-            <div id="team-pin-role" style="font-size:11px;color:var(--t3)"></div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <input class="form-input" id="team-pin-input" type="password" placeholder="Enter your PIN" onkeydown="if(event.key==='Enter')checkTeamPin()" style="flex:1">
-          <button class="btn btn-primary" onclick="checkTeamPin()" style="flex-shrink:0">Login &rarr;</button>
-        </div>
-        <div id="team-pin-error" style="color:var(--red);font-size:12px;display:none;margin-top:8px">Incorrect PIN. Please try again.</div>
-        <input type="hidden" id="team-login-selected-id">
-        <button class="btn btn-ghost btn-xs" style="margin-top:10px;width:100%;color:var(--t3)" onclick="deselectTeamMember()">Choose a different account</button>
-      </div>
-    </div>
-    <div class="modal-footer" style="justify-content:center;background:transparent;border-top:none;padding-top:0">
-      <button class="btn btn-ghost" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'" style="font-size:12px;color:var(--t3)">&larr; Back to home</button>
-    </div>
-  </div>
-</div>
- 
- 
-<!-- Add/Edit Team Member Modal -->
-<div class="modal-overlay" id="modal-member">
-  <div class="modal" style="max-width:440px">
-    <div class="modal-header">
-      <div class="modal-title" id="member-modal-title">Add Team Member</div>
-      <button class="modal-close" onclick="closeModal('modal-member')">✕</button>
-    </div>
-    <div class="modal-body">
-      <input type="hidden" id="member-editing-id">
-      <div class="form-grid">
-        <div class="form-row"><label class="form-label">Full Name <span class="req">*</span></label><input class="form-input" id="m-name" placeholder="e.g. Sara Cohen"></div>
-        <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="m-email" type="email" placeholder="sara@duda.co"></div>
-      </div>
-      <div class="form-grid">
-        <div class="form-row"><label class="form-label">Role <span class="req">*</span></label>
-          <select class="form-select" id="m-role" onchange="previewMemberRole()">
-            <option value="Staff">👤 Staff (AM)</option>
-            <option value="Executive">👔 Executive</option>
-            <option value="Admin">🛡️ Admin</option>
-          </select>
-        </div>
-        <div class="form-row"><label class="form-label">PIN <span class="req">*</span></label><input class="form-input" id="m-pin" type="password" placeholder="4-digit PIN" maxlength="8">
-          <div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="btn btn-xs btn-ghost" onclick="var p=document.getElementById('m-pin');p.type=p.type==='password'?'text':'password'" style="font-size:11px">👁 Show</button><button type="button" class="btn btn-xs btn-ghost" onclick="document.getElementById('m-pin').value=String(1000+Math.floor(Math.random()*9000));document.getElementById('m-pin').type='text'" style="font-size:11px">🎲 Generate</button></div>
-        </div>
-      </div>
-      <div id="member-role-preview" style="background:var(--s2);border-radius:var(--rsm);padding:12px 14px;margin-top:4px"><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Role Permissions</div><div id="member-role-desc" style="font-size:12px;color:var(--t2);line-height:1.7"></div></div>
-      <div class="form-hint" style="margin-top:8px">📌 <strong>Role guide:</strong> Staff = AM (sees own clients only) · Executive = read-only org view, comments · Admin = full access + team management</div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-member')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveMember()">Save Member</button>
-    </div>
-  </div>
-</div>
- 
-<script>
+
+
+
 /* ===== ONWARD EDITORIAL UPGRADES ===== */
 /* ============================================================
    ONWARD — editorial upgrades
@@ -3148,7 +3110,7 @@ function deleteMember(id){
         // today line
         (today >= min && today <= max
           ? '<div style="position:absolute;top:0;bottom:0;width:1px;background:var(--accent);z-index:3;left:calc(240px + (100% - 240px) * ' + (todayPct/100) + ')">' +
-            '<span style="position:absolute;top:-14px;left:-22px;font-size:9px;font-family:var(--mono);letter-spacing:.14em;color:var(--accent);background:var(--surface-2);padding:0 4px">TODAY</span></div>'
+            '<span style="position:absolute;top:-14px;left:-22px;font-size:12px;font-family:var(--mono);letter-spacing:.14em;color:var(--accent);background:var(--surface-2);padding:0 4px">TODAY</span></div>'
           : ''
         );
 
@@ -3357,6 +3319,79 @@ function deleteMember(id){
   console.log('[Onward] Editorial upgrades loaded.');
 })();
 
+
 </script>
+<a href="#main-content" class="skip-link" style="position:absolute;top:-100%;left:0;z-index:9999;padding:12px 20px;background:var(--accent,#1A6EFF);color:#fff;font-weight:600;border-radius:0 0 6px 0;transition:top .15s" onfocus="this.style.top='0'" onblur="this.style.top='-100%'">Skip to main content</a>
+ 
+<!-- Team Login Modal -->
+<div class="modal-overlay" id="modal-team-login">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div><div class="modal-title">🔐 Duda Team Login</div><div style="font-size:12px;color:var(--t3);margin-top:2px">Select your account to continue</div></div>
+      <button class="modal-close" aria-label="Close dialog" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="team-login-list" style="margin-bottom:4px"></div>
+      <div id="team-login-legacy"></div>
+      <div id="team-pin-section" style="display:none;margin-top:16px;background:var(--s2);border-radius:var(--r);padding:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div id="team-pin-avatar" style="width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;flex-shrink:0"></div>
+          <div>
+            <div id="team-pin-label" style="font-size:14px;font-weight:600"></div>
+            <div id="team-pin-role" style="font-size:11px;color:var(--t3)"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="team-pin-input" type="password" placeholder="Enter your PIN" onkeydown="if(event.key==='Enter')checkTeamPin()" style="flex:1">
+          <button class="btn btn-primary" onclick="checkTeamPin()" style="flex-shrink:0">Login &rarr;</button>
+        </div>
+        <div id="team-pin-error" style="color:var(--red);font-size:12px;display:none;margin-top:8px">Incorrect PIN. Please try again.</div>
+        <input type="hidden" id="team-login-selected-id">
+        <button class="btn btn-ghost btn-xs" style="margin-top:10px;width:100%;color:var(--t3)" onclick="deselectTeamMember()">Choose a different account</button>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:center;background:transparent;border-top:none;padding-top:0">
+      <button class="btn btn-ghost" onclick="closeModal('modal-team-login');document.getElementById('app-landing').style.display='flex'" style="font-size:12px;color:var(--t3)">&larr; Back to home</button>
+    </div>
+  </div>
+</div>
+ 
+ 
+<!-- Add/Edit Team Member Modal -->
+<div class="modal-overlay" id="modal-member">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-header">
+      <div class="modal-title" id="member-modal-title">Add Team Member</div>
+      <button class="modal-close" aria-label="Close dialog" onclick="closeModal('modal-member')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="member-editing-id">
+      <div class="form-grid">
+        <div class="form-row"><label class="form-label">Full Name <span class="req">*</span></label><input class="form-input" id="m-name" placeholder="e.g. Sara Cohen"></div>
+        <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="m-email" type="email" placeholder="sara@duda.co"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label class="form-label">Role <span class="req">*</span></label>
+          <select class="form-select" id="m-role" onchange="previewMemberRole()">
+            <option value="Staff">👤 Staff (AM)</option>
+            <option value="Executive">👔 Executive</option>
+            <option value="Admin">🛡️ Admin</option>
+          </select>
+        </div>
+        <div class="form-row"><label class="form-label">PIN <span class="req">*</span></label><input class="form-input" id="m-pin" type="password" placeholder="4-digit PIN" maxlength="8">
+          <div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="btn btn-xs btn-ghost" onclick="var p=document.getElementById('m-pin');p.type=p.type==='password'?'text':'password'" style="font-size:11px">👁 Show</button><button type="button" class="btn btn-xs btn-ghost" onclick="document.getElementById('m-pin').value=String(1000+Math.floor(Math.random()*9000));document.getElementById('m-pin').type='text'" style="font-size:11px">🎲 Generate</button></div>
+        </div>
+      </div>
+      <div id="member-role-preview" style="background:var(--s2);border-radius:var(--rsm);padding:12px 14px;margin-top:4px"><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Role Permissions</div><div id="member-role-desc" style="font-size:12px;color:var(--t2);line-height:1.7"></div></div>
+      <div class="form-hint" style="margin-top:8px">📌 <strong>Role guide:</strong> Staff = AM (sees own clients only) · Executive = read-only org view, comments · Admin = full access + team management</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-member')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMember()">Save Member</button>
+    </div>
+  </div>
+</div>
+ 
+
 </body>
 </html>
