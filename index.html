@@ -352,6 +352,12 @@ body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:
 
 /* Sidebar overlay for mobile */
 @media(min-width:901px){#sidebar-overlay{display:none !important}}
+
+/* Client hero tabs (on colored background) */
+#cv-tabs{border-bottom-color:rgba(255,255,255,.2) !important;margin-bottom:0 !important}
+#cv-tabs .cv-tab{color:rgba(255,255,255,.55);font-weight:600;border-bottom:2px solid transparent}
+#cv-tabs .cv-tab.active{color:#fff;border-bottom-color:#fff;font-weight:700}
+#cv-tabs .cv-tab:hover{color:rgba(255,255,255,.85)}
 </style>
 </head>
 <body>
@@ -944,8 +950,57 @@ clientWhat:'Plan your Phase 2 roadmap: automation, app integrations, additional 
 clientWhy:'Launch is just the beginning. Phase 2 planning locks in the roadmap that moves you from pilot to full-scale deployment.',
 resources:[{label:'App Store',url:'https://www.duda.co/app-market'},{label:'Idea Board',url:'http://ideas.duda.co/'},{label:'Product Updates',url:'https://resources.duda.co/product-updates'}]},
 ];
-var GEO={us:{flag:'🇺🇸',tips:[]},eu:{flag:'🇪🇺',tips:['Add GDPR/cookie consent (Termly recommended)','EAA Accessibility Compliance is an upsell opportunity']},de:{flag:'🇩🇪',tips:['German Impressum required on all sites','DSGVO/GDPR compliance — cookie consent mandatory']},nl:{flag:'🇳🇱',tips:['GDPR cookie consent required','Dutch-language materials available']},fr:{flag:'🇫🇷',tips:['RGPD/GDPR compliance required','CNIL cookie guidelines apply']},uk:{flag:'🇬🇧',tips:['UK GDPR applies post-Brexit','ICO cookie compliance guidelines']},au:{flag:'🇦🇺',tips:['Australian Privacy Act compliance','AEST timezone — schedule accordingly']},ca:{flag:'🇨🇦',tips:['PIPEDA privacy law applies','CASL compliance for email features']},br:{flag:'🇧🇷',tips:['LGPD compliance required','Portuguese-language onboarding recommended']},il:{flag:'🇮🇱',tips:['Hebrew RTL support available','Israeli Privacy Protection Law applies']},mx:{flag:'🇲🇽',tips:['Spanish-language onboarding recommended']},other:{flag:'🌐',tips:[]}};
-var LANGS={en:{steps:'Onboarding Steps',timeline:'Plan',resources:'Resources',qa:'Q&A',progress:'Your Progress',done:'Done',pending:'Pending',inProg:'In Progress',must:'Must',opt:'Optional',noSteps:'No steps configured yet.',askQ:'Ask a Question',yourQ:'Type your question or blocker...',submit:'Submit',amResp:'AM Response',open:'Open',resolved:'Resolved'},es:{steps:'Pasos',timeline:'Plan',resources:'Recursos',qa:'Preguntas',progress:'Tu Progreso',done:'Listo',pending:'Pendiente',inProg:'En Progreso',must:'Obligatorio',opt:'Opcional',noSteps:'Sin pasos.',askQ:'Hacer una Pregunta',yourQ:'Tu pregunta...',submit:'Enviar',amResp:'Respuesta del AM',open:'Abierto',resolved:'Resuelto'},de:{steps:'Schritte',timeline:'Plan',resources:'Ressourcen',qa:'Fragen',progress:'Ihr Fortschritt',done:'Erledigt',pending:'Ausstehend',inProg:'In Bearbeitung',must:'Pflicht',opt:'Optional',noSteps:'Keine Schritte.',askQ:'Frage stellen',yourQ:'Ihre Frage...',submit:'Senden',amResp:'AM Antwort',open:'Offen',resolved:'Gelöst'},nl:{steps:'Stappen',timeline:'Plan',resources:'Bronnen',qa:'Vragen',progress:'Voortgang',done:'Klaar',pending:'In afwachting',inProg:'Bezig',must:'Verplicht',opt:'Optioneel',noSteps:'Geen stappen.',askQ:'Vraag stellen',yourQ:'Uw vraag...',submit:'Versturen',amResp:'AM Reactie',open:'Open',resolved:'Opgelost'},fr:{steps:'Étapes',timeline:'Plan',resources:'Ressources',qa:'Questions',progress:'Progression',done:'Terminé',pending:'En attente',inProg:'En cours',must:'Obligatoire',opt:'Optionnel',noSteps:'Aucune étape.',askQ:'Poser une question',yourQ:'Votre question...',submit:'Envoyer',amResp:'Réponse AM',open:'Ouvert',resolved:'Résolu'},pt:{steps:'Etapas',timeline:'Plano',resources:'Recursos',qa:'Perguntas',progress:'Progresso',done:'Concluído',pending:'Pendente',inProg:'Em Andamento',must:'Obrigatório',opt:'Opcional',noSteps:'Nenhuma etapa.',askQ:'Fazer Pergunta',yourQ:'Sua pergunta...',submit:'Enviar',amResp:'Resposta do AM',open:'Aberto',resolved:'Resolvido'},he:{steps:'שלבים',timeline:'תוכנית',resources:'משאבים',qa:'שאלות',progress:'התקדמות',done:'הושלם',pending:'ממתין',inProg:'בתהליך',must:'חובה',opt:'אופציונלי',noSteps:'לא הוגדרו שלבים.',askQ:'שאל שאלה',yourQ:'השאלה שלך...',submit:'שלח',amResp:'תגובת AM',open:'פתוח',resolved:'נפתר'}};
+var GEO={
+us:{flag:'🇺🇸',tips:[]},
+eu:{flag:'🇪🇺',tips:['Add GDPR/cookie consent (Termly recommended)','EAA Accessibility Compliance is an upsell opportunity']},
+de:{flag:'🇩🇪',tips:['German Impressum required on all sites','DSGVO/GDPR compliance — cookie consent mandatory']},
+nl:{flag:'🇳🇱',tips:['GDPR cookie consent required','Dutch-language materials available']},
+fr:{flag:'🇫🇷',tips:['RGPD/GDPR compliance required','CNIL cookie guidelines apply']},
+uk:{flag:'🇬🇧',tips:['UK GDPR applies post-Brexit','ICO cookie compliance guidelines']},
+au:{flag:'🇦🇺',tips:['Australian Privacy Act compliance','AEST timezone — schedule accordingly']},
+ca:{flag:'🇨🇦',tips:['PIPEDA privacy law applies','CASL compliance for email features']},
+br:{flag:'🇧🇷',tips:['LGPD compliance required','Portuguese-language onboarding recommended']},
+il:{flag:'🇮🇱',tips:['Hebrew RTL support available','Israeli Privacy Protection Law applies']},
+mx:{flag:'🇲🇽',tips:['Spanish-language onboarding recommended']},
+it:{flag:'🇮🇹',tips:['GDPR/DPIA compliance required','Italian DPA (Garante) cookie guidelines apply']},
+es:{flag:'🇪🇸',tips:['RGPD/GDPR compliance required','AEPD cookie guidelines apply','Spanish-language materials available']},
+jp:{flag:'🇯🇵',tips:['APPI (Act on Protection of Personal Information) applies','JST timezone — schedule accordingly','Japanese-language onboarding recommended']},
+kr:{flag:'🇰🇷',tips:['PIPA (Personal Information Protection Act) applies','Korean-language recommended']},
+in:{flag:'🇮🇳',tips:['DPDPA (Digital Personal Data Protection Act) applies','IST timezone considerations']},
+se:{flag:'🇸🇪',tips:['GDPR applies','Swedish DPA (IMY) guidelines','Swedish-language materials available']},
+pl:{flag:'🇵🇱',tips:['GDPR applies','UODO (Polish DPA) guidelines','Polish-language recommended']},
+ch:{flag:'🇨🇭',tips:['nDSG (Swiss Data Protection Act) applies','Multi-language: DE/FR/IT support']},
+at:{flag:'🇦🇹',tips:['GDPR/DSG applies','DSB (Austrian DPA) guidelines','German-language']},
+be:{flag:'🇧🇪',tips:['GDPR applies','APD/GBA guidelines','Multi-language: NL/FR support']},
+za:{flag:'🇿🇦',tips:['POPIA (Protection of Personal Information Act) applies']},
+sg:{flag:'🇸🇬',tips:['PDPA (Personal Data Protection Act) applies','SGT timezone']},
+ae:{flag:'🇦🇪',tips:['DIFC Data Protection Law / UAE Federal Data Protection applies']},
+co:{flag:'🇨🇴',tips:['Ley 1581 data protection applies','Spanish-language onboarding']},
+ar_co:{flag:'🇦🇷',tips:['Ley 25326 data protection applies','Spanish-language onboarding']},
+cl:{flag:'🇨🇱',tips:['Ley 19628 data protection applies','Spanish-language onboarding']},
+nz:{flag:'🇳🇿',tips:['Privacy Act 2020 applies','NZST timezone']},
+tr:{flag:'🇹🇷',tips:['KVKK (Turkish Data Protection Law) applies','Turkish-language recommended']},
+ru:{flag:'🇷🇺',tips:['Federal Law 152-FZ applies','Data localization requirements','Russian-language recommended']},
+other:{flag:'🌐',tips:[]},
+};
+var LANGS={
+en:{steps:'Onboarding Steps',timeline:'60/90/180 Plan',resources:'Resources',qa:'Q&A',progress:'Your Progress',done:'Done',pending:'Pending',inProg:'In Progress',must:'Must',opt:'Optional',noSteps:'No steps configured yet.',askQ:'Ask a Question',yourQ:'Type your question or blocker...',submit:'Submit',amResp:'AM Response',open:'Open',resolved:'Resolved',yourName:'Your name',yourEmail:'Your email',genQ:'General Question',techIssue:'Technical Issue',feature:'Feature / Capability',timing:'Timeline / Scheduling',billing:'Billing / Contract',otherCat:'Other'},
+es:{steps:'Pasos de Onboarding',timeline:'Plan 60/90/180',resources:'Recursos',qa:'Preguntas',progress:'Tu Progreso',done:'Listo',pending:'Pendiente',inProg:'En Progreso',must:'Obligatorio',opt:'Opcional',noSteps:'Sin pasos configurados.',askQ:'Hacer una Pregunta',yourQ:'Tu pregunta o bloqueo...',submit:'Enviar',amResp:'Respuesta del AM',open:'Abierto',resolved:'Resuelto',yourName:'Tu nombre',yourEmail:'Tu correo',genQ:'Pregunta General',techIssue:'Problema Técnico',feature:'Funcionalidad',timing:'Plazos',billing:'Facturación / Contrato',otherCat:'Otro'},
+de:{steps:'Onboarding-Schritte',timeline:'60/90/180 Plan',resources:'Ressourcen',qa:'Fragen',progress:'Ihr Fortschritt',done:'Erledigt',pending:'Ausstehend',inProg:'In Bearbeitung',must:'Pflicht',opt:'Optional',noSteps:'Keine Schritte konfiguriert.',askQ:'Frage stellen',yourQ:'Ihre Frage oder Blocker...',submit:'Senden',amResp:'AM Antwort',open:'Offen',resolved:'Gelöst',yourName:'Ihr Name',yourEmail:'Ihre E-Mail',genQ:'Allgemeine Frage',techIssue:'Technisches Problem',feature:'Feature / Funktion',timing:'Zeitplan',billing:'Abrechnung / Vertrag',otherCat:'Sonstiges'},
+nl:{steps:'Onboarding Stappen',timeline:'60/90/180 Plan',resources:'Bronnen',qa:'Vragen',progress:'Voortgang',done:'Klaar',pending:'In afwachting',inProg:'Bezig',must:'Verplicht',opt:'Optioneel',noSteps:'Geen stappen geconfigureerd.',askQ:'Vraag stellen',yourQ:'Uw vraag of blokkade...',submit:'Versturen',amResp:'AM Reactie',open:'Open',resolved:'Opgelost',yourName:'Uw naam',yourEmail:'Uw e-mail',genQ:'Algemene vraag',techIssue:'Technisch probleem',feature:'Feature / Functie',timing:'Planning',billing:'Facturering / Contract',otherCat:'Anders'},
+fr:{steps:'Étapes d\'Onboarding',timeline:'Plan 60/90/180',resources:'Ressources',qa:'Questions',progress:'Progression',done:'Terminé',pending:'En attente',inProg:'En cours',must:'Obligatoire',opt:'Optionnel',noSteps:'Aucune étape configurée.',askQ:'Poser une question',yourQ:'Votre question ou blocage...',submit:'Envoyer',amResp:'Réponse AM',open:'Ouvert',resolved:'Résolu',yourName:'Votre nom',yourEmail:'Votre email',genQ:'Question générale',techIssue:'Problème technique',feature:'Fonctionnalité',timing:'Planning',billing:'Facturation / Contrat',otherCat:'Autre'},
+pt:{steps:'Etapas de Onboarding',timeline:'Plano 60/90/180',resources:'Recursos',qa:'Perguntas',progress:'Progresso',done:'Concluído',pending:'Pendente',inProg:'Em Andamento',must:'Obrigatório',opt:'Opcional',noSteps:'Nenhuma etapa configurada.',askQ:'Fazer uma Pergunta',yourQ:'Sua pergunta ou bloqueio...',submit:'Enviar',amResp:'Resposta do AM',open:'Aberto',resolved:'Resolvido',yourName:'Seu nome',yourEmail:'Seu email',genQ:'Pergunta Geral',techIssue:'Problema Técnico',feature:'Funcionalidade',timing:'Cronograma',billing:'Faturamento / Contrato',otherCat:'Outro'},
+he:{steps:'שלבי הטמעה',timeline:'תוכנית 60/90/180',resources:'משאבים',qa:'שאלות',progress:'התקדמות',done:'הושלם',pending:'ממתין',inProg:'בתהליך',must:'חובה',opt:'אופציונלי',noSteps:'לא הוגדרו שלבים.',askQ:'שאל שאלה',yourQ:'השאלה או החסימה שלך...',submit:'שלח',amResp:'תגובת AM',open:'פתוח',resolved:'נפתר',yourName:'השם שלך',yourEmail:'האימייל שלך',genQ:'שאלה כללית',techIssue:'בעיה טכנית',feature:'פיצ\'ר / יכולת',timing:'לוח זמנים',billing:'חיוב / חוזה',otherCat:'אחר'},
+it:{steps:'Fasi di Onboarding',timeline:'Piano 60/90/180',resources:'Risorse',qa:'Domande',progress:'Progresso',done:'Completato',pending:'In attesa',inProg:'In corso',must:'Obbligatorio',opt:'Opzionale',noSteps:'Nessuna fase configurata.',askQ:'Fai una domanda',yourQ:'La tua domanda o blocco...',submit:'Invia',amResp:'Risposta AM',open:'Aperto',resolved:'Risolto',yourName:'Il tuo nome',yourEmail:'La tua email',genQ:'Domanda generale',techIssue:'Problema tecnico',feature:'Funzionalità',timing:'Tempistiche',billing:'Fatturazione / Contratto',otherCat:'Altro'},
+ja:{steps:'オンボーディング手順',timeline:'60/90/180日計画',resources:'リソース',qa:'質問',progress:'進捗状況',done:'完了',pending:'未着手',inProg:'進行中',must:'必須',opt:'任意',noSteps:'手順が設定されていません。',askQ:'質問する',yourQ:'質問や課題を入力...',submit:'送信',amResp:'AM回答',open:'未回答',resolved:'解決済み',yourName:'お名前',yourEmail:'メール',genQ:'一般的な質問',techIssue:'技術的な問題',feature:'機能について',timing:'スケジュール',billing:'請求/契約',otherCat:'その他'},
+ko:{steps:'온보딩 단계',timeline:'60/90/180일 계획',resources:'리소스',qa:'Q&A',progress:'진행률',done:'완료',pending:'대기',inProg:'진행중',must:'필수',opt:'선택',noSteps:'단계가 설정되지 않았습니다.',askQ:'질문하기',yourQ:'질문이나 문제를 입력...',submit:'제출',amResp:'AM 답변',open:'미답변',resolved:'해결됨',yourName:'이름',yourEmail:'이메일',genQ:'일반 질문',techIssue:'기술 문제',feature:'기능 관련',timing:'일정',billing:'결제/계약',otherCat:'기타'},
+zh:{steps:'入职步骤',timeline:'60/90/180天计划',resources:'资源',qa:'问答',progress:'进度',done:'已完成',pending:'待处理',inProg:'进行中',must:'必须',opt:'可选',noSteps:'尚未配置步骤。',askQ:'提问',yourQ:'输入您的问题...',submit:'提交',amResp:'AM回复',open:'未回复',resolved:'已解决',yourName:'您的姓名',yourEmail:'您的邮箱',genQ:'一般问题',techIssue:'技术问题',feature:'功能相关',timing:'时间安排',billing:'账单/合同',otherCat:'其他'},
+ar:{steps:'خطوات التهيئة',timeline:'خطة 60/90/180',resources:'الموارد',qa:'أسئلة',progress:'التقدم',done:'مكتمل',pending:'قيد الانتظار',inProg:'قيد التنفيذ',must:'إلزامي',opt:'اختياري',noSteps:'لم يتم تكوين خطوات.',askQ:'اطرح سؤالاً',yourQ:'سؤالك أو مشكلتك...',submit:'إرسال',amResp:'رد المدير',open:'مفتوح',resolved:'تم الحل',yourName:'اسمك',yourEmail:'بريدك',genQ:'سؤال عام',techIssue:'مشكلة تقنية',feature:'ميزة',timing:'الجدول الزمني',billing:'الفوترة / العقد',otherCat:'أخرى'},
+ru:{steps:'Этапы онбординга',timeline:'План 60/90/180',resources:'Ресурсы',qa:'Вопросы',progress:'Прогресс',done:'Готово',pending:'Ожидание',inProg:'В процессе',must:'Обязательно',opt:'Необязательно',noSteps:'Шаги не настроены.',askQ:'Задать вопрос',yourQ:'Ваш вопрос...',submit:'Отправить',amResp:'Ответ AM',open:'Открыт',resolved:'Решён',yourName:'Ваше имя',yourEmail:'Ваш email',genQ:'Общий вопрос',techIssue:'Техническая проблема',feature:'Функционал',timing:'Сроки',billing:'Оплата / Договор',otherCat:'Другое'},
+tr:{steps:'Kurulum Adımları',timeline:'60/90/180 Plan',resources:'Kaynaklar',qa:'Sorular',progress:'İlerleme',done:'Tamamlandı',pending:'Bekliyor',inProg:'Devam Ediyor',must:'Zorunlu',opt:'Opsiyonel',noSteps:'Adım yapılandırılmadı.',askQ:'Soru Sor',yourQ:'Sorunuz veya engeliniz...',submit:'Gönder',amResp:'AM Yanıtı',open:'Açık',resolved:'Çözüldü',yourName:'Adınız',yourEmail:'E-posta',genQ:'Genel Soru',techIssue:'Teknik Sorun',feature:'Özellik',timing:'Zamanlama',billing:'Fatura / Sözleşme',otherCat:'Diğer'},
+pl:{steps:'Etapy wdrożenia',timeline:'Plan 60/90/180',resources:'Zasoby',qa:'Pytania',progress:'Postęp',done:'Ukończone',pending:'Oczekuje',inProg:'W trakcie',must:'Wymagane',opt:'Opcjonalne',noSteps:'Brak skonfigurowanych kroków.',askQ:'Zadaj pytanie',yourQ:'Twoje pytanie...',submit:'Wyślij',amResp:'Odpowiedź AM',open:'Otwarte',resolved:'Rozwiązane',yourName:'Twoje imię',yourEmail:'Twój email',genQ:'Pytanie ogólne',techIssue:'Problem techniczny',feature:'Funkcjonalność',timing:'Harmonogram',billing:'Rozliczenia / Umowa',otherCat:'Inne'},
+sv:{steps:'Onboarding-steg',timeline:'60/90/180-plan',resources:'Resurser',qa:'Frågor',progress:'Framsteg',done:'Klart',pending:'Väntar',inProg:'Pågår',must:'Måste',opt:'Valfritt',noSteps:'Inga steg konfigurerade.',askQ:'Ställ en fråga',yourQ:'Din fråga eller hinder...',submit:'Skicka',amResp:'AM-svar',open:'Öppen',resolved:'Löst',yourName:'Ditt namn',yourEmail:'Din e-post',genQ:'Allmän fråga',techIssue:'Tekniskt problem',feature:'Funktion',timing:'Tidsplan',billing:'Fakturering / Avtal',otherCat:'Övrigt'},
+};
 var PHASE_ORDER=['Pre-Onboarding','Phase 1 — Kickoff & Discovery','Phase 2 — Platform Setup & Build','Phase 3 — Enablement & GTM','Phase 4 — Pilot, Launch & Scale','Custom'];
 var PHASE_COLORS={'Pre-Onboarding':'#6B7280','Phase 1 — Kickoff & Discovery':'#7C3AED','Phase 2 — Platform Setup & Build':'#1A6EFF','Phase 3 — Enablement & GTM':'#0891B2','Phase 4 — Pilot, Launch & Scale':'#0F9960','Custom':'#D97706'};
 var PHASE_ICONS={'Pre-Onboarding':'🔖','Phase 1 — Kickoff & Discovery':'🚀','Phase 2 — Platform Setup & Build':'⚙️','Phase 3 — Enablement & GTM':'🎓','Phase 4 — Pilot, Launch & Scale':'🎯','Custom':'✨'};
@@ -1820,10 +1875,10 @@ function renderClientView(id){
     +'<div style="height:100%;width:'+p+'%;background:#fff;border-radius:4px;transition:width .6s;box-shadow:0 0 10px rgba(255,255,255,.35)"></div>'
     +'</div>'
     +'<div class="tabs" id="cv-tabs" style="border-bottom-color:rgba(255,255,255,.2);margin:0;gap:4px">'
-    +'<div class="tab active" style="color:#fff;border-bottom-color:#fff;font-weight:700" onclick="switchCVTab(0,\''+id+'\',this)">'+lang.steps+'</div>'
-    +'<div class="tab" style="color:rgba(255,255,255,.55);font-weight:600" onclick="switchCVTab(1,\''+id+'\',this)">'+lang.timeline+'</div>'
-    +'<div class="tab" style="color:rgba(255,255,255,.55);font-weight:600" onclick="switchCVTab(2,\''+id+'\',this)">'+lang.resources+'</div>'
-    +'<div class="tab" style="color:rgba(255,255,255,.55);font-weight:600" onclick="switchCVTab(3,\''+id+'\',this)">'+lang.qa+' '+(c.qa&&c.qa.filter(function(q){return q.status!=='Resolved';}).length?'🔔':'')+'</div>'
+    +'<div class="tab cv-tab active" onclick="switchCVTab(0,\''+id+'\',this)">'+lang.steps+'</div>'
+    +'<div class="tab cv-tab" onclick="switchCVTab(1,\''+id+'\',this)">'+lang.timeline+'</div>'
+    +'<div class="tab cv-tab" onclick="switchCVTab(2,\''+id+'\',this)">'+lang.resources+'</div>'
+    +'<div class="tab cv-tab" onclick="switchCVTab(3,\''+id+'\',this)">'+lang.qa+' '+(c.qa&&c.qa.filter(function(q){return q.status!=='Resolved';}).length?'🔔':'')+'</div>'
     +'</div></div></div>'
     +'<div style="max-width:780px;margin:0 auto;padding:22px 24px 80px" id="cv-body"></div>';
  
@@ -1833,8 +1888,6 @@ function renderClientView(id){
 function switchCVTab(i,id,el){
   document.querySelectorAll('#cv-tabs .tab').forEach(function(t,j){
     t.classList.toggle('active',i===j);
-    t.style.color=i===j?'#fff':'rgba(255,255,255,.55)';
-    t.style.borderBottomColor=i===j?'#fff':'transparent';
   });
   renderCVTab(i,id);
 }
@@ -1850,12 +1903,12 @@ function renderCVTab(i,id){
       +'<div class="qa-form" id="qf-'+id+'">'
       +'<div style="font-size:13px;font-weight:700;margin-bottom:12px">💬 '+lang.askQ+'</div>'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">'
-      +'<input class="form-input" id="qa-name-'+id+'" placeholder="Your name" style="font-size:12px;padding:8px 10px">'
-      +'<input class="form-input" id="qa-email-'+id+'" placeholder="Your email" style="font-size:12px;padding:8px 10px">'
+      +'<input class="form-input" id="qa-name-'+id+'" placeholder="'+lang.yourName+'" style="font-size:12px;padding:8px 10px">'
+      +'<input class="form-input" id="qa-email-'+id+'" placeholder="'+lang.yourEmail+'" style="font-size:12px;padding:8px 10px">'
       +'</div>'
       +'<div class="form-row"><select class="form-select" id="qcat-'+id+'">'
-      +'<option>General Question</option><option>Technical Issue</option><option>Feature / Capability</option>'
-      +'<option>Timeline / Scheduling</option><option>Billing / Contract</option><option>Other</option>'
+      +'<option>'+lang.genQ+'</option><option>'+lang.techIssue+'</option><option>'+lang.feature+'</option>'
+      +'<option>'+lang.timing+'</option><option>'+lang.billing+'</option><option>'+lang.otherCat+'</option>'
       +'</select></div>'
       +'<div class="form-row"><textarea class="form-textarea" id="qq-'+id+'" placeholder="'+lang.yourQ+'" style="min-height:80px"></textarea></div>'
       +'<button class="btn btn-primary btn-sm" style="background:var(--client-color,#1A6EFF)" onclick="submitQA(\''+id+'\')">'+lang.submit+'</button>'
@@ -1936,7 +1989,7 @@ function updateGeoRecs(){
   var el=document.getElementById('geo-rec-preview');
   el.innerHTML=geo.tips.length?'<div class="geo-rec"><span>'+geo.flag+'</span><div><strong>Geo recommendations:</strong> '+geo.tips.join(' · ')+'</div></div>':'';
   // auto-lang
-  var langMap={de:'de',nl:'nl',fr:'fr',br:'pt',mx:'es',il:'he'};
+  var langMap={de:'de',at:'de',ch:'de',nl:'nl',be:'nl',fr:'fr',it:'it',es:'es',br:'pt',mx:'es',ar_co:'es',co:'es',cl:'es',il:'he',jp:'ja',kr:'ko',pl:'pl',se:'sv',tr:'tr',ru:'ru'};
   if(langMap[c]) document.getElementById('f-lang').value=langMap[c];
 }
 function onProfileChange(){
