@@ -353,11 +353,11 @@ body{font-family:var(--font);background:var(--paper);color:var(--ink);font-size:
 /* Sidebar overlay for mobile */
 @media(min-width:901px){#sidebar-overlay{display:none !important}}
 
-/* Client hero tabs (on colored background) */
-#cv-tabs{border-bottom-color:rgba(255,255,255,.2) !important;margin-bottom:0 !important}
-#cv-tabs .cv-tab{color:rgba(255,255,255,.55);font-weight:600;border-bottom:2px solid transparent}
-#cv-tabs .cv-tab.active{color:#fff;border-bottom-color:#fff;font-weight:700}
-#cv-tabs .cv-tab:hover{color:rgba(255,255,255,.85)}
+/* Client view tabs (Onward editorial design) */
+#cv-tabs{border-bottom:1px solid var(--hairline);margin-bottom:0}
+#cv-tabs .tab{color:var(--ink-muted);border-bottom:2px solid transparent;margin-bottom:-1px;padding:12px 18px;font-size:14px;font-weight:500}
+#cv-tabs .tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+#cv-tabs .tab:hover:not(.active){color:var(--ink-2)}
 </style>
 </head>
 <body>
@@ -1886,10 +1886,10 @@ function renderClientView(id){
   window.onscroll=function(){ document.getElementById('scroll-top').style.display=window.scrollY>300?'flex':'none'; };
 }
 function switchCVTab(i,id,el){
-  document.querySelectorAll('#cv-tabs .tab').forEach(function(t,j){
-    t.classList.toggle('active',i===j);
-  });
+  var tabs=document.querySelectorAll('#cv-tabs .tab');
+  tabs.forEach(function(t,j){ t.classList.toggle('active',i===j); });
   renderCVTab(i,id);
+  window.scrollTo({top:document.getElementById('cv-tabs').offsetTop-80,behavior:'smooth'});
 }
 function renderCVTab(i,id){
   var c=state.clients[id], el=document.getElementById('cv-body'), lang=LANGS[c.lang||'en'];
@@ -3336,14 +3336,7 @@ function deleteMember(id){
         '</div>' +
       '</footer>';
 
-    // also reset the cv tab style override (original used white-on-color tabs; we use dark-on-paper)
-    var styleTag = document.getElementById('ow-cv-style');
-    if (!styleTag) {
-      styleTag = document.createElement('style');
-      styleTag.id = 'ow-cv-style';
-      styleTag.textContent = '#cv-tabs .tab { color: var(--ink-muted) !important; } #cv-tabs .tab.active { color: var(--ink) !important; border-bottom-color: var(--ink) !important; }';
-      document.head.appendChild(styleTag);
-    }
+    // Tab styling handled by CSS (no runtime injection needed)
 
     renderCVTab(0, id);
     window.onscroll = function(){
