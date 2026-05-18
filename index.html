@@ -339,7 +339,16 @@ select.input{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s;}
 .twk-toggle[data-on="1"] i{transform:translateX(14px);}
 .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px;}
-/* Responsive */
+/* Client status badges */
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;font-size:11px;font-weight:600;border-radius:var(--r-pill);white-space:nowrap;}
+.status-badge::before{content:'';width:6px;height:6px;border-radius:999px;flex-shrink:0;}
+.status-badge.active{background:var(--leaf-soft);color:#0E6E4B;}.status-badge.active::before{background:var(--leaf);}
+.status-badge.inactive{background:var(--paper);color:var(--ink-muted);border:1px solid var(--hairline);}.status-badge.inactive::before{background:var(--ink-faint);}
+.status-badge.archived{background:var(--sun-soft);color:#8B5E0E;}.status-badge.archived::before{background:var(--sun);}
+.status-badge.deleted{background:var(--crimson-soft);color:var(--crimson);}.status-badge.deleted::before{background:var(--crimson);}
+/* Edit client modal overlay */
+.edit-client-section{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:20px;margin-bottom:16px;}
+.edit-client-section h4{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-muted);font-weight:700;margin-bottom:14px;}
 @media(max-width:1100px){
   .rail{grid-template-columns:1fr;}
   .plan-grid{grid-template-columns:1fr;}
@@ -397,7 +406,7 @@ const I = {
   ext:<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M4.5 1.5H2a1 1 0 00-1 1v6.5A1 1 0 002 10h6.5A1 1 0 009.5 9V6.5M6.5 1.5h3v3M9.5 1.5L4.5 6.5"/></svg>,
   filter:<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M1 2h10M3 6h6M5 10h2"/></svg>,
 };
- 
+
 // ─── Data ───────────────────────────────────────────────────────────────────
 const PHASES = [
   {id:'pre', num:'00', name:'Pre-Onboarding', short:'Pre', blurb:'Contract & access provisioned'},
@@ -407,7 +416,7 @@ const PHASES = [
   {id:'p4',  num:'04', name:'Enablement & GTM', short:'GTM', blurb:'Training, launch comms, pilot'},
   {id:'p5',  num:'05', name:'Launch & Optimise', short:'Launch', blurb:'Go-live, review, scale plan'},
 ];
- 
+
 const STATUS_MAP = {
   done:{label:'Done',cls:'done'},
   progress:{label:'In progress',cls:'progress'},
@@ -424,12 +433,12 @@ const PRIO_MAP = {
   med:{label:'Medium',cls:'med'},
   opt:{label:'Optional',cls:'opt'},
 };
- 
+
 // Real steps from XLSX — Onboarding Tracker sheet
 const INITIAL_STEPS = [
   // Phase 00 — Pre-Onboarding (contract signed = prerequisite, added as first step)
   {id:'T01',phase:'pre',ws:'Commercial',title:'Contract signed & commercial terms confirmed',why:'Kicks off billing, legal, and the dedicated onboarding engagement.',owner:'Duda AM',prio:'must',status:'done',start:-7,due:-1,flows:'All',segments:'All',deliverable:'Signed agreement; onboarding engagement confirmed'},
- 
+
   // Phase 01 — First Steps (T02–T07)
   {id:'T02',phase:'p1',ws:'Kickoff',title:'Run kickoff — align stakeholders, timeline, cadence & expectations',why:'Sets the stage: one call to confirm everyone\'s role, how we communicate, and what success looks like.',owner:'Duda AM',prio:'must',status:'done',start:0,due:3,flows:'All',segments:'All',deliverable:'Stakeholders confirmed; timeline, cadence & expectations agreed',resources:['Kickoff deck','Onboarding plan']},
   {id:'T03',phase:'p1',ws:'Kickoff',title:'Run platform overview session tailored to ICP, flow & user roles',why:'Ensures your team understands the platform before we go deeper into configuration.',owner:'Duda AM / Trainer',prio:'must',status:'done',start:2,due:5,flows:'All',segments:'All',deliverable:'Platform overview completed; key user journeys understood',resources:['Tour the platform','Build sites with Duda','Duda Academy']},
@@ -437,7 +446,7 @@ const INITIAL_STEPS = [
   {id:'T05',phase:'p1',ws:'Commercial',title:'Confirm contract / MSA status, provisioning & access prerequisites',why:'Ensures workspace, SSO, and any pending commercial items are resolved before build starts.',owner:'Duda AM',prio:'must',status:'done',start:0,due:2,flows:'All',segments:'All',deliverable:'Workspace provisioned; SSO and access confirmed'},
   {id:'T06',phase:'p1',ws:'Kickoff',title:'Log optional sessions needed — Q&A, GTM, add-ons, expert sessions',why:'Captures scope for any additional enablement so nothing falls through the cracks.',owner:'Duda AM',prio:'opt',status:'not',start:4,due:8,flows:'All',segments:'All',deliverable:'Optional sessions logged with owners, timing & expected outcomes'},
   {id:'T07',phase:'p1',ws:'Discovery',title:'Map customer journey from purchase to publish',why:'Validates assumptions about how your SMBs/end-users will experience the product.',owner:'Client Product',prio:'must',status:'progress',start:5,due:12,flows:'DIY,DIFM,Hybrid',segments:'All',deliverable:'Initial journey mapped and validated after overview/technical sessions',resources:['Flow Router','Customer journey map']},
- 
+
   // Phase 02 — Solution Design & Setup (T08–T16)
   {id:'T08',phase:'p2',ws:'Solution Design',title:'Define MVP scope & success criteria',why:'Prevents scope creep and gives everyone a shared definition of "done for launch".',owner:'Client Product',prio:'high',status:'not',start:10,due:18,flows:'All',segments:'All',deliverable:'MVP scope, assumptions, core deliverables, acceptance criteria & owners approved',resources:['MVP planning worksheet','Implementation plan']},
   {id:'T09',phase:'p2',ws:'Solution Design',title:'Define packaging, product tiers, pricing & bundle logic',why:'Locks the commercial offer before any technical build starts.',owner:'Client Product / Marketing',prio:'must',status:'not',start:12,due:21,flows:'All',segments:'All',deliverable:'Package matrix, plans, pricing, tier differences & bundle definitions approved',resources:['Custom plans','Package matrix','Pricing model']},
@@ -448,7 +457,7 @@ const INITIAL_STEPS = [
   {id:'T14',phase:'p2',ws:'Platform Setup',title:'Set team access, client permissions, roles & plan restrictions',why:'Ensures internal teams and end-clients see exactly what they should — no more, no less.',owner:'Duda TAM',prio:'must',status:'not',start:18,due:28,flows:'All',segments:'All',deliverable:'Roles and permissions tested for internal team and end-client access',resources:['Client Management','Custom plans','Permissions docs']},
   {id:'T15',phase:'p2',ws:'Content / Template',title:'Build or adapt vertical templates, connected sections & mandatory/default sections',why:'Templates are the engine of your build velocity — they must be ready before pilot.',owner:'Client Design',prio:'opt',status:'not',start:20,due:35,flows:'DIFM,Hybrid',segments:'SaaS,Agency,Listing / YP,POS / eCommerce',deliverable:'Template/section library approved',resources:['Simple Editor Admin','Templates','Connected sections']},
   {id:'T16',phase:'p2',ws:'Content / Template',title:'AM template review & sign-off — quality gate before pilot',why:'Catches issues in templates before real SMB sites are built on top of them.',owner:'Duda AM',prio:'opt',status:'not',start:28,due:38,flows:'DIY',segments:'SaaS,Hosting,Agency,Listing / YP,POS / eCommerce',deliverable:'Quality gate completed; templates approved for pilot use',resources:['Template checklist']},
- 
+
   // Phase 03 — Technical Build (T17–T26)
   {id:'T17',phase:'p3',ws:'Technical Build',title:'Map business data fields to Content Library / Collections / Dynamic Pages',why:'The data architecture underpinning automated or data-driven site creation.',owner:'Client Engineering',prio:'high',status:'not',start:30,due:44,flows:'DIY,DIFM,Hybrid',segments:'SaaS,Listing / YP,POS / eCommerce',deliverable:'Data map approved; sample content populates correctly',resources:['Content Library','Collections','Dynamic Pages','API docs']},
   {id:'T18',phase:'p3',ws:'Technical Build',title:'Implement create client/site flow via API or operational SOP',why:'The foundation — without this, you can\'t onboard a single SMB.',owner:'Client Engineering / Ops',prio:'must',status:'not',start:32,due:46,flows:'DIY,DIFM,Hybrid',segments:'All',deliverable:'New SMB/client/site can be created through API or repeatable operational process',resources:['Create Client API','Create Site API','Build SOP']},
@@ -460,7 +469,7 @@ const INITIAL_STEPS = [
   {id:'T24',phase:'p3',ws:'Technical Build',title:'Implement publish & domain flow',why:'The final step of every SMB journey — this must be zero-friction.',owner:'Client Engineering / Ops',prio:'must',status:'not',start:40,due:58,flows:'All',segments:'SaaS,Hosting,POS / eCommerce',deliverable:'Publish and domain connection path validated',resources:['Publish API','Entri','Domain docs']},
   {id:'T25',phase:'p3',ws:'Technical Build',title:'Implement analytics, reporting events & KPI dashboard feed',why:'You can\'t manage what you can\'t measure — wire up reporting before launch.',owner:'Client Engineering',prio:'opt',status:'not',start:42,due:60,flows:'All',segments:'All',deliverable:'Reporting source defined: publish, visits, conversion, support, revenue',resources:['Analytics API','Stats emails','BI dashboard']},
   {id:'T26',phase:'p3',ws:'Agency Flow',title:'Agency DIFM workflow: content collection, creation, approval, QA & handoff',why:'Without a clear SOP, agency builds become bottlenecks and miss SLAs.',owner:'Client Operations / Design',prio:'high',status:'not',start:35,due:55,flows:'DIFM,Hybrid',segments:'Agency',deliverable:'Agency build SOP covers content intake, creation, client approval, QA & handoff',resources:['Content collection form','Site Comments','QA checklist','Approval flow']},
- 
+
   // Phase 04 — Enablement & GTM (T27–T33)
   {id:'T27',phase:'p4',ws:'Training',title:'Assign Duda Academy prerequisite courses before live enablement',why:'Self-paced learning before live sessions dramatically improves training ROI.',owner:'Duda Trainer / Client Lead',prio:'must',status:'not',start:55,due:65,flows:'All',segments:'All',deliverable:'Required Academy paths assigned to relevant teams before live training',resources:['Duda Academy','Build sites with Duda','Fundamentals of Web Design','Connected Data']},
   {id:'T28',phase:'p4',ws:'Training',title:'Train design/ops/build team on Duda, templates, connected data & QA',why:'Your build team needs to be certified before they touch client sites.',owner:'Duda Trainer',prio:'opt',status:'not',start:58,due:70,flows:'DIFM,Hybrid',segments:'Agency,Listing / YP,Hosting,SaaS',deliverable:'Ops/design team completed required training and live enablement',resources:['Duda Academy','Getting Started','Web Design','Dynamic Pages','DudaFlex']},
@@ -469,7 +478,7 @@ const INITIAL_STEPS = [
   {id:'T31',phase:'p4',ws:'GTM',title:'Prepare launch comms, sales enablement, FAQs & customer-facing content',why:'Everything a customer or internal team needs to understand the new product.',owner:'Client Marketing',prio:'high',status:'not',start:65,due:78,flows:'All',segments:'All',deliverable:'Launch comms, FAQs & customer journey content approved',resources:['FAQ/tutorials','Website journey content']},
   {id:'T32',phase:'p4',ws:'GTM',title:'Define demand generation, sales targeting, pilot cohort & adoption plan',why:'Who will use this first? Defines the pilot and the GTM motion.',owner:'Client Marketing',prio:'opt',status:'not',start:68,due:82,flows:'All',segments:'All',deliverable:'Pilot cohort and GTM motion approved',resources:['Customer segmentation','Campaign plan']},
   {id:'T33',phase:'p4',ws:'GTM',title:'GTM review session: partner presents final flow, exec sponsor confirms alignment',why:'The go/no-go moment — exec sign-off before real SMBs see the product.',owner:'Duda AM / Client Exec Sponsor',prio:'must',status:'not',start:75,due:88,flows:'All',segments:'All',deliverable:'Partner presents final customer/build/GTM flow; exec sponsor confirms launch alignment',resources:['GTM review deck','Final flow map','KPI plan']},
- 
+
   // Phase 05 — Launch & Optimise (T34–T38)
   {id:'T34',phase:'p5',ws:'Pilot / Launch',title:'Run pilot site creation for sample SMBs/use cases',why:'Real sites, real data — validates every assumption from design and build.',owner:'Client Product / Ops',prio:'high',status:'not',start:85,due:100,flows:'All',segments:'All',deliverable:'Pilot sites created and reviewed against MVP criteria',resources:['Pilot checklist','QA checklist']},
   {id:'T35',phase:'p5',ws:'Pilot / Launch',title:'QA: permissions, data sync, domain, SEO, accessibility/compliance & apps',why:'One QA pass here prevents dozens of support tickets at launch.',owner:'Client Operations',prio:'high',status:'not',start:95,due:110,flows:'All',segments:'All',deliverable:'QA pass; known issues logged and prioritised',resources:['QA checklist','Compliance/app resources']},
@@ -477,50 +486,89 @@ const INITIAL_STEPS = [
   {id:'T37',phase:'p5',ws:'Optimisation',title:'30/60/90 performance review: publish rate, TTP, activation, support & revenue',why:'Validates the launch and unlocks the expansion conversation.',owner:'Duda AM',prio:'high',status:'not',start:120,due:150,flows:'All',segments:'All',deliverable:'30/60/90 performance review completed against agreed KPIs',resources:['Dashboard','Domo/BI','Account QBR']},
   {id:'T38',phase:'p5',ws:'Optimisation',title:'Plan scale-up: automation, apps/add-ons, migration batches & additional templates',why:'The renewal and expansion plan — what does the next phase look like?',owner:'Duda TAM',prio:'med',status:'not',start:140,due:180,flows:'All',segments:'All',deliverable:'Phase 2 roadmap and owners agreed',resources:['Apps','Automations','Migration plan']},
 ];
- 
+
 // Resources from XLSX — split AM-only vs client-facing
+// ── Resource Library v2 — from xlsx (Resource Library v2 + AM Resource Matrix sheets) ──
+// Visibility: 'am' = AM-only | 'client' = client-visible | 'both' = mixed
 const AM_RESOURCES = [
-  {name:'Flow Router (Onboarding Lane Selector)',type:'Checklist',flows:'All',segments:'All',when:'First planning step — select dedicated onboarding path before creating project plan',url:'',internal:true},
-  {name:'Duda Developer Docs — DIY Onboarding',type:'Developer Docs',flows:'DIY,Hybrid',segments:'SaaS,Hosting',when:'Automated self-serve site creation flow',url:'https://developer.duda.co/docs/diy-onboarding'},
-  {name:'Duda Developer Docs — Instant Sites',type:'Developer Docs',flows:'DIY,Hybrid,Marketplace',segments:'SaaS,Hosting',when:'Generate/prefill sites using connected data',url:'https://developer.duda.co/docs/get-new-customers-with-instant-sites'},
-  {name:'SaaS Integration Blog Series (Parts 1–3)',type:'Public Docs',flows:'DIY,Hybrid',segments:'SaaS',when:'Explain SaaS integration concepts to client engineering team',url:'https://blog.duda.co/integrating-duda-into-a-saas-platform-1'},
-  {name:'Simple Editor Admin / Flow Setup',type:'Internal Deck',flows:'DIY,Hybrid',segments:'Hosting,SaaS,Listing / YP',when:'Configure guided onboarding, sections, themes, button action/upsell',url:'',internal:true},
-  {name:'White Label + Custom Branding Setup',type:'Support Article',flows:'All',segments:'Hosting,Agency,Listing / YP',when:'Configure platform as partner-owned experience',url:''},
-  {name:'Client Permissions & Custom Plans',type:'Checklist',flows:'All',segments:'All',when:'Control editor access, package tiers, upgrade flows',url:''},
-  {name:'Native eCommerce / Composable eCommerce',type:'Public Docs',flows:'DIY,Hybrid,Marketplace',segments:'POS / eCommerce,Agency,SaaS',when:'Store/POS scope, catalog/order/payment/shipping discussions',url:'https://www.duda.co/native-ecommerce'},
-  {name:'Domain Connection / Entri / Domain Purchase',type:'Support Article',flows:'All',segments:'Hosting,SaaS,Agency',when:'Reduce launch friction and time-to-publish',url:''},
-  {name:'Compliance Apps: Cookiebot / UserCentrics / AudioEye',type:'Support Article',flows:'All',segments:'Agency,Listing / YP,Hosting',when:'EU/privacy/accessibility requirements',url:''},
-  {name:'Analytics / Stats Emails / KPI Dashboard',type:'Checklist',flows:'All',segments:'All',when:'Post-launch reviews and adoption tracking',url:''},
-  {name:'Migration Planning Checklist',type:'Checklist',flows:'Migration,DIFM',segments:'Listing / YP,Hosting,Agency',when:'Legacy portfolio migrations and batch rollout',url:'',internal:true},
-  {name:'Segment Playbooks (per ICP)',type:'Internal Deck',flows:'All',segments:'All',when:'Tailoring the onboarding approach to ICP — SaaS, Hosting, Agency, Listing/YP, POS',url:'',internal:true},
-  {name:'Content Collection Form / Site Comments',type:'Client-facing Guide',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Collect content and manage approval/feedback from clients',url:''},
-  {name:'QA Checklist',type:'Checklist',flows:'All',segments:'All',when:'Permissions, data sync, domain, SEO, accessibility before pilot launch',url:'',internal:true},
-  {name:'GTM Review Deck',type:'Internal Deck',flows:'All',segments:'All',when:'Partner presents final flow and exec sponsor confirms launch alignment',url:'',internal:true},
+  // ── Internal GPTs ──────────────────────────────────────────────────────────
+  {name:'AE to AM Handover GPT',type:'Internal GPT',stage:'Pre-kickoff',flows:'All',segments:'All',when:'Summarize sales context, agreed terms, risks, decision makers and onboarding inputs before kickoff',url:'https://chatgpt.com/g/g-6924533130008191b5d9d86f695d5965-am-sales-handoff-summary',internal:true},
+  {name:'Discovery Questions GPT',type:'Internal GPT',stage:'Kickoff',flows:'All',segments:'All',when:'Generate tailored discovery questions based on ICP and flow before kickoff call',url:'https://chatgpt.com/g/g-694bbc3c97908191916cfcfa93ba9289-onboarding-discovery-questions',internal:true},
+  // ── Domo Dashboards ────────────────────────────────────────────────────────
+  {name:'Partners Onboarding Dashboard (Domo)',type:'Domo Dashboard',stage:'Post-launch',flows:'All',segments:'All',when:'Track feature usage and activation metrics during onboarding',url:'https://duda-co.domo.com/page/1847460602',internal:true},
+  {name:'AM Onboarding Dashboard (Domo)',type:'Domo Dashboard',stage:'Post-launch',flows:'All',segments:'All',when:'Onboarding KPI tracking — publish rate, TTP, activation, support tickets',url:'https://duda-co.domo.com/page/637001948',internal:true},
+  // ── Notion AM Guides ───────────────────────────────────────────────────────
+  {name:'SaaS Onboarding — Process for Success (Notion)',type:'Notion Page',stage:'Discovery / Solution Design',flows:'DIY,DIFM,Hybrid,Marketplace',segments:'SaaS',when:'SaaS flow design (DIY/DIFM/Hybrid), UX examples, data/content/widget assumptions, GTM options',url:'https://www.notion.so/duda/SaaS-Onboarding-And-Ongoing-Process-for-Success-20da858e828080838578dda79246a0e0',internal:true},
+  {name:'STR Vertical SaaS AM Handbook (Notion)',type:'Notion Page',stage:'Discovery / QBR',flows:'DIY,DIFM,Hybrid',segments:'SaaS',when:'STR partner archetypes, key features, structured data, lifecycle playbook, churn signals — keep internal',url:'https://www.notion.so/34ba858e828081a384ffc86b287c585f',internal:true},
+  {name:'Onboarding Accounts: The Complete Guide (Notion)',type:'Notion Page',stage:'All stages',flows:'All',segments:'All',when:'AM master reference — resources, academy links, Domo dashboards, GPTs, low/high-touch guidance',url:'https://www.notion.so/duda/Onboarding-Accounts-The-Complete-Guide-2d9a858e828080b7bf55df9918f739f1',internal:true},
+  // ── Planning & Scoping ─────────────────────────────────────────────────────
+  {name:'Flow Router (Onboarding Lane Selector)',type:'Checklist',stage:'Pre-kickoff',flows:'All',segments:'All',when:'First planning step — confirm first-step sessions completed, then choose DIY/DIFM/Hybrid/Migration/Marketplace path',url:'',internal:true},
+  {name:'Simple Editor Admin / Flow Setup',type:'Internal Deck',stage:'Solution Design',flows:'DIY,Hybrid',segments:'Hosting,SaaS,Listing / YP',when:'Configure Simple Editor, sections, themes, button action/upsell — use for scoping sessions',url:'',internal:true},
+  {name:'Segment Playbooks (SaaS, Hosting, Agency, Listing/YP, POS)',type:'Internal Deck',stage:'Discovery',flows:'All',segments:'All',when:'Tailor the onboarding approach to ICP — discovery focus, must-have setup, GTM/enablement KPIs',url:'',internal:true},
+  {name:'GTM Review Deck & Final Flow Map',type:'Internal Deck',stage:'GTM',flows:'All',segments:'All',when:'Partner presents final flow and exec sponsor confirms launch alignment — required before pilot',url:'',internal:true},
+  {name:'Migration Planning Checklist',type:'Checklist',stage:'Launch',flows:'Migration,DIFM',segments:'Listing / YP,Hosting,Agency',when:'Legacy portfolio migrations and batch rollout — inventory, classify, batch, domain switch',url:'',internal:true},
+  {name:'QA Checklist (pre-pilot)',type:'Checklist',stage:'Pilot',flows:'All',segments:'All',when:'Permissions, data sync, domain, SEO, accessibility, apps — run before every pilot',url:'',internal:true},
+  // ── ICP/Flow-specific AM packs ─────────────────────────────────────────────
+  {name:'SaaS DIY GTM Pack — packaging options & upsell logic',type:'Internal Deck',stage:'GTM',flows:'DIY',segments:'SaaS',when:'GTM packaging options: included in all packages, premium, tiered, paid add-on; upsell logic',url:'https://developer.duda.co/docs/upsell-publish-flows',internal:true},
+  {name:'SaaS DIFM Fulfillment Pack — requirements & approval flow',type:'Internal Deck',stage:'Solution Design',flows:'DIFM',segments:'SaaS',when:'DIFM flow details, requirements form, fulfillment workflow, design/review/approval, template/widget standards',url:'',internal:true},
+  {name:'STR Provisioning & SEO Pack — PMS field mapping & schema',type:'Internal Deck',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS',when:'Dynamic Pages, Connected Data, booking widget placement, PMS field mapping, VacationRental schema, GSC validation',url:'',internal:true},
+  {name:'Agency DIFM Production SOP — content, amends, QA',type:'Internal Deck',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency',when:'Agency build SOP: content collection, creation, rounds of amends, client approval, QA, handoff, capacity tracking',url:'',internal:true},
+  {name:'Listing/YP Data & Batch Migration Pack',type:'Internal Deck',stage:'Technical Build',flows:'DIFM,Hybrid,Migration',segments:'Listing / YP',when:'Listing data quality, batch publishing, local schema, apps/compliance, migration issue log',url:'',internal:true},
+  // ── Support & Operations ───────────────────────────────────────────────────
+  {name:'White Label + Custom Branding Setup',type:'Support Article',stage:'Platform Setup',flows:'All',segments:'Hosting,Agency,Listing / YP',when:'Configure platform as partner-owned branded experience — branding, domain, WL support portal',url:''},
+  {name:'Client Permissions & Custom Plans',type:'Checklist',stage:'Platform Setup',flows:'All',segments:'All',when:'Control editor access, package tiers, upgrade flows for end-clients',url:''},
+  {name:'Analytics / Stats Emails / KPI Dashboard',type:'Checklist',stage:'Post-launch',flows:'All',segments:'All',when:'Post-launch review cadence — publish rate, visits, conversion, support, revenue',url:''},
+  {name:'Compliance Apps: Cookiebot / UserCentrics / AudioEye',type:'Support Article',stage:'Technical Build',flows:'All',segments:'Agency,Listing / YP,Hosting',when:'EU/privacy/accessibility requirements before launch',url:''},
+  {name:'Inspiration Board',type:'Client Resource',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Design examples for agency/listing teams planning site templates',url:'https://www.duda.co/inspiration'},
+  {name:'SaaS Integration Blog Series (Parts 1–3)',type:'Public Docs',stage:'Discovery',flows:'DIY,Hybrid',segments:'SaaS',when:'Share with engineering to explain SaaS integration concepts and patterns',url:'https://blog.duda.co/integrating-duda-into-a-saas-platform-1'},
 ];
+
 const CLIENT_RESOURCES = [
-  {name:'Duda Academy',type:'Duda University',flows:'All',segments:'All',when:'Self-paced training for your design, ops, support and sales teams',url:'https://university.duda.co'},
-  {name:'Build Sites with Duda — Getting Started',type:'Duda University',flows:'All',segments:'All',when:'First course for any new Duda user',url:'https://university.duda.co'},
-  {name:'Fundamentals of Web Design',type:'Duda University',flows:'All',segments:'All',when:'Design training before building templates',url:'https://university.duda.co'},
-  {name:'Connected Data / Dynamic Pages',type:'Duda University',flows:'DIY,Hybrid',segments:'SaaS,Listing / YP',when:'Data-driven site creation training',url:'https://university.duda.co'},
-  {name:'DudaFlex Training',type:'Duda University',flows:'DIFM,Hybrid',segments:'Agency',when:'Advanced layout and section customisation',url:'https://university.duda.co'},
-  {name:'Simple Editor Guide (SMB-facing)',type:'Client-facing Guide',flows:'DIY,Hybrid',segments:'Hosting,SaaS,Listing / YP',when:'Share with your SMB end-users so they can self-serve in the editor',url:''},
-  {name:'Branded Help Centre / Support FAQ',type:'Client-facing Guide',flows:'All',segments:'Hosting,SaaS,Agency',when:'Deflect tier-1 support tickets with self-serve resources',url:''},
-  {name:'Domain Connection Guide (SMB-facing)',type:'Client-facing Guide',flows:'All',segments:'Hosting,SaaS,Agency',when:'Step-by-step domain connection for your SMB customers',url:''},
-  {name:'Site Comments — Collaboration Guide',type:'Client-facing Guide',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Client approval and feedback on sites in progress',url:''},
-  {name:'Launch Checklist (Partner-facing)',type:'Checklist',flows:'All',segments:'All',when:'Final pre-launch checks for your ops team',url:''},
-  {name:'Pilot Checklist',type:'Checklist',flows:'All',segments:'All',when:'Validate pilot sites before opening to broader cohort',url:''},
-  {name:'Store Management Training (eCommerce)',type:'Duda University',flows:'DIY,Hybrid,Marketplace',segments:'POS / eCommerce',when:'Train merchants on store management, orders, inventory',url:'https://university.duda.co'},
+  // ── Academy & Training ─────────────────────────────────────────────────────
+  {name:'Duda Academy',type:'Academy',stage:'Enablement',flows:'All',segments:'All',when:'Default training hub — assign before any live enablement session',url:'https://academy.duda.co/'},
+  {name:'Tour the Platform',type:'Academy Course',stage:'Platform Overview',flows:'All',segments:'All',when:'Prerequisite / follow-up for the platform overview session',url:'https://academy.duda.co/course/tour-the-platform'},
+  {name:'Build Sites with Duda / Editor 2.0',type:'Academy Path',stage:'Enablement',flows:'DIFM,Hybrid',segments:'All',when:'Core builder training for design and ops teams',url:'https://app.academy.duda.co/program/e11c463b-4ae7-43c3-84d3-576d0769b649'},
+  {name:'Fundamentals of Web Design',type:'Academy Path',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Design training for teams building sites for SMBs',url:'https://app.academy.duda.co/program/98f8ed95-4836-4b0f-ac15-2750d5b6cdcf'},
+  {name:'Connected Data, Collections & Dynamic Pages',type:'Academy Course',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS,Listing / YP,POS / eCommerce',when:'Data-driven sites, dynamic pages and content mapping — assign before build phase',url:'https://academy.duda.co/course/connected-data-collections-dynamic-pages'},
+  {name:'Build Your Self-Service Website Solution (DIY)',type:'Academy Collection',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting,POS / eCommerce',when:'Complete DIY onboarding path — self-service website solution end-to-end',url:'https://rebrand.ly/duda-diy'},
+  {name:'Building Custom Widgets',type:'Academy Course',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS',when:'Custom widget enablement and feasibility discussion — assign before widget review',url:'https://academy.duda.co/course/building-custom-widgets'},
+  {name:'Integrate Duda into Your Workflow',type:'Academy Course',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting,POS / eCommerce',when:'Intro to Duda API integration — first technical course to assign',url:'https://academy.duda.co/course/integrate-duda-into-your-workflow'},
+  {name:'Push Content into Sites via API',type:'Academy Course',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Listing / YP,POS / eCommerce',when:'API-driven content workflows — for teams building data-prefill or sync flows',url:'https://academy.duda.co/course/push-content-into-sites-via-api'},
+  {name:'White-labeled Video Library',type:'Client Resource',stage:'Enablement',flows:'All',segments:'Hosting,Agency',when:'Partner-branded training videos — share with end-clients and internal teams',url:'https://videos.multiscreensite.com/'},
+  // ── Developer Documentation ────────────────────────────────────────────────
+  {name:'Developer Documentation Hub',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid,Marketplace',segments:'All',when:'Technical reference hub — share with client engineering from technical KO onward',url:'https://developer.duda.co/'},
+  {name:'DIY Onboarding Developer Docs',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',when:'Self-service website solution implementation guide',url:'https://developer.duda.co/docs/diy-onboarding'},
+  {name:'Building a Template Chooser',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',when:'Template selection flow implementation',url:'https://developer.duda.co/docs/building-a-template-chooser'},
+  {name:'Upsell + Publish Flows',type:'Developer Docs',stage:'GTM / Technical Build',flows:'DIY,Hybrid,Marketplace',segments:'SaaS,Hosting,POS / eCommerce',when:'Publish gating and upgrade path — for packaging and GTM sessions',url:'https://developer.duda.co/docs/upsell-publish-flows'},
+  {name:'Generate Sites with AI',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',when:'AI-assisted site generation flow',url:'https://developer.duda.co/docs/how-to-generate-sites-with-ai'},
+  {name:'Configuring Webhooks',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,POS / eCommerce',when:'Event-driven integrations — assign during technical build phase',url:'https://developer.duda.co/docs/configuring-webhooks'},
+  // ── Support & Operational ──────────────────────────────────────────────────
+  {name:'Support Portal',type:'Support',stage:'Support',flows:'All',segments:'All',when:'Customer support and help docs — share from platform setup onward',url:'https://support.duda.co/hc/en-us'},
+  {name:'White-labeled Support Portal',type:'Support',stage:'Support',flows:'All',segments:'Hosting,Agency,Listing / YP',when:'Partner-branded support resource — share when white-label is configured',url:'https://support.multiscreensite.com/hc/en-us'},
+  {name:'System Health / Status Page',type:'Support',stage:'Support / Launch',flows:'All',segments:'All',when:'Duda service status during launch or incidents — share before go-live',url:'https://status.duda.co/'},
+  {name:'Product Updates & Releases',type:'Client Resource',stage:'Ongoing',flows:'All',segments:'All',when:'Keep partner teams updated on new releases and feature changes',url:'https://resources.duda.co/product-updates'},
+  {name:'Idea Board',type:'Client Resource',stage:'Post-launch',flows:'All',segments:'All',when:'Product feedback and idea submission for partner teams',url:'http://ideas.duda.co/'},
+  // ── eCommerce ──────────────────────────────────────────────────────────────
+  {name:'Native eCommerce',type:'Public Product Page',stage:'Technical Build / GTM',flows:'DIY,DIFM,Hybrid,Marketplace',segments:'POS / eCommerce,Agency,SaaS',when:'Commerce product overview — share during discovery and scope sessions',url:'https://www.duda.co/native-ecommerce'},
+  {name:'Composable eCommerce',type:'Public Product Page',stage:'Technical Build / GTM',flows:'DIY,Hybrid,Marketplace',segments:'POS / eCommerce,SaaS',when:'Composable commerce positioning — share for POS/API-first integrations',url:'https://www.duda.co/ecommerce/composable-ecomm'},
+  // ── Content & Collaboration ────────────────────────────────────────────────
+  {name:'Site Comments & Client Approval Guide',type:'Client-facing Guide',stage:'Technical Build',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Collect content and manage client approval/feedback cycles on sites in progress',url:''},
+  {name:'Content Collection Form Template',type:'Client-facing Guide',stage:'Solution Design',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Standardize content intake from clients before build starts',url:''},
+  {name:'Launch Checklist',type:'Checklist',stage:'Launch',flows:'All',segments:'All',when:'Final pre-launch checks — permissions, domain, QA, support readiness',url:''},
+  {name:'Pilot Checklist',type:'Checklist',stage:'Pilot',flows:'All',segments:'All',when:'Validate pilot sites against MVP criteria before opening to broader cohort',url:''},
+  // ── SEO & QA ──────────────────────────────────────────────────────────────
+  {name:'Google Rich Results Test',type:'External Tool',stage:'SEO / QA',flows:'DIY,DIFM,Hybrid',segments:'SaaS,Listing / YP',when:'Validate structured data and rich result eligibility — especially for STR/listing partners',url:'https://search.google.com/test/rich-results'},
 ];
- 
+
 const INITIAL_CLIENTS = [
-  {id:'c1',name:'Northwind Marketing',icp:'Agency',flow:'DIFM',touch:'High-Touch',country:'United States',flag:'🇺🇸',color:'#1F3A5F',mono:'NW',kickoff:'2026-03-12',am:'Maya Levin',dayIn:62,phase:'p2',contacts:[{name:'Adrian Park',role:'CEO',email:'adrian@northwind.co'},{name:'Jules Pham',role:'Web lead',email:'jules@northwind.co'}],progress:{done:8,total:38}},
-  {id:'c2',name:'Goldcrest Hosting',icp:'Hosting',flow:'Hybrid',touch:'High-Touch',country:'Netherlands',flag:'🇳🇱',color:'#B8854A',mono:'GC',kickoff:'2026-02-04',am:'Maya Levin',dayIn:98,phase:'p3',contacts:[{name:'Anika de Vries',role:'COO',email:'anika@goldcrest.nl'}],progress:{done:19,total:38}},
-  {id:'c3',name:'Brio POS',icp:'POS / eCommerce',flow:'DIY',touch:'Low-Touch',country:'Brazil',flag:'🇧🇷',color:'#5C6B4A',mono:'BR',kickoff:'2026-04-22',am:'Maya Levin',dayIn:21,phase:'p1',contacts:[{name:'Camila Souza',role:'Product',email:'cam@briopos.br'}],progress:{done:5,total:38}},
-  {id:'c4',name:'Harbor Lines',icp:'Listing / YP',flow:'Migration',touch:'High-Touch',country:'United Kingdom',flag:'🇬🇧',color:'#4F5A66',mono:'HL',kickoff:'2026-01-15',am:'Theo Nakamura',dayIn:118,phase:'p4',contacts:[{name:'Priya Shah',role:'Director',email:'priya@harbor.uk'}],progress:{done:28,total:38}},
-  {id:'c5',name:'Verda SaaS',icp:'SaaS Platform',flow:'Marketplace',touch:'Low-Touch',country:'Germany',flag:'🇩🇪',color:'#A0392E',mono:'VE',kickoff:'2026-05-01',am:'Theo Nakamura',dayIn:12,phase:'pre',contacts:[{name:'Jonas Becker',role:'PM',email:'jonas@verda.de'}],progress:{done:2,total:38}},
-  {id:'c6',name:'Solea Studio',icp:'Agency',flow:'DIFM',touch:'High-Touch',country:'Mexico',flag:'🇲🇽',color:'#B8543A',mono:'SO',kickoff:'2025-12-09',am:'Maya Levin',dayIn:155,phase:'p5',contacts:[{name:'Inés Reyes',role:'Founder',email:'ines@solea.mx'}],progress:{done:35,total:38}},
+  {id:'c1',name:'Northwind Marketing',icp:'Agency',flow:'DIFM',touch:'High-Touch',country:'United States',flag:'🇺🇸',color:'#1F3A5F',mono:'NW',kickoff:'2026-03-12',am:'Maya Levin',dayIn:62,phase:'p2',status:'active',contacts:[{name:'Adrian Park',role:'CEO',email:'adrian@northwind.co'},{name:'Jules Pham',role:'Web lead',email:'jules@northwind.co'}],progress:{done:8,total:38}},
+  {id:'c2',name:'Goldcrest Hosting',icp:'Hosting',flow:'Hybrid',touch:'High-Touch',country:'Netherlands',flag:'🇳🇱',color:'#B8854A',mono:'GC',kickoff:'2026-02-04',am:'Maya Levin',dayIn:98,phase:'p3',status:'active',contacts:[{name:'Anika de Vries',role:'COO',email:'anika@goldcrest.nl'}],progress:{done:19,total:38}},
+  {id:'c3',name:'Brio POS',icp:'POS / eCommerce',flow:'DIY',touch:'Low-Touch',country:'Brazil',flag:'🇧🇷',color:'#5C6B4A',mono:'BR',kickoff:'2026-04-22',am:'Maya Levin',dayIn:21,phase:'p1',status:'active',contacts:[{name:'Camila Souza',role:'Product',email:'cam@briopos.br'}],progress:{done:5,total:38}},
+  {id:'c4',name:'Harbor Lines',icp:'Listing / YP',flow:'Migration',touch:'High-Touch',country:'United Kingdom',flag:'🇬🇧',color:'#4F5A66',mono:'HL',kickoff:'2026-01-15',am:'Theo Nakamura',dayIn:118,phase:'p4',status:'active',contacts:[{name:'Priya Shah',role:'Director',email:'priya@harbor.uk'}],progress:{done:28,total:38}},
+  {id:'c5',name:'Verda SaaS',icp:'SaaS Platform',flow:'Marketplace',touch:'Low-Touch',country:'Germany',flag:'🇩🇪',color:'#A0392E',mono:'VE',kickoff:'2026-05-01',am:'Theo Nakamura',dayIn:12,phase:'pre',status:'active',contacts:[{name:'Jonas Becker',role:'PM',email:'jonas@verda.de'}],progress:{done:2,total:38}},
+  {id:'c6',name:'Solea Studio',icp:'Agency',flow:'DIFM',touch:'High-Touch',country:'Mexico',flag:'🇲🇽',color:'#B8543A',mono:'SO',kickoff:'2025-12-09',am:'Maya Levin',dayIn:155,phase:'p5',status:'active',contacts:[{name:'Inés Reyes',role:'Founder',email:'ines@solea.mx'}],progress:{done:35,total:38}},
 ];
- 
+
 const INITIAL_TEAM = [
   {id:'t1',name:'Maya Levin',role:'Staff',mono:'ML',clients:14,open:38,resolved:121,color:'#1F3A5F'},
   {id:'t2',name:'Theo Nakamura',role:'Staff',mono:'TN',clients:9,open:22,resolved:88,color:'#5C6B4A'},
@@ -528,13 +576,13 @@ const INITIAL_TEAM = [
   {id:'t4',name:'Sasha Petrov',role:'Executive',mono:'SP',clients:0,open:0,resolved:0,color:'#4F5A66'},
   {id:'t5',name:'Lior Ben-Ari',role:'Admin',mono:'LB',clients:0,open:0,resolved:0,color:'#1A1714'},
 ];
- 
+
 const PLAN = {
   d60:{goal:'Foundation set — platform branded, permissions configured, build flow agreed, and first template/pilot in progress.',notes:'Your team should be able to run the platform without Duda in the room.',milestones:[{done:true,text:'Workspace provisioned & SSO live'},{done:true,text:'Kickoff, overview & technical KO complete'},{done:false,text:'Solution design & packaging locked'},{done:false,text:'Core technical build in progress'}]},
   d90:{goal:'Go-live. First SMB cohort published on your domain. Sales team is enabled and pitching.',notes:'Public launch announcement goes out. Support team is ready.',milestones:[{done:false,text:'Pilot sites live on your domain'},{done:false,text:'Sales & support teams trained'},{done:false,text:'GTM review completed with exec sponsor'},{done:false,text:'KPI baseline established'}]},
   d180:{goal:'Scale. 25+ customer sites live, expansion plan agreed, first QBR completed.',notes:'Review wins, blockers, and plan the next phase.',milestones:[{done:false,text:'25 SMB sites published'},{done:false,text:'30/60/90 review completed'},{done:false,text:'Scale-up / Phase 2 roadmap signed off'},{done:false,text:'Renewal conversation initiated'}]},
 };
- 
+
 const ACTIVITY = [
   {who:'Maya Levin',what:'marked',target:'Kickoff call',verb:'Done',when:'2h ago'},
   {who:'Adrian Park',what:'replied to',target:'Discovery questionnaire',verb:'',when:'5h ago'},
@@ -542,11 +590,11 @@ const ACTIVITY = [
   {who:'Jules Pham',what:'uploaded',target:'Brand assets v2',verb:'',when:'Mon'},
   {who:'Theo Nakamura',what:'commented on',target:'Technical kickoff',verb:'',when:'Apr 21'},
 ];
- 
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const uid = () => Math.random().toString(36).slice(2,8);
 const ini = name => name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
- 
+
 function getStepCounts(steps){
   const c={};
   PHASES.forEach(p=>{
@@ -562,7 +610,7 @@ function getNextStep(steps,client){
 }
 function dayLabel(d){return d<0?`Day ${d}`:`Day ${d}`;}
 function clamp(v,lo,hi){return isFinite(v)?Math.max(lo,Math.min(hi,v)):lo;}
- 
+
 // ─── Dropdown ─────────────────────────────────────────────────────────────────
 function Dropdown({trigger,items,align='right'}){
   const [open,setOpen]=React.useState(false);
@@ -598,7 +646,7 @@ function Dropdown({trigger,items,align='right'}){
     </div>
   );
 }
- 
+
 // ─── Modal ────────────────────────────────────────────────────────────────────
 function Modal({children,onClose,size='md'}){
   React.useEffect(()=>{
@@ -622,7 +670,7 @@ function ModalHead({title,eyebrow,onClose}){
     </div>
   );
 }
- 
+
 // ─── Atomic UI ────────────────────────────────────────────────────────────────
 function Pill({kind,children}){
   const s=STATUS_MAP[kind];
@@ -652,7 +700,7 @@ function ProgressRing({pct}){
     </div>
   );
 }
- 
+
 // ─── Journey strip ─────────────────────────────────────────────────────────────
 function JourneyStrip({phaseIdx,phaseProgress,stepCounts,onPhase}){
   const total=Math.max(PHASES.length-1,1);
@@ -679,7 +727,7 @@ function JourneyStrip({phaseIdx,phaseProgress,stepCounts,onPhase}){
     </div>
   );
 }
- 
+
 // ─── Gantt ────────────────────────────────────────────────────────────────────
 function Gantt({steps}){
   if(!steps.length)return null;
@@ -727,7 +775,7 @@ function Gantt({steps}){
     </div>
   );
 }
- 
+
 // ─── Step row ──────────────────────────────────────────────────────────────────
 function StepRow({step,onToggle,onEdit,onDelete,onStatusChange}){
   const today=28;
@@ -762,7 +810,7 @@ function StepRow({step,onToggle,onEdit,onDelete,onStatusChange}){
     </div>
   );
 }
- 
+
 // ─── Phase group ───────────────────────────────────────────────────────────────
 function PhaseGroup({phase,steps,onToggle,onEdit,onDelete,onStatusChange}){
   const done=steps.filter(s=>s.status==='done').length;
@@ -778,33 +826,61 @@ function PhaseGroup({phase,steps,onToggle,onEdit,onDelete,onStatusChange}){
     </div>
   );
 }
- 
+
 // ─── Resources panel ───────────────────────────────────────────────────────────
-function ResourcesPanel({resources,title,subtitle}){
-  const [filter,setFilter]=React.useState('All');
+function ResourcesPanel({resources,title,subtitle,clientIcp,clientFlow}){
+  const [typeFilter,setTypeFilter]=React.useState('All');
+  const [stageFilter,setStageFilter]=React.useState('All');
+  const [showRelevant,setShowRelevant]=React.useState(false);
+
   const types=[...new Set(resources.map(r=>r.type))];
-  const shown=filter==='All'?resources:resources.filter(r=>r.type===filter);
+  const stages=[...new Set(resources.filter(r=>r.stage).map(r=>r.stage))];
+
+  const shown=resources.filter(r=>{
+    const mt=typeFilter==='All'||r.type===typeFilter;
+    const ms=stageFilter==='All'||r.stage===stageFilter;
+    const mr=!showRelevant||!clientIcp||!clientFlow||
+      (r.segments==='All'||r.segments.includes(clientIcp)||r.segments.includes('All'))||
+      (r.flows==='All'||r.flows.split(',').some(f=>f.trim()===clientFlow||f.trim()==='All'));
+    return mt&&ms&&mr;
+  });
+
   return(
     <div>
       <div style={{marginBottom:16}}>
         <div className="eyebrow">{title}</div>
         {subtitle&&<p className="muted text-sm" style={{marginTop:6}}>{subtitle}</p>}
       </div>
-      <div className="flex gap-2" style={{marginBottom:16,flexWrap:'wrap'}}>
-        <button type="button" className={`btn sm${filter==='All'?' primary':''}`} onClick={()=>setFilter('All')}>All</button>
-        {types.map(t=><button key={t} type="button" className={`btn sm${filter===t?' primary':''}`} onClick={()=>setFilter(t)}>{t}</button>)}
+      <div className="flex gap-2" style={{marginBottom:8,flexWrap:'wrap',alignItems:'center'}}>
+        <span className="muted text-xs semibold" style={{marginRight:4}}>Type:</span>
+        <button type="button" className={`btn sm${typeFilter==='All'?' primary':''}`} onClick={()=>setTypeFilter('All')}>All</button>
+        {types.map(t=><button key={t} type="button" className={`btn sm${typeFilter===t?' primary':''}`} onClick={()=>setTypeFilter(t)}>{t}</button>)}
       </div>
+      <div className="flex gap-2" style={{marginBottom:16,flexWrap:'wrap',alignItems:'center'}}>
+        <span className="muted text-xs semibold" style={{marginRight:4}}>Stage:</span>
+        <button type="button" className={`btn sm${stageFilter==='All'?' primary':''}`} onClick={()=>setStageFilter('All')}>All stages</button>
+        {stages.map(s=><button key={s} type="button" className={`btn sm${stageFilter===s?' primary':''}`} onClick={()=>setStageFilter(s)}>{s}</button>)}
+        {clientIcp&&clientFlow&&(
+          <button type="button" className={`btn sm${showRelevant?' primary':''}`} style={{marginLeft:'auto'}} onClick={()=>setShowRelevant(v=>!v)}>
+            {I.filter} {showRelevant?'Showing relevant':'Filter for '+clientIcp+' / '+clientFlow}
+          </button>
+        )}
+      </div>
+      {shown.length===0&&<div className="card card-pad" style={{textAlign:'center',color:'var(--ink-muted)'}}>No resources match this filter.</div>}
       <div className="resource-grid">
         {shown.map((r,i)=>(
           <div key={i} className="resource-card">
-            <div className="rc-type">{r.type}</div>
+            <div className="flex justify-between items-start gap-2">
+              <div className="rc-type">{r.type}</div>
+              {r.stage&&<span style={{fontSize:10,color:'var(--ink-faint)',fontWeight:600,textAlign:'right',whiteSpace:'nowrap'}}>{r.stage}</span>}
+            </div>
             {r.url
               ?<a href={r.url} target="_blank" rel="noopener noreferrer">{r.name} {I.ext}</a>
               :<div style={{fontSize:13,fontWeight:600,color:'var(--ink)'}}>{r.name}</div>
             }
             <div className="rc-desc">{r.when}</div>
             <div className="flex gap-2" style={{flexWrap:'wrap'}}>
-              {r.flows&&r.flows!=='All'&&r.flows.split(',').map(f=><span key={f} className="rc-badge">{f.trim()}</span>)}
+              {r.flows&&r.flows!=='All'&&r.flows.split(',').slice(0,3).map(f=><span key={f} className="rc-badge">{f.trim()}</span>)}
               {r.internal&&<span className="rc-badge" style={{background:'var(--sun-soft)',color:'#8B5E0E'}}>AM only</span>}
             </div>
           </div>
@@ -813,7 +889,7 @@ function ResourcesPanel({resources,title,subtitle}){
     </div>
   );
 }
- 
+
 // ─── Topbar ───────────────────────────────────────────────────────────────────
 function Topbar({view,setView,screen,setScreen,client}){
   const showToggle=screen.kind==='tracker'||screen.kind==='client'||screen.kind==='plan';
@@ -842,40 +918,58 @@ function Topbar({view,setView,screen,setScreen,client}){
     </header>
   );
 }
- 
+
 // ─── Dashboard ─────────────────────────────────────────────────────────────────
-function Dashboard({clients,setScreen,onAddClient}){
+function Dashboard({clients,setScreen,onAddClient,onEditClient}){
   const [icp,setIcp]=React.useState('All');
   const [touch,setTouch]=React.useState('All');
   const [activeTab,setActiveTab]=React.useState('all');
   const [search,setSearch]=React.useState('');
+  const [showArchived,setShowArchived]=React.useState(false);
   const needle=search.trim().toLowerCase();
- 
-  const filtered=React.useMemo(()=>clients.filter(c=>{
+
+  // Base: exclude deleted always; exclude archived unless toggle on
+  const base=clients.filter(c=>c.status!=='deleted'&&(showArchived||c.status!=='archived'));
+
+  const filtered=React.useMemo(()=>base.filter(c=>{
     const ms=!needle||[c.name,c.country,c.icp,c.flow,...c.contacts.map(x=>`${x.name} ${x.email} ${x.role}`)].join(' ').toLowerCase().includes(needle);
     const mi=icp==='All'||c.icp===icp;
     const mt=touch==='All'||c.touch===touch;
-    const tabs={all:true,setup:c.phase==='p1'||c.phase==='p2',build:c.phase==='p3',gtm:c.phase==='p4',launch:c.phase==='p5',risk:c.progress.done/c.progress.total<0.25&&c.dayIn>20};
+    const tabs={
+      all:true,
+      active:c.status==='active'||!c.status,
+      inactive:c.status==='inactive',
+      setup:c.phase==='p1'||c.phase==='p2',
+      build:c.phase==='p3',
+      gtm:c.phase==='p4',
+      launch:c.phase==='p5',
+      risk:c.progress.done/c.progress.total<0.25&&c.dayIn>20,
+    };
     return ms&&mi&&mt&&(tabs[activeTab]??true);
-  }),[clients,icp,touch,needle,activeTab]);
- 
+  }),[base,icp,touch,needle,activeTab]);
+
   const s=React.useMemo(()=>({
-    total:clients.length,
-    launched:clients.filter(c=>c.phase==='p5').length,
-    inSetup:clients.filter(c=>c.phase==='p1'||c.phase==='p2'||c.phase==='p3').length,
-    atRisk:clients.filter(c=>c.progress.done/c.progress.total<0.25&&c.dayIn>20).length,
-    gtm:clients.filter(c=>c.phase==='p4').length,
-  }),[clients]);
- 
+    total:base.length,
+    active:base.filter(c=>!c.status||c.status==='active').length,
+    inactive:base.filter(c=>c.status==='inactive').length,
+    launched:base.filter(c=>c.phase==='p5').length,
+    inSetup:base.filter(c=>c.phase==='p1'||c.phase==='p2'||c.phase==='p3').length,
+    atRisk:base.filter(c=>c.progress.done/c.progress.total<0.25&&c.dayIn>20).length,
+    gtm:base.filter(c=>c.phase==='p4').length,
+    archived:clients.filter(c=>c.status==='archived').length,
+  }),[base,clients]);
+
   const TABS=[
-    {k:'all',l:'All',count:clients.length},
-    {k:'setup',l:'Setup',count:clients.filter(c=>c.phase==='p1'||c.phase==='p2').length},
-    {k:'build',l:'Build',count:clients.filter(c=>c.phase==='p3').length},
+    {k:'all',l:'All',count:base.length},
+    {k:'active',l:'Active',count:s.active},
+    {k:'inactive',l:'Inactive',count:s.inactive},
+    {k:'setup',l:'Setup',count:base.filter(c=>c.phase==='p1'||c.phase==='p2').length},
+    {k:'build',l:'Build',count:base.filter(c=>c.phase==='p3').length},
     {k:'gtm',l:'GTM',count:s.gtm},
     {k:'launch',l:'Launched',count:s.launched},
     {k:'risk',l:'At risk',count:s.atRisk},
   ];
- 
+
   return(
     <main className="canvas canvas-wide">
       <section className="dash-hero">
@@ -886,7 +980,7 @@ function Dashboard({clients,setScreen,onAddClient}){
         </div>
         <div className="dash-stats">
           <div className="dash-stat"><div className="s-label">In flight</div><div className="s-value tabnum">{s.total}</div><div className="s-delta">+1 this month</div></div>
-          <div className="dash-stat"><div className="s-label">Launched</div><div className="s-value tabnum">{s.launched}</div><div className="s-delta">Live accounts</div></div>
+          <div className="dash-stat"><div className="s-label">Active</div><div className="s-value tabnum">{s.active}</div><div className="s-delta">Onboarding now</div></div>
           <div className="dash-stat"><div className="s-label">In setup/build</div><div className="s-value tabnum">{s.inSetup}</div><div className="s-delta">Phases 1–3</div></div>
           <div className="dash-stat"><div className="s-label">At risk</div><div className="s-value tabnum" style={{color:'var(--duda)'}}>{s.atRisk}</div><div className="s-delta" style={{color:'var(--duda)'}}>Action needed</div></div>
         </div>
@@ -902,6 +996,11 @@ function Dashboard({clients,setScreen,onAddClient}){
             <button type="button" className={touch==='High-Touch'?'on':''} onClick={()=>setTouch('High-Touch')}>High</button>
             <button type="button" className={touch==='Low-Touch'?'on':''} onClick={()=>setTouch('Low-Touch')}>Low</button>
           </div>
+          {s.archived>0&&(
+            <button type="button" className={`btn sm${showArchived?' primary':''}`} onClick={()=>setShowArchived(v=>!v)}>
+              {showArchived?'Hide archived':'Show archived ('+s.archived+')'}
+            </button>
+          )}
         </div>
         <div className="t-right">
           <button type="button" className="btn primary" onClick={onAddClient}>{I.plus} New client</button>
@@ -917,14 +1016,35 @@ function Dashboard({clients,setScreen,onAddClient}){
           const pi=PHASES.findIndex(p=>p.id===c.phase);
           const prog=c.progress.total>0?c.progress.done/c.progress.total:0;
           const next=getNextStep(INITIAL_STEPS,c);
+          const isInactive=c.status==='inactive'||c.status==='archived';
           return(
-            <div key={c.id} className="client-row clickable" onClick={()=>setScreen({kind:'tracker',clientId:c.id})}>
-              <div className="client-id"><ClientLogo client={c}/><div><div className="client-name">{c.name}</div><div className="client-sub">{c.flag} {c.country} · {c.contacts[0].name}</div></div></div>
+            <div key={c.id} className="client-row clickable" style={{opacity:isInactive?0.6:1}} onClick={()=>setScreen({kind:'tracker',clientId:c.id})}>
+              <div className="client-id">
+                <ClientLogo client={c}/>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="client-name">{c.name}</div>
+                    {c.status&&c.status!=='active'&&<StatusBadge status={c.status}/>}
+                  </div>
+                  <div className="client-sub">{c.flag} {c.country} · {c.contacts[0].name}</div>
+                </div>
+              </div>
               <div><div style={{fontSize:13}}>{c.icp}</div><div className="client-sub">{c.flow} · {c.touch}</div></div>
               <div><MiniBar phaseIdx={pi} progress={prog}/><div className="client-sub" style={{marginTop:5}}>{PHASES[pi]?.name} · {c.progress.done}/{c.progress.total}</div></div>
               <div className="day-ctr"><span className="n tabnum">{c.dayIn}</span><span className="l">/180</span></div>
               <div><div style={{fontSize:13}}>{next?next.title:'QBR review'}</div><div className="client-sub">{next?dayLabel(next.due):'—'}</div></div>
-              <div style={{textAlign:'right'}}>{I.arrow}</div>
+              <div style={{textAlign:'right'}} onClick={e=>e.stopPropagation()}>
+                <Dropdown align="right" items={[
+                  {label:'Open tracker',icon:I.eye,onClick:()=>setScreen({kind:'tracker',clientId:c.id})},
+                  {label:'Client view',icon:I.link,onClick:()=>setScreen({kind:'client',clientId:c.id})},
+                  null,
+                  {label:'Edit client',icon:I.edit,onClick:()=>onEditClient(c)},
+                  {label:c.status==='active'?'Mark inactive':'Mark active',icon:null,onClick:()=>onEditClient({...c,_quickStatus:c.status==='active'?'inactive':'active'})},
+                  {label:c.status==='archived'?'Unarchive':'Archive',icon:null,onClick:()=>onEditClient({...c,_quickStatus:c.status==='archived'?'active':'archived'})},
+                  null,
+                  {label:'Delete permanently',icon:I.trash,danger:true,onClick:()=>onEditClient({...c,_delete:true})},
+                ]}/>
+              </div>
             </div>
           );
         })}
@@ -932,33 +1052,40 @@ function Dashboard({clients,setScreen,onAddClient}){
     </main>
   );
 }
- 
+
 // ─── Tracker ───────────────────────────────────────────────────────────────────
-function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onStatusChange}){
+function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onStatusChange,onEditClient}){
   const [tab,setTab]=React.useState('journey');
   const [wsFilter,setWsFilter]=React.useState('All');
   const stepCounts=getStepCounts(steps);
   const pi=PHASES.findIndex(p=>p.id===client.phase);
   const cc=stepCounts[client.phase]||{done:0,total:1};
   const phaseProgress=cc.total>0?cc.done/cc.total:0;
- 
+
   const allWs=[...new Set(steps.map(s=>s.ws))];
   const filteredSteps=wsFilter==='All'?steps:steps.filter(s=>s.ws===wsFilter);
- 
+
   const clientMenu=[
     {label:'Open client view',icon:I.eye,onClick:()=>setScreen({kind:'client',clientId:client.id})},
     {label:'Copy client link',icon:I.link,onClick:()=>alert('Link copied!')},
     null,
-    {label:'Edit client',icon:I.edit,onClick:()=>alert('Edit client — coming soon')},
+    {label:'Edit client details',icon:I.edit,onClick:()=>onEditClient(client)},
+    {label:client.status==='active'?'Mark inactive':'Mark active',icon:null,onClick:()=>onEditClient({...client,_quickStatus:client.status==='active'?'inactive':'active'})},
+    {label:client.status==='archived'?'Unarchive':'Archive client',icon:null,onClick:()=>onEditClient({...client,_quickStatus:client.status==='archived'?'active':'archived'})},
+    null,
+    {label:'Delete client permanently',icon:I.trash,danger:true,onClick:()=>onEditClient({...client,_delete:true})},
   ];
- 
+
   return(
     <main className="canvas canvas-wide">
       <header className="tracker-head">
         <ClientLogo client={client} size="lg"/>
         <div className="info">
           <div className="eyebrow">Client · {client.flag} {client.country}</div>
-          <h1 className="h1" style={{marginTop:6}}>{client.name}</h1>
+          <div className="flex items-center gap-3" style={{marginTop:6}}>
+            <h1 className="h1">{client.name}</h1>
+            {client.status&&client.status!=='active'&&<StatusBadge status={client.status}/>}
+          </div>
           <div className="meta">
             <span><b>ICP</b> · {client.icp}</span>
             <span><b>Flow</b> · {client.flow}</span>
@@ -974,7 +1101,7 @@ function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onS
           </div>
         </div>
       </header>
- 
+
       <div className="tab-row">
         {[{k:'journey',l:'Journey'},{k:'steps',l:'Checklist',cnt:steps.length},{k:'timeline',l:'Timeline'},{k:'plan',l:'60·90·180'},{k:'resources',l:'Resources',cnt:AM_RESOURCES.length},{k:'notes',l:'Notes'}].map(t=>(
           <button key={t.k} type="button" className={tab===t.k?'on':''} onClick={()=>{if(t.k==='plan'){onPlanEdit(client.id);}else setTab(t.k);}}>
@@ -982,7 +1109,7 @@ function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onS
           </button>
         ))}
       </div>
- 
+
       {tab==='journey'&&(
         <div className="rail">
           <div>
@@ -1023,7 +1150,7 @@ function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onS
           </aside>
         </div>
       )}
- 
+
       {tab==='steps'&&(
         <div>
           <div className="flex gap-2 items-center" style={{marginBottom:20,flexWrap:'wrap'}}>
@@ -1037,17 +1164,19 @@ function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onS
           })}
         </div>
       )}
- 
+
       {tab==='timeline'&&<Gantt steps={steps}/>}
- 
+
       {tab==='resources'&&(
         <ResourcesPanel
           resources={AM_RESOURCES}
           title="AM Resource Library"
           subtitle="Internal resources for this engagement. Not shared with the client automatically."
+          clientIcp={client.icp}
+          clientFlow={client.flow}
         />
       )}
- 
+
       {tab==='notes'&&(
         <div className="rail">
           <div className="card card-pad">
@@ -1062,12 +1191,12 @@ function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onS
     </main>
   );
 }
- 
+
 function NotesBox({defaultValue}){
   const [v,setV]=React.useState(defaultValue||'');
   return <textarea className="input" style={{marginTop:12,minHeight:280,fontSize:14,lineHeight:1.55}} value={v} onChange={e=>setV(e.target.value)}/>;
 }
- 
+
 // ─── Plan view ─────────────────────────────────────────────────────────────────
 function PlanView({client,editable}){
   const days=[
@@ -1117,7 +1246,7 @@ function PlanView({client,editable}){
     </main>
   );
 }
- 
+
 // ─── Client view ───────────────────────────────────────────────────────────────
 function ClientView({client,steps,onOpenPlan}){
   const [tab,setTab]=React.useState('overview');
@@ -1128,7 +1257,7 @@ function ClientView({client,steps,onOpenPlan}){
   const curPhaseProgress=cc.total>0?cc.done/cc.total:0;
   const clientTasks=steps.filter(s=>(s.owner.includes('Client')||s.owner==='Both')&&s.status!=='done'&&s.status!=='skip'&&s.status!=='na').slice(0,5);
   const next=getNextStep(steps,client);
- 
+
   const phaseCopy=[
     'We\'re setting up your workspace — everything starts here.',
     'We\'re listening and mapping your journey together.',
@@ -1137,7 +1266,7 @@ function ClientView({client,steps,onOpenPlan}){
     'Almost there — training your team and preparing for launch.',
     'Live and growing. The next chapter begins.',
   ][Math.max(0,pi)];
- 
+
   return(
     <div className="client-shell">
       <section className="client-mast">
@@ -1160,7 +1289,7 @@ function ClientView({client,steps,onOpenPlan}){
           </div>
         </div>
       </section>
- 
+
       <section style={{padding:'48px 64px',maxWidth:1100,margin:'0 auto'}}>
         <div className="tab-row">
           <button type="button" className={tab==='overview'?'on':''} onClick={()=>setTab('overview')}>Overview</button>
@@ -1168,7 +1297,7 @@ function ClientView({client,steps,onOpenPlan}){
           <button type="button" className={tab==='resources'?'on':''} onClick={()=>setTab('resources')}>Resources</button>
           <button type="button" className={tab==='plan'?'on':''} onClick={()=>{setTab('plan');onOpenPlan();}}>60·90·180 plan</button>
         </div>
- 
+
         {tab==='overview'&&(
           <div className="rail">
             <div>
@@ -1216,7 +1345,7 @@ function ClientView({client,steps,onOpenPlan}){
             </aside>
           </div>
         )}
- 
+
         {tab==='tasks'&&(
           <div>
             <div style={{marginBottom:16}}>
@@ -1245,16 +1374,18 @@ function ClientView({client,steps,onOpenPlan}){
             }
           </div>
         )}
- 
+
         {tab==='resources'&&(
           <ResourcesPanel
             resources={CLIENT_RESOURCES}
             title="Resources for your team"
             subtitle="Training, guides, and checklists to help you succeed on Duda."
+            clientIcp={client.icp}
+            clientFlow={client.flow}
           />
         )}
       </section>
- 
+
       <footer style={{padding:'28px 64px',borderTop:'1px solid var(--hairline)',color:'var(--ink-muted)',fontSize:12}}>
         <div style={{maxWidth:1100,margin:'0 auto',display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
           <span>{client.name} · Onboarding · powered by <b style={{color:'var(--ink)'}}>Duda</b></span>
@@ -1264,7 +1395,7 @@ function ClientView({client,steps,onOpenPlan}){
     </div>
   );
 }
- 
+
 // ─── Team page ─────────────────────────────────────────────────────────────────
 function TeamPage({team,onAdd,onDeleteMember}){
   return(
@@ -1313,21 +1444,21 @@ function TeamPage({team,onAdd,onDeleteMember}){
     </main>
   );
 }
- 
+
 // ─── Login ────────────────────────────────────────────────────────────────────
 function Login({team,onSuccess}){
   const [pin,setPin]=React.useState('');
   const [err,setErr]=React.useState(false);
   const [sel,setSel]=React.useState(team[0]?.id||'');
   const inputRef=React.useRef(null);
- 
+
   function tryPin(p){if(p==='1234')onSuccess();else{setErr(true);setPin('');}}
   function handleChange(e){
     const v=e.target.value.replace(/\D/g,'').slice(0,4);
     setPin(v);setErr(false);
     if(v.length===4)tryPin(v);
   }
- 
+
   return(
     <div className="login-shell">
       <aside className="login-poster">
@@ -1370,7 +1501,161 @@ function Login({team,onSuccess}){
     </div>
   );
 }
- 
+
+// ─── Client status badge ───────────────────────────────────────────────────────
+function StatusBadge({status}){
+  const labels={active:'Active',inactive:'Inactive',archived:'Archived',deleted:'Deleted'};
+  return <span className={`status-badge ${status||'active'}`}>{labels[status]||'Active'}</span>;
+}
+
+// ─── Edit Client Modal ─────────────────────────────────────────────────────────
+function EditClientModal({client,onClose,onSave,onDelete}){
+  const [name,setName]=React.useState(client.name);
+  const [icp,setIcp]=React.useState(client.icp);
+  const [flow,setFlow]=React.useState(client.flow);
+  const [touch,setTouch]=React.useState(client.touch);
+  const [am,setAm]=React.useState(client.am);
+  const [color,setColor]=React.useState(client.color);
+  const [kickoff,setKickoff]=React.useState(client.kickoff);
+  const [status,setStatus]=React.useState(client.status||'active');
+  const [phase,setPhase]=React.useState(client.phase);
+  // Contact 0
+  const [cName,setCName]=React.useState(client.contacts[0]?.name||'');
+  const [cRole,setCRole]=React.useState(client.contacts[0]?.role||'');
+  const [cEmail,setCEmail]=React.useState(client.contacts[0]?.email||'');
+  const [tab,setTab]=React.useState('info');
+
+  const AMS=['Maya Levin','Theo Nakamura','Avery Okonkwo'];
+  const COLORS=['#1F3A5F','#B8543A','#5C6B4A','#B8854A','#A0392E','#4F5A66','#6E2F1E','#1A1714','#2C5F6E','#2E5B4F','#3B4A6B','#7A3B1E'];
+  const STATUS_OPTIONS=[
+    {k:'active',label:'Active',desc:'In active onboarding'},
+    {k:'inactive',label:'Inactive',desc:'Paused — not actively onboarding'},
+    {k:'archived',label:'Archived',desc:'Completed or closed — read-only'},
+  ];
+
+  function handleSave(){
+    if(!name.trim()){alert('Name is required.');return;}
+    const mono=name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??';
+    const updated={
+      ...client, name:name.trim(), icp, flow, touch, am, color, kickoff, status, phase, mono,
+      contacts:[{name:cName,role:cRole,email:cEmail},...client.contacts.slice(1)],
+    };
+    onSave(updated);
+    onClose();
+  }
+
+  function handleDelete(){
+    if(!window.confirm(`Permanently delete ${client.name}? This cannot be undone.`))return;
+    onDelete(client.id);
+    onClose();
+  }
+
+  return(
+    <Modal size="lg" onClose={onClose}>
+      <ModalHead title={`Edit — ${client.name}`} eyebrow="Client settings" onClose={onClose}/>
+      <div style={{padding:'0 24px',borderBottom:'1px solid var(--hairline)',background:'var(--paper)'}}>
+        <div className="tab-row" style={{borderBottom:0,marginBottom:0}}>
+          {['Details','Status & phase','Brand'].map((l,i)=>{
+            const k=['info','status','brand'][i];
+            return<button key={k} type="button" className={tab===k?'on':''} onClick={()=>setTab(k)}>{l}</button>;
+          })}
+        </div>
+      </div>
+      <div className="modal-body" style={{background:'var(--paper-soft)'}}>
+
+        {tab==='info'&&(
+          <div className="flex-col gap-5">
+            <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:16}}>
+              <div className="field"><label>Company name *</label><input className="input" value={name} onChange={e=>setName(e.target.value)}/></div>
+              <div className="field"><label>Kickoff date</label><input className="input" type="date" value={kickoff} onChange={e=>setKickoff(e.target.value)}/></div>
+            </div>
+            <div className="rule rule-soft" style={{margin:'4px 0'}}/>
+            <div className="eyebrow">Primary contact</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12}}>
+              <input className="input" placeholder="Full name" value={cName} onChange={e=>setCName(e.target.value)}/>
+              <input className="input" placeholder="Role / title" value={cRole} onChange={e=>setCRole(e.target.value)}/>
+              <input className="input" placeholder="email@company.com" value={cEmail} onChange={e=>setCEmail(e.target.value)}/>
+            </div>
+            <div className="rule rule-soft" style={{margin:'4px 0'}}/>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+              <div className="field"><label>Assigned AM</label><select className="input" value={am} onChange={e=>setAm(e.target.value)}>{AMS.map(a=><option key={a}>{a}</option>)}</select></div>
+              <div className="field"><label>Touch level</label><div className="seg" style={{alignSelf:'flex-start',marginTop:4}}><button type="button" className={touch==='High-Touch'?'on':''} onClick={()=>setTouch('High-Touch')}>High-Touch</button><button type="button" className={touch==='Low-Touch'?'on':''} onClick={()=>setTouch('Low-Touch')}>Low-Touch</button></div></div>
+            </div>
+            <div className="field"><label>ICP</label><div className="flex gap-2" style={{flexWrap:'wrap'}}>{['Agency','SaaS Platform','Hosting','Listing / YP','POS / eCommerce'].map(o=><button key={o} type="button" className={`btn sm${icp===o?' primary':''}`} onClick={()=>setIcp(o)}>{o}</button>)}</div></div>
+            <div className="field"><label>Build flow</label><div className="flex gap-2" style={{flexWrap:'wrap'}}>{['DIFM','DIY','Hybrid','Migration','Marketplace'].map(o=><button key={o} type="button" className={`btn sm${flow===o?' primary':''}`} onClick={()=>setFlow(o)}>{o}</button>)}</div></div>
+          </div>
+        )}
+
+        {tab==='status'&&(
+          <div className="flex-col gap-5">
+            <div>
+              <div className="eyebrow" style={{marginBottom:12}}>Account status</div>
+              <div className="flex-col gap-2">
+                {STATUS_OPTIONS.map(s=>(
+                  <button key={s.k} type="button" onClick={()=>setStatus(s.k)}
+                    className="edit-client-section"
+                    style={{textAlign:'left',cursor:'pointer',borderColor:status===s.k?'var(--ink)':'var(--hairline)',background:status===s.k?'var(--surface)':'var(--paper-soft)',borderWidth:'1.5px',borderStyle:'solid',borderRadius:10,padding:'14px 18px'}}>
+                    <div className="flex items-center gap-3">
+                      <StatusBadge status={s.k}/>
+                      <div>
+                        <div style={{fontWeight:600,fontSize:13.5}}>{s.label}</div>
+                        <div className="muted text-xs" style={{marginTop:2}}>{s.desc}</div>
+                      </div>
+                      {status===s.k&&<span style={{marginLeft:'auto'}}>{I.check}</span>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="rule rule-soft"/>
+            <div>
+              <div className="eyebrow" style={{marginBottom:12}}>Current onboarding phase</div>
+              <div className="flex gap-2" style={{flexWrap:'wrap'}}>
+                {PHASES.map(p=>(
+                  <button key={p.id} type="button" className={`btn sm${phase===p.id?' primary':''}`} onClick={()=>setPhase(p.id)}>
+                    {p.num} {p.short}
+                  </button>
+                ))}
+              </div>
+              <p className="muted text-xs" style={{marginTop:8}}>Moving a client backwards or forwards in phase doesn't change task statuses — adjust those manually in the checklist.</p>
+            </div>
+            <div className="rule rule-soft"/>
+            <div>
+              <div className="eyebrow" style={{marginBottom:8,color:'var(--crimson)'}}>Danger zone</div>
+              <div className="flex gap-3 items-center">
+                <button type="button" className="btn danger-btn" onClick={handleDelete}>{I.trash} Delete client permanently</button>
+                <span className="muted text-xs">This removes the client and all their tasks from Onward. It cannot be undone.</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab==='brand'&&(
+          <div className="flex-col gap-5">
+            <div className="eyebrow">Brand colour</div>
+            <div className="flex gap-3" style={{flexWrap:'wrap',alignItems:'center'}}>
+              {COLORS.map(c=><button key={c} type="button" onClick={()=>setColor(c)} style={{width:40,height:40,borderRadius:999,background:c,border:color===c?'2px solid var(--ink)':'1px solid var(--hairline)',outline:color===c?'2px solid var(--paper)':'none',outlineOffset:'-3px'}} aria-label={c}/>)}
+              <input type="text" value={color} onChange={e=>setColor(e.target.value)} className="input mono" style={{width:100,fontSize:12}}/>
+            </div>
+            <div className="flex items-center gap-4" style={{marginTop:8}}>
+              <div className="muted text-xs">Preview</div>
+              <span className="client-logo lg" style={{background:color}}>{name.split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)}</span>
+              <div><div style={{fontWeight:700,fontSize:16}}>{name}</div><div className="muted text-sm">{icp} · {flow}</div></div>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="modal-foot">
+        <span className="muted text-xs flex items-center gap-2"><StatusBadge status={status}/>{status==='archived'?'Read-only after save':status==='inactive'?'Paused — won\'t appear in active counts':''}</span>
+        <div className="flex gap-2">
+          <button type="button" className="btn" onClick={onClose}>Cancel</button>
+          <button type="button" className="btn primary" onClick={handleSave}>Save changes {I.check}</button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 // ─── Add Client Modal ──────────────────────────────────────────────────────────
 function AddClientModal({onClose,onSave}){
   const [tab,setTab]=React.useState('info');
@@ -1385,10 +1670,10 @@ function AddClientModal({onClose,onSave}){
   const [cEmail,setCEmail]=React.useState('');
   const [country,setCountry]=React.useState('🇺🇸 United States');
   const [am,setAm]=React.useState('Maya Levin');
- 
+
   const COUNTRIES=['🇺🇸 United States','🇬🇧 United Kingdom','🇨🇦 Canada','🇦🇺 Australia','🇩🇪 Germany','🇫🇷 France','🇳🇱 Netherlands','🇧🇪 Belgium','🇨🇭 Switzerland','🇦🇹 Austria','🇪🇸 Spain','🇮🇹 Italy','🇵🇹 Portugal','🇸🇪 Sweden','🇩🇰 Denmark','🇳🇴 Norway','🇫🇮 Finland','🇵🇱 Poland','🇧🇷 Brazil','🇲🇽 Mexico','🇦🇷 Argentina','🇨🇴 Colombia','🇨🇱 Chile','🇮🇱 Israel','🇦🇪 UAE','🇸🇦 Saudi Arabia','🇹🇷 Turkey','🇯🇵 Japan','🇰🇷 South Korea','🇮🇳 India','🇸🇬 Singapore','🇿🇦 South Africa','🇳🇬 Nigeria','🇰🇪 Kenya'];
   const AMS=['Maya Levin','Theo Nakamura','Avery Okonkwo'];
- 
+
   function handleSave(){
     if(!name.trim()){alert('Please enter a company name.');return;}
     const mono=name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??';
@@ -1404,9 +1689,9 @@ function AddClientModal({onClose,onSave}){
     });
     onClose();
   }
- 
+
   const COLORS=['#1F3A5F','#B8543A','#5C6B4A','#B8854A','#A0392E','#4F5A66','#6E2F1E','#1A1714','#2C5F6E','#2E5B4F','#3B4A6B','#7A3B1E'];
- 
+
   return(
     <Modal size="lg" onClose={onClose}>
       <ModalHead title="New client" eyebrow="Onboarding setup" onClose={onClose}/>
@@ -1486,7 +1771,7 @@ function AddClientModal({onClose,onSave}){
     </Modal>
   );
 }
- 
+
 // ─── Edit Step Modal ───────────────────────────────────────────────────────────
 function EditStepModal({step,onClose,onSave}){
   const [title,setTitle]=React.useState(step.title);
@@ -1496,7 +1781,7 @@ function EditStepModal({step,onClose,onSave}){
   const [prio,setPrio]=React.useState(step.prio);
   const [note,setNote]=React.useState('');
   const ph=PHASES.find(p=>p.id===step.phase);
- 
+
   return(
     <Modal size="md" onClose={onClose}>
       <ModalHead title={step.id} eyebrow={ph?`Phase ${ph.num} — ${step.ws}`:step.ws} onClose={onClose}/>
@@ -1550,7 +1835,7 @@ function EditStepModal({step,onClose,onSave}){
     </Modal>
   );
 }
- 
+
 // ─── Add Team Modal ────────────────────────────────────────────────────────────
 function AddTeamModal({onClose,onSave}){
   const [name,setName]=React.useState('');
@@ -1598,23 +1883,23 @@ function AddTeamModal({onClose,onSave}){
     </Modal>
   );
 }
- 
+
 // ─── Tweaks panel ──────────────────────────────────────────────────────────────
 const TWEAK_DEFAULTS={showLogin:false,startScreen:'dashboard',viewMode:'am',density:'balanced',accent:'#FB673E',paperTone:'warm'};
- 
+
 function TweaksPanel({t,setTweak,screen,setScreen}){
   const [open,setOpen]=React.useState(false);
   const ref=React.useRef(null);
- 
+
   React.useEffect(()=>{
     const h=e=>{const t=e?.data?.type;if(t==='__activate_edit_mode')setOpen(true);else if(t==='__deactivate_edit_mode')setOpen(false);};
     window.addEventListener('message',h);
     window.parent.postMessage({type:'__edit_mode_available'},'*');
     return()=>window.removeEventListener('message',h);
   },[]);
- 
+
   if(!open)return null;
- 
+
   const SCREENS=[
     {value:'dashboard',label:'Portfolio'},
     {value:'tracker',label:'Client tracker'},
@@ -1622,7 +1907,7 @@ function TweaksPanel({t,setTweak,screen,setScreen}){
     {value:'client',label:'Client view'},
     {value:'team',label:'Team'},
   ];
- 
+
   return(
     <div ref={ref} className="twk-panel">
       <div className="twk-hd">
@@ -1669,14 +1954,14 @@ function TweaksPanel({t,setTweak,screen,setScreen}){
     </div>
   );
 }
- 
+
 // ─── App root ──────────────────────────────────────────────────────────────────
 function useTweaks(defaults){
   const [v,setV]=React.useState(defaults);
   const setTweak=React.useCallback((k,val)=>setV(p=>({...p,[k]:val})),[]);
   return [v,setTweak];
 }
- 
+
 function App(){
   const [t,setTweak]=useTweaks(TWEAK_DEFAULTS);
   const [authed,setAuthed]=React.useState(!t.showLogin);
@@ -1686,7 +1971,7 @@ function App(){
   const [clients,setClients]=React.useState(INITIAL_CLIENTS);
   const [steps,setSteps]=React.useState(INITIAL_STEPS);
   const [team,setTeam]=React.useState(INITIAL_TEAM);
- 
+
   // Tweaks sync
   React.useEffect(()=>setAuthed(!t.showLogin),[t.showLogin]);
   React.useEffect(()=>{
@@ -1699,7 +1984,7 @@ function App(){
     else if(t.paperTone==='crisp'){r.style.setProperty('--paper','#FFFFFF');r.style.setProperty('--hairline','#EAEAEA');}
     else{r.style.removeProperty('--paper');r.style.removeProperty('--hairline');}
   },[t.density,t.accent,t.paperTone]);
- 
+
   // Steps mutations
   function toggleStep(id){setSteps(p=>p.map(s=>s.id===id?{...s,status:s.status==='done'?'not':'done'}:s));}
   function statusChange(id,status){setSteps(p=>p.map(s=>s.id===id?{...s,status}:s));}
@@ -1708,21 +1993,34 @@ function App(){
     if(updated._delete){deleteStep(updated.id);return;}
     setSteps(p=>p.map(s=>s.id===updated.id?updated:s));
   }
- 
+
   // Client mutations
   function addClient(c){
-    setClients(p=>[...p,c]);
-    // Navigate to new client tracker immediately
+    setClients(p=>[...p,{...c,status:'active'}]);
     setScreen({kind:'tracker',clientId:c.id});
     setView('am');
   }
- 
+  function saveClient(updated){
+    if(updated._delete){
+      if(window.confirm(`Permanently delete ${updated.name}? This cannot be undone.`)){
+        setClients(p=>p.filter(c=>c.id!==updated.id));
+        setScreen({kind:'dashboard'});
+      }
+      return;
+    }
+    if(updated._quickStatus){
+      setClients(p=>p.map(c=>c.id===updated.id?{...c,status:updated._quickStatus}:c));
+      return;
+    }
+    setClients(p=>p.map(c=>c.id===updated.id?updated:c));
+  }
+
   // Team mutations
   function addTeam(m){setTeam(p=>[...p,m]);}
   function deleteMember(id){setTeam(p=>p.filter(m=>m.id!==id));}
- 
+
   const client=screen.clientId?clients.find(c=>c.id===screen.clientId):null;
- 
+
   // View toggle — keeps clientId
   function handleSetView(v){
     setView(v);
@@ -1734,11 +2032,11 @@ function App(){
     if(s.kind==='client')setView('client');
     else if(s.kind==='tracker'||s.kind==='plan')setView('am');
   }
- 
+
   const isClient=screen.kind==='client';
- 
+
   if(!authed)return <Login team={team} onSuccess={()=>setAuthed(true)}/>;
- 
+
   return(
     <>
       {!isClient&&<Topbar view={view} setView={handleSetView} screen={screen} setScreen={handleSetScreen} client={client}/>}
@@ -1750,27 +2048,29 @@ function App(){
           </div>
         </div>
       )}
- 
-      {screen.kind==='dashboard'&&<Dashboard clients={clients} setScreen={handleSetScreen} onAddClient={()=>setModal({kind:'addClient'})}/>}
+
+      {screen.kind==='dashboard'&&<Dashboard clients={clients} setScreen={handleSetScreen} onAddClient={()=>setModal({kind:'addClient'})} onEditClient={c=>{ if(c._delete||c._quickStatus){saveClient(c);}else setModal({kind:'editClient',client:c}); }}/>}
       {screen.kind==='tracker'&&client&&(
         <Tracker client={client} steps={steps} setScreen={handleSetScreen}
           onPlanEdit={id=>handleSetScreen({kind:'plan',clientId:id})}
           onToggle={toggleStep} onEdit={s=>setModal({kind:'editStep',step:s})}
-          onDelete={deleteStep} onStatusChange={statusChange}/>
+          onDelete={deleteStep} onStatusChange={statusChange}
+          onEditClient={c=>{ if(c._delete||c._quickStatus){saveClient(c);}else setModal({kind:'editClient',client:c}); }}/>
       )}
       {screen.kind==='plan'&&client&&<PlanView client={client} editable={view==='am'}/>}
       {screen.kind==='client'&&client&&<ClientView client={client} steps={steps} onOpenPlan={()=>handleSetScreen({kind:'plan',clientId:client.id})}/>}
       {screen.kind==='team'&&<TeamPage team={team} onAdd={()=>setModal({kind:'addTeam'})} onDeleteMember={deleteMember}/>}
- 
+
       {modal?.kind==='addClient'&&<AddClientModal onClose={()=>setModal(null)} onSave={addClient}/>}
+      {modal?.kind==='editClient'&&<EditClientModal client={modal.client} onClose={()=>setModal(null)} onSave={saveClient} onDelete={id=>{saveClient({...modal.client,_delete:true,id});}}/>}
       {modal?.kind==='editStep'&&<EditStepModal step={modal.step} onClose={()=>setModal(null)} onSave={saveStep}/>}
       {modal?.kind==='addTeam'&&<AddTeamModal onClose={()=>setModal(null)} onSave={addTeam}/>}
- 
+
       <TweaksPanel t={t} setTweak={setTweak} screen={screen} setScreen={handleSetScreen}/>
     </>
   );
 }
- 
+
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
