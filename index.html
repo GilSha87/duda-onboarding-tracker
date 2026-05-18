@@ -380,7 +380,56 @@ select.input{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
   .search-bar{min-width:0;width:100%;}
   .client-title{font-size:32px;}
 }
-  </style>
+  
+/* Logo upload & display */
+.logo-upload-area{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:2px dashed var(--hairline);border-radius:var(--r-lg);background:var(--paper-soft);cursor:pointer;transition:border-color .15s,background .15s;overflow:hidden;}
+.logo-upload-area:hover{border-color:var(--duda);background:var(--duda-soft);}
+.lu-hint{font-size:11px;color:var(--ink-muted);text-align:center;line-height:1.45;padding:0 8px;}
+.client-logo-img{border-radius:10px;object-fit:cover;flex-shrink:0;}
+.client-logo-img.lg{width:60px;height:60px;border-radius:var(--r);}
+.client-header-logo{width:64px;height:64px;border-radius:16px;object-fit:contain;background:var(--surface);border:1.5px solid var(--hairline);flex-shrink:0;}
+
+/* ── Client theming ── */
+.client-shell{--ca:var(--client-accent,var(--duda));--ca-soft:var(--client-accent-soft,var(--duda-soft));--ca-ink:var(--client-accent-ink,var(--duda-ink));}
+.client-shell .client-mast{background:radial-gradient(circle at 100% 0%,var(--ca-soft) 0%,transparent 45%),var(--surface);}
+.client-shell .client-title em{color:var(--ca);}
+.client-shell .eyebrow{color:var(--ca);}
+.client-shell .eyebrow::before{background:var(--ca);}
+.client-shell .j-station.current .s-dot{background:var(--ca);border-color:var(--ca);box-shadow:0 0 0 8px var(--ca-soft);}
+.client-shell .pill.progress{background:var(--ca-soft);color:var(--ca-ink);}
+.client-shell .pill.progress .dot{background:var(--ca);}
+/* ── Confidence badge ── */
+.conf-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;font-size:12px;font-weight:600;border-radius:var(--r-pill);white-space:nowrap;}
+.conf-badge::before{content:'';width:7px;height:7px;border-radius:999px;flex-shrink:0;}
+.conf-badge.on-track{background:var(--leaf-soft);color:#0E6E4B;}.conf-badge.on-track::before{background:var(--leaf);}
+.conf-badge.needs-input{background:var(--sun-soft);color:#8B5E0E;}.conf-badge.needs-input::before{background:var(--sun);}
+.conf-badge.blocked{background:var(--crimson-soft);color:var(--crimson);}.conf-badge.blocked::before{background:var(--crimson);}
+.conf-badge.waiting{background:var(--grape-soft);color:#4A38D9;}.conf-badge.waiting::before{background:var(--grape);}
+/* ── Hero cards ── */
+.hero-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px;}
+.hero-card{background:var(--surface);border:1px solid var(--hairline);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden;transition:box-shadow .15s;}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.hero-card.card-stage::before{background:var(--ca,var(--duda));}
+.hero-card.card-action::before{background:var(--leaf);}
+.hero-card.card-duda::before{background:var(--grape);}
+.hero-card .hc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-muted);margin-bottom:8px;}
+.hero-card .hc-title{font-size:16px;font-weight:700;letter-spacing:-0.012em;line-height:1.3;color:var(--ink);}
+.hero-card .hc-sub{font-size:12px;color:var(--ink-muted);margin-top:5px;font-weight:500;line-height:1.4;}
+.hero-card .hc-action{margin-top:14px;}
+/* ── Sticky help ── */
+.sticky-help{position:fixed;bottom:24px;right:24px;z-index:90;}
+.sticky-help button{display:flex;align-items:center;gap:8px;padding:10px 18px;background:var(--ink);color:#fff;border:0;border-radius:var(--r-pill);font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 8px 24px rgba(20,20,26,.25);transition:transform .15s,box-shadow .15s;white-space:nowrap;}
+.sticky-help button:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(20,20,26,.3);}
+/* ── Preview banner ── */
+.preview-banner{background:var(--ink);color:#fff;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;gap:12px;}
+.preview-banner .pb-badge{background:rgba(255,255,255,.15);padding:3px 10px;border-radius:var(--r-pill);font-size:11px;}
+/* ── Checklist summary ── */
+.cl-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.cl-summary-item{background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r);padding:12px 16px;}
+.cl-summary-item .cs-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-muted);font-weight:600;}
+.cl-summary-item .cs-val{font-size:26px;font-weight:700;letter-spacing:-0.03em;margin-top:4px;}
+@media(max-width:780px){.hero-cards{grid-template-columns:1fr;}.cl-summary{grid-template-columns:repeat(2,1fr);}}
+</style>
   <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
@@ -488,76 +537,151 @@ const INITIAL_STEPS = [
 ];
 
 // Resources from XLSX — split AM-only vs client-facing
-// ── Resource Library v2 — from xlsx (Resource Library v2 + AM Resource Matrix sheets) ──
-// Visibility: 'am' = AM-only | 'client' = client-visible | 'both' = mixed
+// ── Resource Library — from Resource Library v2 + AM Resource Matrix (xlsx) ──
+// Visibility: internal=true → AM-only; no flag → client-visible
 const AM_RESOURCES = [
-  // ── Internal GPTs ──────────────────────────────────────────────────────────
-  {name:'AE to AM Handover GPT',type:'Internal GPT',stage:'Pre-kickoff',flows:'All',segments:'All',when:'Summarize sales context, agreed terms, risks, decision makers and onboarding inputs before kickoff',url:'https://chatgpt.com/g/g-6924533130008191b5d9d86f695d5965-am-sales-handoff-summary',internal:true},
-  {name:'Discovery Questions GPT',type:'Internal GPT',stage:'Kickoff',flows:'All',segments:'All',when:'Generate tailored discovery questions based on ICP and flow before kickoff call',url:'https://chatgpt.com/g/g-694bbc3c97908191916cfcfa93ba9289-onboarding-discovery-questions',internal:true},
-  // ── Domo Dashboards ────────────────────────────────────────────────────────
-  {name:'Partners Onboarding Dashboard (Domo)',type:'Domo Dashboard',stage:'Post-launch',flows:'All',segments:'All',when:'Track feature usage and activation metrics during onboarding',url:'https://duda-co.domo.com/page/1847460602',internal:true},
-  {name:'AM Onboarding Dashboard (Domo)',type:'Domo Dashboard',stage:'Post-launch',flows:'All',segments:'All',when:'Onboarding KPI tracking — publish rate, TTP, activation, support tickets',url:'https://duda-co.domo.com/page/637001948',internal:true},
-  // ── Notion AM Guides ───────────────────────────────────────────────────────
-  {name:'SaaS Onboarding — Process for Success (Notion)',type:'Notion Page',stage:'Discovery / Solution Design',flows:'DIY,DIFM,Hybrid,Marketplace',segments:'SaaS',when:'SaaS flow design (DIY/DIFM/Hybrid), UX examples, data/content/widget assumptions, GTM options',url:'https://www.notion.so/duda/SaaS-Onboarding-And-Ongoing-Process-for-Success-20da858e828080838578dda79246a0e0',internal:true},
-  {name:'STR Vertical SaaS AM Handbook (Notion)',type:'Notion Page',stage:'Discovery / QBR',flows:'DIY,DIFM,Hybrid',segments:'SaaS',when:'STR partner archetypes, key features, structured data, lifecycle playbook, churn signals — keep internal',url:'https://www.notion.so/34ba858e828081a384ffc86b287c585f',internal:true},
-  {name:'Onboarding Accounts: The Complete Guide (Notion)',type:'Notion Page',stage:'All stages',flows:'All',segments:'All',when:'AM master reference — resources, academy links, Domo dashboards, GPTs, low/high-touch guidance',url:'https://www.notion.so/duda/Onboarding-Accounts-The-Complete-Guide-2d9a858e828080b7bf55df9918f739f1',internal:true},
-  // ── Planning & Scoping ─────────────────────────────────────────────────────
-  {name:'Flow Router (Onboarding Lane Selector)',type:'Checklist',stage:'Pre-kickoff',flows:'All',segments:'All',when:'First planning step — confirm first-step sessions completed, then choose DIY/DIFM/Hybrid/Migration/Marketplace path',url:'',internal:true},
-  {name:'Simple Editor Admin / Flow Setup',type:'Internal Deck',stage:'Solution Design',flows:'DIY,Hybrid',segments:'Hosting,SaaS,Listing / YP',when:'Configure Simple Editor, sections, themes, button action/upsell — use for scoping sessions',url:'',internal:true},
-  {name:'Segment Playbooks (SaaS, Hosting, Agency, Listing/YP, POS)',type:'Internal Deck',stage:'Discovery',flows:'All',segments:'All',when:'Tailor the onboarding approach to ICP — discovery focus, must-have setup, GTM/enablement KPIs',url:'',internal:true},
-  {name:'GTM Review Deck & Final Flow Map',type:'Internal Deck',stage:'GTM',flows:'All',segments:'All',when:'Partner presents final flow and exec sponsor confirms launch alignment — required before pilot',url:'',internal:true},
-  {name:'Migration Planning Checklist',type:'Checklist',stage:'Launch',flows:'Migration,DIFM',segments:'Listing / YP,Hosting,Agency',when:'Legacy portfolio migrations and batch rollout — inventory, classify, batch, domain switch',url:'',internal:true},
-  {name:'QA Checklist (pre-pilot)',type:'Checklist',stage:'Pilot',flows:'All',segments:'All',when:'Permissions, data sync, domain, SEO, accessibility, apps — run before every pilot',url:'',internal:true},
-  // ── ICP/Flow-specific AM packs ─────────────────────────────────────────────
-  {name:'SaaS DIY GTM Pack — packaging options & upsell logic',type:'Internal Deck',stage:'GTM',flows:'DIY',segments:'SaaS',when:'GTM packaging options: included in all packages, premium, tiered, paid add-on; upsell logic',url:'https://developer.duda.co/docs/upsell-publish-flows',internal:true},
-  {name:'SaaS DIFM Fulfillment Pack — requirements & approval flow',type:'Internal Deck',stage:'Solution Design',flows:'DIFM',segments:'SaaS',when:'DIFM flow details, requirements form, fulfillment workflow, design/review/approval, template/widget standards',url:'',internal:true},
-  {name:'STR Provisioning & SEO Pack — PMS field mapping & schema',type:'Internal Deck',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS',when:'Dynamic Pages, Connected Data, booking widget placement, PMS field mapping, VacationRental schema, GSC validation',url:'',internal:true},
-  {name:'Agency DIFM Production SOP — content, amends, QA',type:'Internal Deck',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency',when:'Agency build SOP: content collection, creation, rounds of amends, client approval, QA, handoff, capacity tracking',url:'',internal:true},
-  {name:'Listing/YP Data & Batch Migration Pack',type:'Internal Deck',stage:'Technical Build',flows:'DIFM,Hybrid,Migration',segments:'Listing / YP',when:'Listing data quality, batch publishing, local schema, apps/compliance, migration issue log',url:'',internal:true},
-  // ── Support & Operations ───────────────────────────────────────────────────
-  {name:'White Label + Custom Branding Setup',type:'Support Article',stage:'Platform Setup',flows:'All',segments:'Hosting,Agency,Listing / YP',when:'Configure platform as partner-owned branded experience — branding, domain, WL support portal',url:''},
-  {name:'Client Permissions & Custom Plans',type:'Checklist',stage:'Platform Setup',flows:'All',segments:'All',when:'Control editor access, package tiers, upgrade flows for end-clients',url:''},
-  {name:'Analytics / Stats Emails / KPI Dashboard',type:'Checklist',stage:'Post-launch',flows:'All',segments:'All',when:'Post-launch review cadence — publish rate, visits, conversion, support, revenue',url:''},
-  {name:'Compliance Apps: Cookiebot / UserCentrics / AudioEye',type:'Support Article',stage:'Technical Build',flows:'All',segments:'Agency,Listing / YP,Hosting',when:'EU/privacy/accessibility requirements before launch',url:''},
-  {name:'Inspiration Board',type:'Client Resource',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Design examples for agency/listing teams planning site templates',url:'https://www.duda.co/inspiration'},
-  {name:'SaaS Integration Blog Series (Parts 1–3)',type:'Public Docs',stage:'Discovery',flows:'DIY,Hybrid',segments:'SaaS',when:'Share with engineering to explain SaaS integration concepts and patterns',url:'https://blog.duda.co/integrating-duda-into-a-saas-platform-1'},
+  // ── Internal GPTs ───────────────────────────────────────────────────────
+  {name:'AE to AM Handover GPT',type:'Internal GPT',stage:'Pre-kickoff',flows:'All',segments:'All',
+   when:'Summarize sales context, agreed terms, risks, decision makers and onboarding inputs before kickoff',
+   url:'https://chatgpt.com/g/g-6924533130008191b5d9d86f695d5965-am-sales-handoff-summary',internal:true},
+  {name:'Discovery Questions GPT',type:'Internal GPT',stage:'Kickoff',flows:'All',segments:'All',
+   when:'Generate tailored discovery questions based on ICP and flow before kickoff call',
+   url:'https://chatgpt.com/g/g-694bbc3c97908191916cfcfa93ba9289-onboarding-discovery-questions',internal:true},
+  // ── Domo Dashboards ───────────────────────────────────────────────────
+  {name:'Partners Onboarding Dashboard',type:'Domo Dashboard',stage:'Post-launch',flows:'All',segments:'All',
+   when:'Track feature usage and activation metrics during onboarding — do not share link externally',
+   url:'https://duda-co.domo.com/page/1847460602',internal:true},
+  {name:'AM Onboarding KPI Dashboard',type:'Domo Dashboard',stage:'Post-launch',flows:'All',segments:'All',
+   when:'Onboarding KPI tracking — publish rate, TTP, activation, support tickets',
+   url:'https://duda-co.domo.com/page/637001948',internal:true},
+  // ── Notion AM Guides ──────────────────────────────────────────────────
+  {name:'SaaS Onboarding — Process for Success',type:'Notion Page',stage:'Discovery / Solution Design',flows:'DIY,DIFM,Hybrid,Marketplace',segments:'SaaS',
+   when:'SaaS flow design, GTM options, UX examples, data/content/widget assumptions — AM-only source',
+   url:'https://www.notion.so/duda/SaaS-Onboarding-And-Ongoing-Process-for-Success-20da858e828080838578dda79246a0e0',internal:true},
+  {name:'STR Vertical SaaS AM Handbook',type:'Notion Page',stage:'Discovery / QBR',flows:'DIY,DIFM,Hybrid',segments:'SaaS',
+   when:'STR archetypes, features, structured data, lifecycle playbook, churn signals — keep internal',
+   url:'https://www.notion.so/34ba858e828081a384ffc86b287c585f',internal:true},
+  // ── Planning & Scoping ─────────────────────────────────────────────────
+  {name:'Flow Router (Onboarding Lane Selector)',type:'Checklist',stage:'Pre-kickoff',flows:'All',segments:'All',
+   when:'First planning step — complete first-step sessions, then choose DIY/DIFM/Hybrid/Migration/Marketplace path',
+   url:'',internal:true},
+  {name:'Simple Editor Admin / Flow Setup',type:'Internal Deck',stage:'Solution Design',flows:'DIY,Hybrid',segments:'Hosting,SaaS,Listing / YP',
+   when:'Configure Simple Editor, sections, themes, button action/upsell — use for scoping sessions',
+   url:'',internal:true},
+  {name:'Segment Playbooks (SaaS, Hosting, Agency, Listing/YP, POS)',type:'Internal Deck',stage:'Discovery',flows:'All',segments:'All',
+   when:'Tailor the onboarding approach to ICP — discovery focus, must-have setup, GTM/enablement KPIs',
+   url:'',internal:true},
+  {name:'GTM Review Deck & Final Flow Map',type:'Internal Deck',stage:'GTM',flows:'All',segments:'All',
+   when:'Partner presents final flow and exec sponsor confirms launch alignment — required before pilot',
+   url:'',internal:true},
+  {name:'Migration Planning Checklist',type:'Checklist',stage:'Launch',flows:'Migration,DIFM',segments:'Listing / YP,Hosting,Agency',
+   when:'Legacy portfolio migrations and batch rollout — inventory, classify, batch, domain switch',
+   url:'',internal:true},
+  {name:'QA Checklist (pre-pilot)',type:'Checklist',stage:'Pilot',flows:'All',segments:'All',
+   when:'Permissions, data sync, domain, SEO, accessibility, apps — run before every pilot',
+   url:'',internal:true},
+  // ── AM Resource Packs by ICP/Flow ─────────────────────────────────────
+  {name:'SaaS DIY Technical Pack — data/widgets/SSO/API',type:'AM Pack',stage:'Technical Build',flows:'DIY',segments:'SaaS',
+   when:'Data model, collections/content library mapping, custom template/widget review, SSO plan, editor access, API readiness',
+   url:'https://developer.duda.co/docs/diy-onboarding',internal:true},
+  {name:'SaaS DIFM Fulfillment Pack — requirements & approval',type:'AM Pack',stage:'Solution Design',flows:'DIFM',segments:'SaaS',
+   when:'DIFM flow details, requirements form, fulfillment workflow, design/review/approval, template/widget standards',
+   url:'',internal:true},
+  {name:'SaaS DIY GTM Pack — packaging options & upsell logic',type:'AM Pack',stage:'GTM',flows:'DIY,Marketplace',segments:'SaaS',
+   when:'GTM packaging options: included in all packages, premium, tiered, paid add-on; upsell logic',
+   url:'https://developer.duda.co/docs/upsell-publish-flows',internal:true},
+  {name:'STR Provisioning & SEO Pack — PMS field mapping',type:'AM Pack',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS',
+   when:'Dynamic Pages, Connected Data, booking widget placement, PMS field mapping, VacationRental schema, GSC validation',
+   url:'',internal:true},
+  {name:'Hosting DIY Setup Pack — Simple Editor & domain',type:'AM Pack',stage:'Discovery / Solution Design',flows:'DIY',segments:'Hosting',
+   when:'Hosting onboarding: white-label/client journey, Simple Editor, domain/DNS, support portal, package/upsell model',
+   url:'',internal:true},
+  {name:'Agency DIFM Production SOP — content, amends, QA',type:'AM Pack',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency',
+   when:'Agency build SOP: content collection, creation, rounds of amends, client approval, QA, handoff, capacity tracking',
+   url:'',internal:true},
+  {name:'Listing/YP Data & Batch Migration Pack',type:'AM Pack',stage:'Technical Build',flows:'DIFM,Hybrid,Migration',segments:'Listing / YP',
+   when:'Listing data quality, batch publishing, local schema, apps/compliance, migration issue log',
+   url:'',internal:true},
+  // ── Support & Operations ───────────────────────────────────────────────
+  {name:'White Label + Custom Branding Setup',type:'Support Article',stage:'Platform Setup',flows:'All',segments:'Hosting,Agency,Listing / YP',
+   when:'Configure platform as partner-owned branded experience',url:''},
+  {name:'Client Permissions & Custom Plans',type:'Checklist',stage:'Platform Setup',flows:'All',segments:'All',
+   when:'Control editor access, package tiers, upgrade flows for end-clients',url:''},
+  {name:'Analytics / Stats Emails / KPI Dashboard',type:'Checklist',stage:'Post-launch',flows:'All',segments:'All',
+   when:'Post-launch review cadence — publish rate, visits, conversion, support, revenue',url:''},
+  {name:'Compliance Apps: Cookiebot / UserCentrics / AudioEye',type:'Support Article',stage:'Technical Build',flows:'All',segments:'Agency,Listing / YP,Hosting',
+   when:'EU/privacy/accessibility requirements before launch',url:''},
+  {name:'SaaS Integration Blog Series (Parts 1–3)',type:'Public Docs',stage:'Discovery',flows:'DIY,Hybrid',segments:'SaaS',
+   when:'Share with engineering to explain SaaS integration concepts and patterns',
+   url:'https://blog.duda.co/integrating-duda-into-a-saas-platform-1'},
 ];
 
+// Client-visible resources — exact list from Resource Library v2 "Client-visible" rows
 const CLIENT_RESOURCES = [
-  // ── Academy & Training ─────────────────────────────────────────────────────
-  {name:'Duda Academy',type:'Academy',stage:'Enablement',flows:'All',segments:'All',when:'Default training hub — assign before any live enablement session',url:'https://academy.duda.co/'},
-  {name:'Tour the Platform',type:'Academy Course',stage:'Platform Overview',flows:'All',segments:'All',when:'Prerequisite / follow-up for the platform overview session',url:'https://academy.duda.co/course/tour-the-platform'},
-  {name:'Build Sites with Duda / Editor 2.0',type:'Academy Path',stage:'Enablement',flows:'DIFM,Hybrid',segments:'All',when:'Core builder training for design and ops teams',url:'https://app.academy.duda.co/program/e11c463b-4ae7-43c3-84d3-576d0769b649'},
-  {name:'Fundamentals of Web Design',type:'Academy Path',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Design training for teams building sites for SMBs',url:'https://app.academy.duda.co/program/98f8ed95-4836-4b0f-ac15-2750d5b6cdcf'},
-  {name:'Connected Data, Collections & Dynamic Pages',type:'Academy Course',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS,Listing / YP,POS / eCommerce',when:'Data-driven sites, dynamic pages and content mapping — assign before build phase',url:'https://academy.duda.co/course/connected-data-collections-dynamic-pages'},
-  {name:'Build Your Self-Service Website Solution (DIY)',type:'Academy Collection',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting,POS / eCommerce',when:'Complete DIY onboarding path — self-service website solution end-to-end',url:'https://rebrand.ly/duda-diy'},
-  {name:'Building Custom Widgets',type:'Academy Course',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS',when:'Custom widget enablement and feasibility discussion — assign before widget review',url:'https://academy.duda.co/course/building-custom-widgets'},
-  {name:'Integrate Duda into Your Workflow',type:'Academy Course',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting,POS / eCommerce',when:'Intro to Duda API integration — first technical course to assign',url:'https://academy.duda.co/course/integrate-duda-into-your-workflow'},
-  {name:'Push Content into Sites via API',type:'Academy Course',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Listing / YP,POS / eCommerce',when:'API-driven content workflows — for teams building data-prefill or sync flows',url:'https://academy.duda.co/course/push-content-into-sites-via-api'},
-  {name:'White-labeled Video Library',type:'Client Resource',stage:'Enablement',flows:'All',segments:'Hosting,Agency',when:'Partner-branded training videos — share with end-clients and internal teams',url:'https://videos.multiscreensite.com/'},
-  // ── Developer Documentation ────────────────────────────────────────────────
-  {name:'Developer Documentation Hub',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid,Marketplace',segments:'All',when:'Technical reference hub — share with client engineering from technical KO onward',url:'https://developer.duda.co/'},
-  {name:'DIY Onboarding Developer Docs',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',when:'Self-service website solution implementation guide',url:'https://developer.duda.co/docs/diy-onboarding'},
-  {name:'Building a Template Chooser',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',when:'Template selection flow implementation',url:'https://developer.duda.co/docs/building-a-template-chooser'},
-  {name:'Upsell + Publish Flows',type:'Developer Docs',stage:'GTM / Technical Build',flows:'DIY,Hybrid,Marketplace',segments:'SaaS,Hosting,POS / eCommerce',when:'Publish gating and upgrade path — for packaging and GTM sessions',url:'https://developer.duda.co/docs/upsell-publish-flows'},
-  {name:'Generate Sites with AI',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',when:'AI-assisted site generation flow',url:'https://developer.duda.co/docs/how-to-generate-sites-with-ai'},
-  {name:'Configuring Webhooks',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,POS / eCommerce',when:'Event-driven integrations — assign during technical build phase',url:'https://developer.duda.co/docs/configuring-webhooks'},
-  // ── Support & Operational ──────────────────────────────────────────────────
-  {name:'Support Portal',type:'Support',stage:'Support',flows:'All',segments:'All',when:'Customer support and help docs — share from platform setup onward',url:'https://support.duda.co/hc/en-us'},
-  {name:'White-labeled Support Portal',type:'Support',stage:'Support',flows:'All',segments:'Hosting,Agency,Listing / YP',when:'Partner-branded support resource — share when white-label is configured',url:'https://support.multiscreensite.com/hc/en-us'},
-  {name:'System Health / Status Page',type:'Support',stage:'Support / Launch',flows:'All',segments:'All',when:'Duda service status during launch or incidents — share before go-live',url:'https://status.duda.co/'},
-  {name:'Product Updates & Releases',type:'Client Resource',stage:'Ongoing',flows:'All',segments:'All',when:'Keep partner teams updated on new releases and feature changes',url:'https://resources.duda.co/product-updates'},
-  {name:'Idea Board',type:'Client Resource',stage:'Post-launch',flows:'All',segments:'All',when:'Product feedback and idea submission for partner teams',url:'http://ideas.duda.co/'},
-  // ── eCommerce ──────────────────────────────────────────────────────────────
-  {name:'Native eCommerce',type:'Public Product Page',stage:'Technical Build / GTM',flows:'DIY,DIFM,Hybrid,Marketplace',segments:'POS / eCommerce,Agency,SaaS',when:'Commerce product overview — share during discovery and scope sessions',url:'https://www.duda.co/native-ecommerce'},
-  {name:'Composable eCommerce',type:'Public Product Page',stage:'Technical Build / GTM',flows:'DIY,Hybrid,Marketplace',segments:'POS / eCommerce,SaaS',when:'Composable commerce positioning — share for POS/API-first integrations',url:'https://www.duda.co/ecommerce/composable-ecomm'},
-  // ── Content & Collaboration ────────────────────────────────────────────────
-  {name:'Site Comments & Client Approval Guide',type:'Client-facing Guide',stage:'Technical Build',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Collect content and manage client approval/feedback cycles on sites in progress',url:''},
-  {name:'Content Collection Form Template',type:'Client-facing Guide',stage:'Solution Design',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',when:'Standardize content intake from clients before build starts',url:''},
-  {name:'Launch Checklist',type:'Checklist',stage:'Launch',flows:'All',segments:'All',when:'Final pre-launch checks — permissions, domain, QA, support readiness',url:''},
-  {name:'Pilot Checklist',type:'Checklist',stage:'Pilot',flows:'All',segments:'All',when:'Validate pilot sites against MVP criteria before opening to broader cohort',url:''},
-  // ── SEO & QA ──────────────────────────────────────────────────────────────
-  {name:'Google Rich Results Test',type:'External Tool',stage:'SEO / QA',flows:'DIY,DIFM,Hybrid',segments:'SaaS,Listing / YP',when:'Validate structured data and rich result eligibility — especially for STR/listing partners',url:'https://search.google.com/test/rich-results'},
+  // ── Academy & Training ────────────────────────────────────────────────
+  {name:'Duda Academy',type:'Academy',stage:'Enablement',flows:'All',segments:'All',
+   when:'Default training hub — assign before any live enablement session',url:'https://academy.duda.co/'},
+  {name:'Tour the Platform',type:'Academy Course',stage:'Platform Overview',flows:'All',segments:'All',
+   when:'Prerequisite / follow-up for the platform overview session',url:'https://academy.duda.co/course/tour-the-platform'},
+  {name:'Build Sites with Duda / Editor 2.0',type:'Academy Path',stage:'Enablement',flows:'DIFM,Hybrid',segments:'All',
+   when:'Core builder training for design and ops teams',url:'https://app.academy.duda.co/program/e11c463b-4ae7-43c3-84d3-576d0769b649'},
+  {name:'Fundamentals of Web Design',type:'Academy Path',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',
+   when:'Design training for teams building sites for SMBs',url:'https://app.academy.duda.co/program/98f8ed95-4836-4b0f-ac15-2750d5b6cdcf'},
+  {name:'Connected Data, Collections & Dynamic Pages',type:'Academy Course',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS,Listing / YP,POS / eCommerce',
+   when:'Data-driven sites, dynamic pages and content mapping — assign before build phase',url:'https://academy.duda.co/course/connected-data-collections-dynamic-pages'},
+  {name:'Build Your Self-Service Website Solution',type:'Academy Collection',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting,POS / eCommerce',
+   when:'Complete DIY path for self-service website solution',url:'https://rebrand.ly/duda-diy'},
+  {name:'Building Custom Widgets',type:'Academy Course',stage:'Technical Build',flows:'DIY,DIFM,Hybrid',segments:'SaaS',
+   when:'Custom widget enablement — assign before widget review session',url:'https://academy.duda.co/course/building-custom-widgets'},
+  {name:'Integrate Duda into Your Workflow',type:'Academy Course',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting,POS / eCommerce',
+   when:'Intro to Duda API integration — first technical course to assign',url:'https://academy.duda.co/course/integrate-duda-into-your-workflow'},
+  {name:'Push Content into Sites via API',type:'Academy Course',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Listing / YP,POS / eCommerce',
+   when:'API-driven content workflows — for teams building data-prefill or sync flows',url:'https://academy.duda.co/course/push-content-into-sites-via-api'},
+  {name:'White-labeled Video Library',type:'Client Resource',stage:'Enablement',flows:'All',segments:'Hosting,Agency',
+   when:'Partner-branded training videos — share with end-clients and internal teams',url:'https://videos.multiscreensite.com/'},
+  // ── Developer Documentation ───────────────────────────────────────────
+  {name:'Developer Documentation Hub',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid,Marketplace',segments:'All',
+   when:'Technical reference hub — share with client engineering from technical KO onward',url:'https://developer.duda.co/'},
+  {name:'DIY Onboarding Developer Docs',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',
+   when:'Self-service website solution implementation guide',url:'https://developer.duda.co/docs/diy-onboarding'},
+  {name:'Building a Template Chooser',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',
+   when:'Template selection flow implementation',url:'https://developer.duda.co/docs/building-a-template-chooser'},
+  {name:'Upsell + Publish Flows',type:'Developer Docs',stage:'GTM / Technical Build',flows:'DIY,Hybrid,Marketplace',segments:'SaaS,Hosting,POS / eCommerce',
+   when:'Publish gating and upgrade path — for packaging and GTM sessions',url:'https://developer.duda.co/docs/upsell-publish-flows'},
+  {name:'Generate Sites with AI',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,Hosting',
+   when:'AI-assisted site generation flow',url:'https://developer.duda.co/docs/how-to-generate-sites-with-ai'},
+  {name:'Configuring Webhooks',type:'Developer Docs',stage:'Technical Build',flows:'DIY,Hybrid',segments:'SaaS,POS / eCommerce',
+   when:'Event-driven integrations — assign during technical build phase',url:'https://developer.duda.co/docs/configuring-webhooks'},
+  // ── Support & Status ──────────────────────────────────────────────────
+  {name:'Support Portal',type:'Support',stage:'Support',flows:'All',segments:'All',
+   when:'Customer support and help docs — share from platform setup onward',url:'https://support.duda.co/hc/en-us'},
+  {name:'White-labeled Support Portal',type:'Support',stage:'Support',flows:'All',segments:'Hosting,Agency,Listing / YP',
+   when:'Partner-branded support resource — share when white-label is configured',url:'https://support.multiscreensite.com/hc/en-us'},
+  {name:'System Health / Status Page',type:'Support',stage:'Support / Launch',flows:'All',segments:'All',
+   when:'Duda service status during launch or incidents — share before go-live',url:'https://status.duda.co/'},
+  // ── Client Resources ──────────────────────────────────────────────────
+  {name:'Product Updates & Releases',type:'Client Resource',stage:'Ongoing',flows:'All',segments:'All',
+   when:'Keep partner teams updated on new releases and feature changes',url:'https://resources.duda.co/product-updates'},
+  {name:'Idea Board',type:'Client Resource',stage:'Post-launch',flows:'All',segments:'All',
+   when:'Product feedback and idea submission',url:'http://ideas.duda.co/'},
+  {name:'Inspiration Board',type:'Client Resource',stage:'Enablement',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',
+   when:'Design examples and inspiration for teams building sites',url:'https://www.duda.co/inspiration'},
+  // ── eCommerce ─────────────────────────────────────────────────────────
+  {name:'Native eCommerce',type:'Public Product Page',stage:'Technical Build / GTM',flows:'DIY,DIFM,Hybrid,Marketplace',segments:'POS / eCommerce,Agency,SaaS',
+   when:'Commerce product overview — share during discovery and scope sessions',url:'https://www.duda.co/native-ecommerce'},
+  {name:'Composable eCommerce',type:'Public Product Page',stage:'Technical Build / GTM',flows:'DIY,Hybrid,Marketplace',segments:'POS / eCommerce,SaaS',
+   when:'Composable commerce positioning — for POS/API-first integrations',url:'https://www.duda.co/ecommerce/composable-ecomm'},
+  // ── Collaboration & Launch ────────────────────────────────────────────
+  {name:'Site Comments & Client Approval Guide',type:'Client-facing Guide',stage:'Technical Build',flows:'DIFM,Hybrid',segments:'Agency,Listing / YP',
+   when:'Content collection and client approval/feedback cycles on sites in progress',url:''},
+  {name:'Launch Checklist',type:'Checklist',stage:'Launch',flows:'All',segments:'All',
+   when:'Final pre-launch checks — permissions, domain, QA, support readiness',url:''},
+  {name:'Pilot Checklist',type:'Checklist',stage:'Pilot',flows:'All',segments:'All',
+   when:'Validate pilot sites against MVP criteria before opening to broader cohort',url:''},
+  // ── SEO & QA ──────────────────────────────────────────────────────────
+  {name:'Google Rich Results Test',type:'External Tool',stage:'SEO / QA',flows:'DIY,DIFM,Hybrid',segments:'SaaS,Listing / YP',
+   when:'Validate structured data and rich result eligibility — especially for STR/listing partners',
+   url:'https://search.google.com/test/rich-results'},
 ];
 
 const INITIAL_CLIENTS = [
@@ -677,7 +801,12 @@ function Pill({kind,children}){
   return <span className={`pill ${s?.cls||kind}`}>{s&&<span className="dot"/>}{children||s?.label}</span>;
 }
 function PrioPill({prio}){return <span className={`pill ${PRIO_MAP[prio]?.cls||''}`}>{PRIO_MAP[prio]?.label||prio}</span>;}
-function ClientLogo({client,size}){return <span className={`client-logo${size==='lg'?' lg':''}`} style={{background:client.color}}>{client.mono}</span>;}
+function ClientLogo({client,size}){
+  if(client.logoUrl){
+    return <img className={`client-logo-img${size==='lg'?' lg':''}`} src={client.logoUrl} alt={client.name}/>;
+  }
+  return <span className={`client-logo${size==='lg'?' lg':''}`} style={{background:client.color}}>{client.mono}</span>;
+}
 function MiniBar({phaseIdx,progress}){
   return(
     <div className="mini-bar">
@@ -1091,7 +1220,7 @@ function ChecklistSummary({steps}){
 }
 
 // ─── Tracker ───────────────────────────────────────────────────────────────────
-function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onStatusChange,onEditClient}){
+function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onStatusChange,onEditClient,initialTab}){
   const [tab,setTab]=React.useState('journey');
   const [wsFilter,setWsFilter]=React.useState('All');
   const stepCounts=getStepCounts(steps);
@@ -1215,6 +1344,10 @@ function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onS
         />
       )}
 
+      {tab==='plan'&&(
+        <PlanView client={client} editable={true} inline={true}/>
+      )}
+
       {tab==='notes'&&(
         <div className="rail">
           <div className="card card-pad">
@@ -1236,14 +1369,16 @@ function NotesBox({defaultValue}){
 }
 
 // ─── Plan view ─────────────────────────────────────────────────────────────────
-function PlanView({client,editable}){
+function PlanView({client,editable,inline,lang}){
   const days=[
     {key:'d60',n:60,label:'Foundation',heading:'Set the table.',data:PLAN.d60},
     {key:'d90',n:90,label:'Go-live',heading:'Make it real.',data:PLAN.d90},
     {key:'d180',n:180,label:'Scale',heading:'Compound.',data:PLAN.d180},
   ];
+  var Wrap=inline?'div':'main';
+  var wrapProps=inline?{}:{className:'canvas'};
   return(
-    <main className="canvas">
+    <Wrap {...wrapProps}>
       <section style={{paddingBottom:32,borderBottom:'1px solid var(--hairline)',marginBottom:40}}>
         <div className="flex items-center gap-3">
           <ClientLogo client={client}/>
@@ -1281,7 +1416,7 @@ function PlanView({client,editable}){
           <span className="pill done"><span className="dot"/>Plan locked</span>
         </div>
       </div>
-    </main>
+    </Wrap>
   );
 }
 
@@ -1326,7 +1461,9 @@ function makeClientTheme(hex){
   var drk=function(x){return Math.round(x*0.5);};
   var soft='#'+[r,g,b].map(function(x){return mix(x).toString(16).padStart(2,'0');}).join('');
   var ink='#'+[r,g,b].map(function(x){return drk(x).toString(16).padStart(2,'0');}).join('');
-  return{accent:hex,soft:soft,ink:ink};
+  var lum=(0.299*r+0.587*g+0.114*b)/255;
+  var textColor=lum>0.55?'#14141A':'#FFFFFF';
+  return{accent:hex,soft:soft,ink:ink,textColor:textColor};
 }
 
 function getConfidence(steps){
@@ -1342,7 +1479,7 @@ function getConfidence(steps){
 }
 
 // ── ClientView — action-first with i18n and client theming ─────────────────
-function ClientView({client,steps,onOpenPlan,isPreview,onExitPreview}){
+function ClientView({client,steps,onOpenPlan,isPreview,onExitPreview,onToggleStep}){
   var lang=client.language||'en-US';
   var dir=client.dir||'ltr';
   var [tab,setTab]=React.useState('overview');
@@ -1378,7 +1515,7 @@ function ClientView({client,steps,onOpenPlan,isPreview,onExitPreview}){
   ];
 
   function handleTab(k){
-    if(k==='plan'){onOpenPlan();}else{setTab(k);}
+    setTab(k);
   }
 
   var themeStyle={'--client-accent':theme.accent,'--client-accent-soft':theme.soft,'--client-accent-ink':theme.ink};
@@ -1392,7 +1529,7 @@ function ClientView({client,steps,onOpenPlan,isPreview,onExitPreview}){
             <span className="pb-badge">Preview</span>
             <span>{tr(lang,'previewingAs')} · {client.name}</span>
           </div>
-          <button type="button" className="btn sm" style={{background:'rgba(255,255,255,.15)',border:'none',color:'#fff'}} onClick={onExitPreview}>
+          <button type="button" className="btn sm" style={{background:'rgba(255,255,255,.9)',border:'none',color:'var(--ink)',fontWeight:600}} onClick={onExitPreview}>
             {I.arrowL} {tr(lang,'backToAM')}
           </button>
         </div>
@@ -1400,9 +1537,15 @@ function ClientView({client,steps,onOpenPlan,isPreview,onExitPreview}){
 
       <section className="client-mast" style={{paddingTop:isPreview?80:undefined}}>
         <div className="container">
-          <p style={{fontSize:13,color:'var(--ink-muted)',fontWeight:600}}>
-            {tr(lang,'welcomeBack')}, {firstContact.name.split(' ')[0]} —
-          </p>
+          <div className="flex items-center gap-4" style={{marginBottom:16}}>
+            {client.logoUrl
+              ?<img src={client.logoUrl} alt={client.name} className="client-header-logo"/>
+              :<span className="client-logo lg" style={{background:theme.accent,color:theme.textColor||'#fff',flexShrink:0}}>{client.mono}</span>
+            }
+            <p style={{fontSize:13,color:'var(--ink-muted)',fontWeight:600,margin:0}}>
+              {tr(lang,'welcomeBack')}, {firstContact.name.split(' ')[0]} —
+            </p>
+          </div>
           <h1 className="client-title">
             {tr(lang,'onboarding')},<br/>
             {tr(lang,'dayOf',{day:client.dayIn,total:180})}.
@@ -1482,8 +1625,10 @@ function ClientView({client,steps,onOpenPlan,isPreview,onExitPreview}){
                   </div>
                   <div className="card" style={{overflow:'hidden'}}>
                     {clientTasks.slice(0,3).map(function(s){return(
-                      <div key={s.id} className="step-row" style={{padding:'14px 20px',gridTemplateColumns:'28px 1fr auto auto',cursor:'default'}}>
-                        <span className="step-check" style={{cursor:'default'}}>{s.status==='done'&&I.check}</span>
+                      <div key={s.id} className={`step-row${s.status==='done'?' done':''}`} style={{padding:'14px 20px',gridTemplateColumns:'28px 1fr auto auto',cursor:'default'}}>
+                        <span className="step-check" style={{cursor:'pointer'}} title="Mark complete" onClick={function(){onToggleStep(s.id);}}>
+                          {s.status==='done'&&I.check}
+                        </span>
                         <div className="step-title"><b>{s.title}</b><div className="s-why">{s.why}</div></div>
                         <span className="step-due">{dayLabel(s.due)}</span>
                         <Pill kind={s.status}/>
@@ -1550,8 +1695,10 @@ function ClientView({client,steps,onOpenPlan,isPreview,onExitPreview}){
                     <h2 className="h2 ph-h2">{pNames[PHASES.indexOf(p)]||p.name}</h2>
                   </div>
                   {ps.map(function(s){return(
-                    <div key={s.id} className="step-row" style={{cursor:'default',gridTemplateColumns:'28px 1fr auto auto'}}>
-                      <span className="step-check" style={{cursor:'default'}}>{s.status==='done'&&I.check}</span>
+                    <div key={s.id} className={`step-row${s.status==='done'?' done':''}`} style={{padding:'14px 8px',gridTemplateColumns:'28px 1fr auto auto'}}>
+                      <span className="step-check" style={{cursor:'pointer'}} title="Mark complete" onClick={function(){onToggleStep&&onToggleStep(s.id);}}>
+                        {s.status==='done'&&I.check}
+                      </span>
                       <div className="step-title"><b>{s.title}</b><div className="s-why">{s.why}</div></div>
                       <span className="step-due">{dayLabel(s.due)}</span>
                       <Pill kind={s.status}/>
@@ -1572,6 +1719,10 @@ function ClientView({client,steps,onOpenPlan,isPreview,onExitPreview}){
             clientIcp={client.icp}
             clientFlow={client.flow}
           />
+        )}
+
+        {tab==='plan'&&(
+          <PlanView client={client} editable={false} inline={true} lang={lang}/>
         )}
       </section>
 
@@ -1712,6 +1863,7 @@ function EditClientModal({client,onClose,onSave,onDelete}){
   const [touch,setTouch]=React.useState(client.touch);
   const [am,setAm]=React.useState(client.am);
   const [color,setColor]=React.useState(client.color);
+  const [logoUrl,setLogoUrl]=React.useState(client.logoUrl||'');
   const [kickoff,setKickoff]=React.useState(client.kickoff);
   const [language,setLanguage]=React.useState(client.language||'en-US');
   const [status,setStatus]=React.useState(client.status||'active');
@@ -1735,7 +1887,7 @@ function EditClientModal({client,onClose,onSave,onDelete}){
     const mono=name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??';
     var langDir=language==='he-IL'?'rtl':'ltr';
     const updated={
-      ...client, name:name.trim(), icp, flow, touch, am, color, kickoff, status, phase, mono, language, dir:langDir,
+      ...client, name:name.trim(), icp, flow, touch, am, color, kickoff, status, phase, mono, language, dir:langDir, logoUrl,
       contacts:[{name:cName,role:cRole,email:cEmail},...client.contacts.slice(1)],
     };
     onSave(updated);
@@ -1847,6 +1999,23 @@ function EditClientModal({client,onClose,onSave,onDelete}){
               <p className="muted text-xs" style={{marginTop:4}}>Sets the language of the client-facing portal for this account.</p>
             </div>
             <div className="rule rule-soft" style={{margin:'4px 0'}}/>
+            <div className="eyebrow">Partner logo</div>
+            <div className="flex items-start gap-5" style={{marginBottom:16}}>
+              <LogoUpload value={logoUrl} onChange={setLogoUrl} size="lg"/>
+              <div>
+                <p className="muted text-sm" style={{lineHeight:1.55,marginBottom:8}}>Upload your logo to display it on the client-facing portal. If no logo is uploaded, we'll use your brand initials.</p>
+                <p className="muted text-xs">PNG, SVG or JPG · max 2 MB · recommended 200×200px</p>
+              </div>
+            </div>
+            <div className="rule rule-soft" style={{margin:'4px 0'}}/>
+            <div className="eyebrow">Partner logo</div>
+            <div className="flex items-start gap-5" style={{marginBottom:16}}>
+              <LogoUpload value={logoUrl} onChange={setLogoUrl} size="lg"/>
+              <div>
+                <p className="muted text-sm" style={{lineHeight:1.55,marginBottom:8}}>Displayed on the client portal header and reports. Leave blank to use brand initials instead.</p>
+              </div>
+            </div>
+            <div className="rule rule-soft" style={{margin:'4px 0'}}/>
             <div className="eyebrow">Brand colour</div>
             <div className="flex gap-3" style={{flexWrap:'wrap',alignItems:'center'}}>
               {COLORS.map(c=><button key={c} type="button" onClick={()=>setColor(c)} style={{width:40,height:40,borderRadius:999,background:c,border:color===c?'2px solid var(--ink)':'1px solid var(--hairline)',outline:color===c?'2px solid var(--paper)':'none',outlineOffset:'-3px'}} aria-label={c}/>)}
@@ -1871,10 +2040,38 @@ function EditClientModal({client,onClose,onSave,onDelete}){
   );
 }
 
+// ─── LogoUpload ───────────────────────────────────────────────────────────────
+function LogoUpload({value,onChange,size}){
+  var inputRef=React.useRef(null);
+  function handleFile(e){
+    var file=e.target.files&&e.target.files[0];
+    if(!file)return;
+    var reader=new FileReader();
+    reader.onload=function(ev){onChange(ev.target.result);};
+    reader.readAsDataURL(file);
+  }
+  return(
+    <div>
+      <div className="logo-upload-area" style={{width:size==='lg'?120:88,height:size==='lg'?120:88}} onClick={function(){inputRef.current&&inputRef.current.click();}}>
+        {value
+          ?<img src={value} alt="Logo" style={{width:'100%',height:'100%',objectFit:'contain',borderRadius:8}}/>
+          :<div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6,color:'var(--ink-muted)'}}>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.4"><rect x="2" y="5" width="24" height="18" rx="2"/><circle cx="10" cy="12" r="2.5"/><path d="M2 20l8-7 8 7M18 20l4-3 4 3"/></svg>
+            <span className="lu-hint">Click to upload<br/>PNG, SVG, JPG</span>
+          </div>
+        }
+      </div>
+      {value&&<button type="button" className="btn sm ghost" style={{marginTop:6,fontSize:11}} onClick={function(){onChange('');}} >Remove</button>}
+      <input ref={inputRef} type="file" accept="image/*" style={{display:'none'}} onChange={handleFile}/>
+    </div>
+  );
+}
+
 // ─── Add Client Modal ──────────────────────────────────────────────────────────
 function AddClientModal({onClose,onSave}){
   const [tab,setTab]=React.useState('info');
   const [color,setColor]=React.useState('#1F3A5F');
+  const [logoUrl,setLogoUrl]=React.useState('');
   const [icp,setIcp]=React.useState('Agency');
   const [flow,setFlow]=React.useState('DIFM');
   const [touch,setTouch]=React.useState('High-Touch');
@@ -1901,7 +2098,7 @@ function AddClientModal({onClose,onSave}){
       id:'c'+uid(), name:name.trim(), icp, flow, touch,
       country:countryName, flag, color, mono,
       kickoff, am, dayIn:0, phase:'pre',
-      language:language, dir:autoDir, status:'active',
+      language:language, dir:autoDir, status:'active', logoUrl:logoUrl,
       contacts:cName?[{name:cName,role:cRole||'Contact',email:cEmail}]:[{name:'TBC',role:'Contact',email:''}],
       progress:{done:0,total:INITIAL_STEPS.length},
     });
@@ -2268,8 +2465,8 @@ function App(){
           onDelete={deleteStep} onStatusChange={statusChange}
           onEditClient={c=>{ if(c._delete||c._quickStatus){saveClient(c);}else setModal({kind:'editClient',client:c}); }}/>
       )}
-      {screen.kind==='plan'&&client&&<PlanView client={client} editable={view==='am'}/>}
-      {screen.kind==='client'&&client&&<ClientView client={client} steps={steps} onOpenPlan={()=>handleSetScreen({kind:'plan',clientId:client.id})} isPreview={true} onExitPreview={()=>handleSetView('am')}/>}
+      {screen.kind==='plan'&&client&&<Tracker client={client} steps={steps} setScreen={handleSetScreen} onPlanEdit={id=>handleSetScreen({kind:'plan',clientId:id})} onToggle={toggleStep} onEdit={s=>setModal({kind:'editStep',step:s})} onDelete={deleteStep} onStatusChange={statusChange} onEditClient={c=>{if(c._delete||c._quickStatus){saveClient(c);}else setModal({kind:'editClient',client:c});}} initialTab='plan'/>}
+      {screen.kind==='client'&&client&&<ClientView client={client} steps={steps} onOpenPlan={()=>handleSetScreen({kind:'plan',clientId:client.id})} isPreview={true} onExitPreview={()=>handleSetView('am')} onToggleStep={toggleStep}/>}
       {screen.kind==='team'&&<TeamPage team={team} onAdd={()=>setModal({kind:'addTeam'})} onDeleteMember={deleteMember}/>}
 
       {modal?.kind==='addClient'&&<AddClientModal onClose={()=>setModal(null)} onSave={addClient}/>}
