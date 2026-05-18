@@ -189,7 +189,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 .tracker-head .t-right{display:flex;flex-direction:column;align-items:flex-end;gap:12px;}
 /* Journey */
 .journey{position:relative;padding:40px 32px 28px;margin-bottom:32px;background:radial-gradient(circle at 14% 30%,var(--duda-soft) 0%,transparent 55%),radial-gradient(circle at 86% 70%,var(--grape-soft) 0%,transparent 55%),var(--surface);border:1px solid var(--hairline);border-radius:14px;overflow:hidden;}
-.journey-track{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.journey-track{position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
 .journey-line{position:absolute;top:56px;left:10%;right:10%;height:2px;border-radius:999px;background:var(--hairline);z-index:0;}
 .journey-line .jl-fill{position:absolute;left:0;top:0;height:100%;background:var(--ink);border-radius:999px;}
 .j-station{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 4px;border-radius:var(--r);transition:background .12s;min-height:130px;}
@@ -202,7 +202,7 @@ select.input{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 .j-station .s-name{font-size:14px;font-weight:700;letter-spacing:-0.014em;line-height:1.22;max-width:140px;min-height:36px;color:var(--ink);}
 .j-station .s-meta{font-size:11px;color:var(--ink-muted);margin-top:8px;font-weight:600;white-space:nowrap;}
 .j-station.current .s-meta{color:var(--duda-deep);font-weight:700;}
-.j-caption{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:20px;padding-top:18px;border-top:1px solid var(--hairline-soft);}
+.j-caption{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:20px;padding-top:18px;border-top:1px solid var(--hairline-soft);}
 .j-caption .jc-col{text-align:center;padding:0 8px;font-size:12px;color:var(--ink-muted);line-height:1.45;font-weight:500;}
 /* Phase / step */
 .phase-group{margin-bottom:40px;}
@@ -339,6 +339,53 @@ select.input{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg 
 .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s;}
 .twk-toggle[data-on="1"] i{transform:translateX(14px);}
 .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px;}
+/* Client theme variables — scoped to client-shell */
+.client-shell{
+  --ca: var(--client-accent, var(--duda));
+  --ca-soft: var(--client-accent-soft, var(--duda-soft));
+  --ca-ink: var(--client-accent-ink, var(--duda-ink));
+}
+.client-shell .client-mast{
+  background: radial-gradient(circle at 100% 0%, var(--ca-soft) 0%, transparent 45%), var(--surface);
+}
+.client-shell .client-title em{color:var(--ca);}
+.client-shell .eyebrow{color:var(--ca);}
+.client-shell .eyebrow::before{background:var(--ca);}
+.client-shell .j-station.current .s-dot{
+  background:var(--ca);border-color:var(--ca);box-shadow:0 0 0 8px var(--ca-soft);
+}
+.client-shell .j-station.done .s-dot{background:var(--ink);border-color:var(--ink);}
+.client-shell .cp-ring circle:last-child{stroke:var(--ca);}
+.client-shell .pill.progress{background:var(--ca-soft);color:var(--ca);}
+.client-shell .pill.progress .dot{background:var(--ca);}
+/* Confidence/status hero cards */
+.hero-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px;}
+.hero-card{background:var(--surface);border:1px solid var(--hairline);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden;transition:box-shadow .15s;}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.hero-card.card-stage::before{background:var(--ca,var(--duda));}
+.hero-card.card-action::before{background:var(--leaf);}
+.hero-card.card-duda::before{background:var(--grape);}
+.hero-card .hc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-muted);margin-bottom:8px;}
+.hero-card .hc-title{font-size:17px;font-weight:700;letter-spacing:-0.015em;line-height:1.3;color:var(--ink);}
+.hero-card .hc-sub{font-size:12px;color:var(--ink-muted);margin-top:6px;font-weight:500;line-height:1.4;}
+.hero-card .hc-action{margin-top:16px;}
+/* Confidence badge */
+.conf-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;font-size:12px;font-weight:600;border-radius:var(--r-pill);white-space:nowrap;}
+.conf-badge::before{content:'';width:7px;height:7px;border-radius:999px;flex-shrink:0;}
+.conf-badge.on-track{background:#DEF5EA;color:#0E6E4B;}.conf-badge.on-track::before{background:var(--leaf);}
+.conf-badge.needs-input{background:var(--sun-soft);color:#8B5E0E;}.conf-badge.needs-input::before{background:var(--sun);}
+.conf-badge.blocked{background:var(--crimson-soft);color:var(--crimson);}.conf-badge.blocked::before{background:var(--crimson);}
+.conf-badge.waiting{background:var(--grape-soft);color:#4A38D9;}.conf-badge.waiting::before{background:var(--grape);}
+/* Sticky help CTA */
+.sticky-help{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:90;pointer-events:none;}
+.sticky-help .sh-inner{pointer-events:all;display:flex;align-items:center;gap:10px;padding:10px 18px 10px 14px;background:var(--ink);color:#fff;border-radius:var(--r-pill);box-shadow:0 8px 24px rgba(20,20,26,.25);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform .15s,box-shadow .15s;}
+.sticky-help .sh-inner:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(20,20,26,.3);}
+/* Preview banner */
+.preview-banner{position:fixed;top:0;left:0;right:0;z-index:400;background:var(--ink);color:#fff;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;gap:12px;}
+.preview-banner .pb-badge{background:rgba(255,255,255,.15);padding:3px 10px;border-radius:var(--r-pill);font-size:11px;}
+@media(max-width:780px){
+  .hero-cards{grid-template-columns:1fr;}
+}
 /* Client status badges */
 .status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;font-size:11px;font-weight:600;border-radius:var(--r-pill);white-space:nowrap;}
 .status-badge::before{content:'';width:6px;height:6px;border-radius:999px;flex-shrink:0;}
@@ -561,12 +608,12 @@ const CLIENT_RESOURCES = [
 ];
 
 const INITIAL_CLIENTS = [
-  {id:'c1',name:'Northwind Marketing',icp:'Agency',flow:'DIFM',touch:'High-Touch',country:'United States',flag:'🇺🇸',color:'#1F3A5F',mono:'NW',kickoff:'2026-03-12',am:'Maya Levin',dayIn:62,phase:'p2',status:'active',contacts:[{name:'Adrian Park',role:'CEO',email:'adrian@northwind.co'},{name:'Jules Pham',role:'Web lead',email:'jules@northwind.co'}],progress:{done:8,total:38}},
-  {id:'c2',name:'Goldcrest Hosting',icp:'Hosting',flow:'Hybrid',touch:'High-Touch',country:'Netherlands',flag:'🇳🇱',color:'#B8854A',mono:'GC',kickoff:'2026-02-04',am:'Maya Levin',dayIn:98,phase:'p3',status:'active',contacts:[{name:'Anika de Vries',role:'COO',email:'anika@goldcrest.nl'}],progress:{done:19,total:38}},
-  {id:'c3',name:'Brio POS',icp:'POS / eCommerce',flow:'DIY',touch:'Low-Touch',country:'Brazil',flag:'🇧🇷',color:'#5C6B4A',mono:'BR',kickoff:'2026-04-22',am:'Maya Levin',dayIn:21,phase:'p1',status:'active',contacts:[{name:'Camila Souza',role:'Product',email:'cam@briopos.br'}],progress:{done:5,total:38}},
-  {id:'c4',name:'Harbor Lines',icp:'Listing / YP',flow:'Migration',touch:'High-Touch',country:'United Kingdom',flag:'🇬🇧',color:'#4F5A66',mono:'HL',kickoff:'2026-01-15',am:'Theo Nakamura',dayIn:118,phase:'p4',status:'active',contacts:[{name:'Priya Shah',role:'Director',email:'priya@harbor.uk'}],progress:{done:28,total:38}},
-  {id:'c5',name:'Verda SaaS',icp:'SaaS Platform',flow:'Marketplace',touch:'Low-Touch',country:'Germany',flag:'🇩🇪',color:'#A0392E',mono:'VE',kickoff:'2026-05-01',am:'Theo Nakamura',dayIn:12,phase:'pre',status:'active',contacts:[{name:'Jonas Becker',role:'PM',email:'jonas@verda.de'}],progress:{done:2,total:38}},
-  {id:'c6',name:'Solea Studio',icp:'Agency',flow:'DIFM',touch:'High-Touch',country:'Mexico',flag:'🇲🇽',color:'#B8543A',mono:'SO',kickoff:'2025-12-09',am:'Maya Levin',dayIn:155,phase:'p5',status:'active',contacts:[{name:'Inés Reyes',role:'Founder',email:'ines@solea.mx'}],progress:{done:35,total:38}},
+  {id:'c1',name:'Northwind Marketing',icp:'Agency',flow:'DIFM',touch:'High-Touch',country:'United States',flag:'🇺🇸',color:'#1F3A5F',mono:'NW',kickoff:'2026-03-12',am:'Maya Levin',dayIn:62,phase:'p2',status:'active',language:'en-US',dir:'ltr',contacts:[{name:'Adrian Park',role:'CEO',email:'adrian@northwind.co'},{name:'Jules Pham',role:'Web lead',email:'jules@northwind.co'}],progress:{done:8,total:38}},
+  {id:'c2',name:'Goldcrest Hosting',icp:'Hosting',flow:'Hybrid',touch:'High-Touch',country:'Netherlands',flag:'🇳🇱',color:'#B8854A',mono:'GC',kickoff:'2026-02-04',am:'Maya Levin',dayIn:98,phase:'p3',status:'active',language:'nl-NL',dir:'ltr',contacts:[{name:'Anika de Vries',role:'COO',email:'anika@goldcrest.nl'}],progress:{done:19,total:38}},
+  {id:'c3',name:'Brio POS',icp:'POS / eCommerce',flow:'DIY',touch:'Low-Touch',country:'Brazil',flag:'🇧🇷',color:'#5C6B4A',mono:'BR',kickoff:'2026-04-22',am:'Maya Levin',dayIn:21,phase:'p1',status:'active',language:'pt-BR',dir:'ltr',contacts:[{name:'Camila Souza',role:'Product',email:'cam@briopos.br'}],progress:{done:5,total:38}},
+  {id:'c4',name:'Harbor Lines',icp:'Listing / YP',flow:'Migration',touch:'High-Touch',country:'United Kingdom',flag:'🇬🇧',color:'#4F5A66',mono:'HL',kickoff:'2026-01-15',am:'Theo Nakamura',dayIn:118,phase:'p4',status:'active',language:'en-GB',dir:'ltr',contacts:[{name:'Priya Shah',role:'Director',email:'priya@harbor.uk'}],progress:{done:28,total:38}},
+  {id:'c5',name:'Verda SaaS',icp:'SaaS Platform',flow:'Marketplace',touch:'Low-Touch',country:'Germany',flag:'🇩🇪',color:'#A0392E',mono:'VE',kickoff:'2026-05-01',am:'Theo Nakamura',dayIn:12,phase:'pre',status:'active',language:'de-DE',dir:'ltr',contacts:[{name:'Jonas Becker',role:'PM',email:'jonas@verda.de'}],progress:{done:2,total:38}},
+  {id:'c6',name:'Solea Studio',icp:'Agency',flow:'DIFM',touch:'High-Touch',country:'Mexico',flag:'🇲🇽',color:'#B8543A',mono:'SO',kickoff:'2025-12-09',am:'Maya Levin',dayIn:155,phase:'p5',status:'active',language:'es-ES',dir:'ltr',contacts:[{name:'Inés Reyes',role:'Founder',email:'ines@solea.mx'}],progress:{done:35,total:38}},
 ];
 
 const INITIAL_TEAM = [
@@ -714,7 +761,10 @@ function JourneyStrip({phaseIdx,phaseProgress,stepCounts,onPhase}){
           const cls=i<phaseIdx?'done':i===phaseIdx?'current':'';
           const c=stepCounts[p.id]||{done:0,total:0};
           return(
-            <button key={p.id} type="button" className={`j-station ${cls}`} onClick={()=>onPhase?.(p.id)}>
+            <button key={p.id} type="button" className={`j-station ${cls}`}
+              aria-current={i===phaseIdx?'step':undefined}
+              aria-label={`${p.name}, ${c.done} of ${c.total} tasks`}
+              onClick={()=>onPhase?.(p.id)}>
               <span className="s-num">Phase {p.num}</span>
               <span className="s-dot"/>
               <span className="s-name">{p.name}</span>
@@ -926,6 +976,7 @@ function Dashboard({clients,setScreen,onAddClient,onEditClient}){
   const [activeTab,setActiveTab]=React.useState('all');
   const [search,setSearch]=React.useState('');
   const [showArchived,setShowArchived]=React.useState(false);
+  const [sortBy,setSortBy]=React.useState('dayIn');
   const needle=search.trim().toLowerCase();
 
   // Base: exclude deleted always; exclude archived unless toggle on
@@ -946,7 +997,12 @@ function Dashboard({clients,setScreen,onAddClient,onEditClient}){
       risk:c.progress.done/c.progress.total<0.25&&c.dayIn>20,
     };
     return ms&&mi&&mt&&(tabs[activeTab]??true);
-  }),[base,icp,touch,needle,activeTab]);
+  }).sort((a,b)=>{
+    if(sortBy==='risk'){const ra=(a.progress.done/a.progress.total<0.25&&a.dayIn>20)?0:1;const rb=(b.progress.done/b.progress.total<0.25&&b.dayIn>20)?0:1;return ra-rb;}
+    if(sortBy==='progress')return(a.progress.done/a.progress.total)-(b.progress.done/b.progress.total);
+    if(sortBy==='name')return a.name.localeCompare(b.name);
+    return b.dayIn-a.dayIn;
+  }),[base,icp,touch,needle,activeTab,sortBy]);
 
   const s=React.useMemo(()=>({
     total:base.length,
@@ -1003,6 +1059,12 @@ function Dashboard({clients,setScreen,onAddClient,onEditClient}){
           )}
         </div>
         <div className="t-right">
+          <select className="input" style={{width:145,fontSize:12}} value={sortBy} onChange={e=>setSortBy(e.target.value)} aria-label="Sort by">
+            <option value="dayIn">Sort: Day in</option>
+            <option value="risk">Sort: At risk</option>
+            <option value="progress">Sort: Progress</option>
+            <option value="name">Sort: Name</option>
+          </select>
           <button type="button" className="btn primary" onClick={onAddClient}>{I.plus} New client</button>
         </div>
       </section>
@@ -1104,7 +1166,7 @@ function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onS
 
       <div className="tab-row">
         {[{k:'journey',l:'Journey'},{k:'steps',l:'Checklist',cnt:steps.length},{k:'timeline',l:'Timeline'},{k:'plan',l:'60·90·180'},{k:'resources',l:'Resources',cnt:AM_RESOURCES.length},{k:'notes',l:'Notes'}].map(t=>(
-          <button key={t.k} type="button" className={tab===t.k?'on':''} onClick={()=>{if(t.k==='plan'){onPlanEdit(client.id);}else setTab(t.k);}}>
+          <button key={t.k} type="button" role="tab" aria-selected={tab===t.k} className={tab===t.k?'on':''} onClick={()=>{if(t.k==='plan'){onPlanEdit(client.id);}else setTab(t.k);}}>
             {t.l}{t.cnt!=null&&<span className="badge">{t.cnt}</span>}
           </button>
         ))}
@@ -1153,6 +1215,30 @@ function Tracker({client,steps,setScreen,onPlanEdit,onToggle,onEdit,onDelete,onS
 
       {tab==='steps'&&(
         <div>
+          {/* Checklist summary strip */}
+          {(()=>{
+            const today=28;
+            const open=steps.filter(s=>(s.owner.includes('Client')||s.owner==='Both')&&s.status!=='done'&&s.status!=='skip'&&s.status!=='na').length;
+            const blk=steps.filter(s=>s.status==='blocked'||s.status==='at_risk').length;
+            const ovd=steps.filter(s=>s.status!=='done'&&s.status!=='skip'&&s.status!=='na'&&s.due<today).length;
+            const done=steps.filter(s=>s.status==='done').length;
+            return(
+              <div className="flex gap-3" style={{marginBottom:20,flexWrap:'wrap'}}>
+                {[
+                  {label:'Client tasks open',n:open,color:open>0?'var(--sun)':'var(--leaf)'},
+                  {label:'Blocked / at risk',n:blk,color:blk>0?'var(--crimson)':'var(--leaf)'},
+                  {label:'Overdue',n:ovd,color:ovd>0?'var(--crimson)':'var(--leaf)'},
+                  {label:'Completed',n:done,color:'var(--leaf)'},
+                ].map(s=>(
+                  <div key={s.label} className="dash-stat" style={{flex:'1 1 120px',padding:'12px 16px',minWidth:100}}>
+                    <div style={{fontSize:10,textTransform:'uppercase',letterSpacing:'0.1em',color:'var(--ink-muted)',fontWeight:600}}>{s.label}</div>
+                    <div style={{fontSize:28,fontWeight:700,color:s.color,letterSpacing:'-0.03em',marginTop:6}}>{s.n}</div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+          {/* Workstream filter */}
           <div className="flex gap-2 items-center" style={{marginBottom:20,flexWrap:'wrap'}}>
             <div className="flex gap-2" style={{flexWrap:'wrap'}}>
               {['All',...allWs].map(w=><button key={w} type="button" className={`btn sm${wsFilter===w?' primary':''}`} onClick={()=>setWsFilter(w)}>{w}</button>)}
@@ -1248,118 +1334,454 @@ function PlanView({client,editable}){
 }
 
 // ─── Client view ───────────────────────────────────────────────────────────────
-function ClientView({client,steps,onOpenPlan}){
-  const [tab,setTab]=React.useState('overview');
-  const pi=PHASES.findIndex(p=>p.id===client.phase);
-  const pct=client.progress.total>0?client.progress.done/client.progress.total:0;
-  const stepCounts=getStepCounts(steps);
-  const cc=stepCounts[client.phase]||{done:0,total:1};
-  const curPhaseProgress=cc.total>0?cc.done/cc.total:0;
-  const clientTasks=steps.filter(s=>(s.owner.includes('Client')||s.owner==='Both')&&s.status!=='done'&&s.status!=='skip'&&s.status!=='na').slice(0,5);
-  const next=getNextStep(steps,client);
+// ── i18n translation dictionary ───────────────────────────────────────────
+const COPY = {
+  'en-US': {
+    welcomeBack:'Welcome back',yourOnboarding:'Your onboarding',dayOf:'day {day} of {total}',
+    youAreHere:'Where you are',nextTask:'Your next action',dudaWorking:'Duda is working on',
+    yourTasks:'To-do',resources:'Resources',milestones:'Milestones',overview:'Overview',
+    askQuestion:'Ask a question',stepProgress:'Step {done} of {total}',
+    onTrack:'On track',needsInput:'Needs your input',blocked:'Blocked',waiting:'Waiting on Duda',
+    onTrackMsg:'Everything is moving — no action needed from you right now.',
+    needsInputMsg:'We need a decision from you before we can continue.',
+    blockedMsg:'Something is blocked. Your AM is working to resolve it.',
+    waitingMsg:'No open tasks for you right now.',
+    noTasks:'Nothing on your plate right now. We'll notify you when there's something to do.',
+    noNextTask:'No open tasks',bookmark:'Bookmark this page — it updates automatically. No login needed.',
+    yourTeam:'Your Duda team',responds:'Account Manager · responds within 4 hrs',
+    poweredBy:'powered by',lastUpdated:'Last updated 2 hours ago',
+    askBtn:'Ask {am}',yourJourney:'Your journey',phases:'phases',
+    stepsTodo:'Open tasks',phaseLabel:'Step',intSetup:'Integration setup',
+    launchPrep:'Launch preparation',firstLaunchGroup:'First launch group',
+    doneForYou:'Done-for-you website build',
+    DIFM:'Done-for-you build',DIY:'Self-serve',Hybrid:'Mixed',Migration:'Migration',Marketplace:'Add-on',
+    previewingAs:'Previewing as client',backToAM:'Back to AM view',
+  },
+  'es-ES': {
+    welcomeBack:'Bienvenido de nuevo',yourOnboarding:'Tu incorporación',dayOf:'día {day} de {total}',
+    youAreHere:'Dónde estás',nextTask:'Tu próxima acción',dudaWorking:'Duda está trabajando en',
+    yourTasks:'Tareas',resources:'Recursos',milestones:'Hitos',overview:'Resumen',
+    askQuestion:'Hacer una pregunta',stepProgress:'Paso {done} de {total}',
+    onTrack:'En camino',needsInput:'Necesita tu acción',blocked:'Bloqueado',waiting:'Esperando a Duda',
+    onTrackMsg:'Todo avanza — no necesitamos nada de ti en este momento.',
+    needsInputMsg:'Necesitamos una decisión tuya antes de continuar.',
+    blockedMsg:'Algo está bloqueado. Tu AM está trabajando para resolverlo.',
+    waitingMsg:'Sin tareas abiertas por ahora.',
+    noTasks:'Sin tareas por ahora. Te avisaremos cuando haya algo.',
+    noNextTask:'Sin tareas abiertas',bookmark:'Guarda esta página — se actualiza automáticamente. Sin inicio de sesión.',
+    yourTeam:'Tu equipo en Duda',responds:'Account Manager · responde en 4 horas',
+    poweredBy:'creado con',lastUpdated:'Actualizado hace 2 horas',
+    askBtn:'Preguntarle a {am}',yourJourney:'Tu recorrido',phases:'fases',
+    stepsTodo:'Tareas abiertas',phaseLabel:'Paso',
+    DIFM:'Build gestionado',DIY:'Autoservicio',Hybrid:'Mixto',Migration:'Migración',Marketplace:'Add-on',
+    previewingAs:'Vista previa como cliente',backToAM:'Volver a vista AM',
+  },
+  'pt-BR': {
+    welcomeBack:'Bem-vindo de volta',yourOnboarding:'Seu onboarding',dayOf:'dia {day} de {total}',
+    youAreHere:'Onde você está',nextTask:'Sua próxima ação',dudaWorking:'A Duda está trabalhando em',
+    yourTasks:'Tarefas',resources:'Recursos',milestones:'Marcos',overview:'Visão geral',
+    askQuestion:'Fazer uma pergunta',stepProgress:'Passo {done} de {total}',
+    onTrack:'No caminho certo',needsInput:'Precisa da sua ação',blocked:'Bloqueado',waiting:'Aguardando Duda',
+    onTrackMsg:'Tudo avançando — nenhuma ação necessária agora.',
+    needsInputMsg:'Precisamos de uma decisão sua antes de continuar.',
+    blockedMsg:'Algo está bloqueado. Seu AM está trabalhando para resolver.',
+    waitingMsg:'Sem tarefas abertas por enquanto.',
+    noTasks:'Nenhuma tarefa no momento. Te avisamos quando houver algo.',
+    noNextTask:'Sem tarefas abertas',bookmark:'Salve esta página — ela se atualiza automaticamente. Sem login.',
+    yourTeam:'Sua equipe na Duda',responds:'Account Manager · responde em 4 horas',
+    poweredBy:'criado com',lastUpdated:'Atualizado há 2 horas',
+    askBtn:'Perguntar a {am}',yourJourney:'Sua jornada',phases:'fases',
+    stepsTodo:'Tarefas abertas',phaseLabel:'Passo',
+    DIFM:'Build gerenciado',DIY:'Autoatendimento',Hybrid:'Misto',Migration:'Migração',Marketplace:'Add-on',
+    previewingAs:'Visualizando como cliente',backToAM:'Voltar à visão AM',
+  },
+  'de-DE': {
+    welcomeBack:'Willkommen zurück',yourOnboarding:'Dein Onboarding',dayOf:'Tag {day} von {total}',
+    youAreHere:'Wo du bist',nextTask:'Deine nächste Aufgabe',dudaWorking:'Duda arbeitet gerade an',
+    yourTasks:'Aufgaben',resources:'Ressourcen',milestones:'Meilensteine',overview:'Übersicht',
+    askQuestion:'Frage stellen',stepProgress:'Schritt {done} von {total}',
+    onTrack:'Im Plan',needsInput:'Deine Eingabe erforderlich',blocked:'Blockiert',waiting:'Warten auf Duda',
+    onTrackMsg:'Alles läuft — keine Aktion von dir nötig.',
+    needsInputMsg:'Wir brauchen eine Entscheidung von dir, bevor wir weitermachen können.',
+    blockedMsg:'Etwas ist blockiert. Dein AM arbeitet an der Lösung.',
+    waitingMsg:'Keine offenen Aufgaben für dich.',
+    noTasks:'Gerade nichts auf deiner Liste. Wir melden uns.',
+    noNextTask:'Keine offenen Aufgaben',bookmark:'Lesezeichen setzen — aktualisiert sich automatisch. Kein Login.',
+    yourTeam:'Dein Duda-Team',responds:'Account Manager · antwortet in 4 Stunden',
+    poweredBy:'powered by',lastUpdated:'Zuletzt aktualisiert vor 2 Stunden',
+    askBtn:'{am} fragen',yourJourney:'Deine Reise',phases:'Phasen',
+    stepsTodo:'Offene Aufgaben',phaseLabel:'Schritt',
+    DIFM:'Managed Build',DIY:'Selbstservice',Hybrid:'Gemischt',Migration:'Migration',Marketplace:'Add-on',
+    previewingAs:'Vorschau als Kunde',backToAM:'Zur AM-Ansicht',
+  },
+  'fr-FR': {
+    welcomeBack:'Bienvenue',yourOnboarding:'Votre onboarding',dayOf:'jour {day} sur {total}',
+    youAreHere:'Où vous êtes',nextTask:'Votre prochaine action',dudaWorking:'Duda travaille sur',
+    yourTasks:'Tâches',resources:'Ressources',milestones:'Jalons',overview:'Aperçu',
+    askQuestion:'Poser une question',stepProgress:'Étape {done} sur {total}',
+    onTrack:'En bonne voie',needsInput:'Votre action requise',blocked:'Bloqué',waiting:'En attente de Duda',
+    onTrackMsg:'Tout avance — aucune action requise de votre part.',
+    needsInputMsg:'Nous avons besoin d'une décision de votre part pour continuer.',
+    blockedMsg:'Quelque chose est bloqué. Votre AM travaille à résoudre le problème.',
+    waitingMsg:'Pas de tâches ouvertes pour l'instant.',
+    noTasks:'Rien en attente. Nous vous informerons.',
+    noNextTask:'Aucune tâche ouverte',bookmark:'Enregistrez cette page — elle se met à jour automatiquement. Sans connexion.',
+    yourTeam:'Votre équipe Duda',responds:'Account Manager · répond en 4 heures',
+    poweredBy:'propulsé par',lastUpdated:'Mis à jour il y a 2 heures',
+    askBtn:'Demander à {am}',yourJourney:'Votre parcours',phases:'phases',
+    stepsTodo:'Tâches ouvertes',phaseLabel:'Étape',
+    DIFM:'Build géré',DIY:'Libre-service',Hybrid:'Mixte',Migration:'Migration',Marketplace:'Add-on',
+    previewingAs:'Aperçu vue client',backToAM:'Retour vue AM',
+  },
+  'nl-NL': {
+    welcomeBack:'Welkom terug',yourOnboarding:'Jouw onboarding',dayOf:'dag {day} van {total}',
+    youAreHere:'Waar je bent',nextTask:'Jouw volgende actie',dudaWorking:'Duda werkt aan',
+    yourTasks:'Taken',resources:'Bronnen',milestones:'Mijlpalen',overview:'Overzicht',
+    askQuestion:'Stel een vraag',stepProgress:'Stap {done} van {total}',
+    onTrack:'Op schema',needsInput:'Jouw actie vereist',blocked:'Geblokkeerd',waiting:'Wachten op Duda',
+    onTrackMsg:'Alles loopt goed — je hoeft nu niets te doen.',
+    needsInputMsg:'We hebben een beslissing van je nodig om verder te gaan.',
+    blockedMsg:'Er is iets geblokkeerd. Je AM werkt aan een oplossing.',
+    waitingMsg:'Geen openstaande taken op dit moment.',
+    noTasks:'Niets op je lijst. We laten het weten.',
+    noNextTask:'Geen openstaande taken',bookmark:'Sla deze pagina op als bladwijzer — automatisch bijgewerkt. Geen login.',
+    yourTeam:'Jouw Duda-team',responds:'Account Manager · reageert binnen 4 uur',
+    poweredBy:'aangedreven door',lastUpdated:'2 uur geleden bijgewerkt',
+    askBtn:'{am} vragen',yourJourney:'Jouw reis',phases:'fasen',
+    stepsTodo:'Openstaande taken',phaseLabel:'Stap',
+    DIFM:'Beheerde build',DIY:'Zelfservice',Hybrid:'Gemengd',Migration:'Migratie',Marketplace:'Add-on',
+    previewingAs:'Voorvertoning klantweergave',backToAM:'Terug naar AM-weergave',
+  },
+  'it-IT': {
+    welcomeBack:'Bentornato',yourOnboarding:'Il tuo onboarding',dayOf:'giorno {day} di {total}',
+    youAreHere:'Dove sei',nextTask:'La tua prossima azione',dudaWorking:'Duda sta lavorando su',
+    yourTasks:'Attività',resources:'Risorse',milestones:'Traguardi',overview:'Panoramica',
+    askQuestion:'Fai una domanda',stepProgress:'Passo {done} di {total}',
+    onTrack:'In linea',needsInput:'Richiesta la tua azione',blocked:'Bloccato',waiting:'In attesa di Duda',
+    onTrackMsg:'Tutto procede bene — nessuna azione richiesta da parte tua.',
+    needsInputMsg:'Abbiamo bisogno di una tua decisione per continuare.',
+    blockedMsg:'C'è un blocco. Il tuo AM sta lavorando per risolverlo.',
+    waitingMsg:'Nessuna attività aperta al momento.',
+    noTasks:'Niente in lista. Ti avviseremo.',
+    noNextTask:'Nessuna attività aperta',bookmark:'Salva questa pagina — si aggiorna automaticamente. Senza accesso.',
+    yourTeam:'Il tuo team Duda',responds:'Account Manager · risponde entro 4 ore',
+    poweredBy:'realizzato con',lastUpdated:'Aggiornato 2 ore fa',
+    askBtn:'Chiedi a {am}',yourJourney:'Il tuo percorso',phases:'fasi',
+    stepsTodo:'Attività aperte',phaseLabel:'Passo',
+    DIFM:'Build gestito',DIY:'Self-service',Hybrid:'Misto',Migration:'Migrazione',Marketplace:'Add-on',
+    previewingAs:'Anteprima vista cliente',backToAM:'Torna alla vista AM',
+  },
+  'he-IL': {
+    welcomeBack:'ברוך שובך',yourOnboarding:'תהליך הקליטה שלך',dayOf:'יום {day} מתוך {total}',
+    youAreHere:'איפה אתה נמצא',nextTask:'הפעולה הבאה שלך',dudaWorking:'Duda עובדת על',
+    yourTasks:'משימות',resources:'משאבים',milestones:'אבני דרך',overview:'סקירה כללית',
+    askQuestion:'שאל שאלה',stepProgress:'שלב {done} מתוך {total}',
+    onTrack:'בזמן',needsInput:'נדרשת פעולה שלך',blocked:'חסום',waiting:'מחכה ל-Duda',
+    onTrackMsg:'הכל מתקדם — אין צורך בפעולה שלך כעת.',
+    needsInputMsg:'אנחנו צריכים החלטה שלך לפני שנוכל להמשיך.',
+    blockedMsg:'משהו חסום. ה-AM שלך עובד על פתרון.',
+    waitingMsg:'אין משימות פתוחות כרגע.',
+    noTasks:'אין משימות כרגע. נעדכן אותך.',
+    noNextTask:'אין משימות פתוחות',bookmark:'סמן עמוד זה — מתעדכן אוטומטית. ללא התחברות.',
+    yourTeam:'הצוות שלך ב-Duda',responds:'מנהל חשבון · מגיב תוך 4 שעות',
+    poweredBy:'מופעל על ידי',lastUpdated:'עודכן לפני שעתיים',
+    askBtn:'שאל את {am}',yourJourney:'המסע שלך',phases:'שלבים',
+    stepsTodo:'משימות פתוחות',phaseLabel:'שלב',
+    DIFM:'בנייה מנוהלת',DIY:'שירות עצמי',Hybrid:'משולב',Migration:'מיגרציה',Marketplace:'תוסף',
+    previewingAs:'תצוגה מקדימה כלקוח',backToAM:'חזרה לתצוגת AM',
+  },
+  'ja-JP': {
+    welcomeBack:'おかえりなさい',yourOnboarding:'オンボーディング',dayOf:'{total}日中{day}日目',
+    youAreHere:'現在地',nextTask:'次のアクション',dudaWorking:'Dudaが対応中',
+    yourTasks:'タスク',resources:'リソース',milestones:'マイルストーン',overview:'概要',
+    askQuestion:'質問する',stepProgress:'{total}ステップ中{done}完了',
+    onTrack:'順調',needsInput:'あなたの対応が必要',blocked:'ブロック中',waiting:'Duda対応待ち',
+    onTrackMsg:'順調に進んでいます。現在、あなたの対応は不要です。',
+    needsInputMsg:'続行する前に、あなたの判断が必要です。',
+    blockedMsg:'問題が発生しています。AMが解決に取り組んでいます。',
+    waitingMsg:'現在、開いているタスクはありません。',
+    noTasks:'現在タスクはありません。お知らせします。',
+    noNextTask:'タスクなし',bookmark:'このページをブックマーク — 自動更新されます。ログイン不要。',
+    yourTeam:'DudaチームAM',responds:'アカウントマネージャー · 4時間以内に返信',
+    poweredBy:'powered by',lastUpdated:'2時間前に更新',
+    askBtn:'{am}に質問',yourJourney:'あなたの旅',phases:'フェーズ',
+    stepsTodo:'オープンタスク',phaseLabel:'ステップ',
+    DIFM:'代行ビルド',DIY:'セルフサービス',Hybrid:'ハイブリッド',Migration:'移行',Marketplace:'アドオン',
+    previewingAs:'クライアントビューでプレビュー中',backToAM:'AMビューに戻る',
+  },
+};
 
-  const phaseCopy=[
-    'We\'re setting up your workspace — everything starts here.',
-    'We\'re listening and mapping your journey together.',
-    'Your platform is taking shape — design and configuration in progress.',
-    'Building the technical foundation: APIs, integrations and automations.',
-    'Almost there — training your team and preparing for launch.',
-    'Live and growing. The next chapter begins.',
-  ][Math.max(0,pi)];
+function t(lang, key, vars={}) {
+  const dict = COPY[lang] || COPY['en-US'];
+  let v = dict[key] ?? (COPY['en-US'][key] ?? key);
+  Object.entries(vars).forEach(([k,val]) => { v = v.replace('{'+k+'}', val); });
+  return v;
+}
+
+// Client-phase friendly names (per language)
+const PHASE_LABELS = {
+  'en-US': ['Pre-Onboarding','First Steps','Design & Setup','Integration Setup','Launch Preparation','Live & Growing'],
+  'es-ES': ['Pre-incorporación','Primeros pasos','Diseño y configuración','Integración','Preparación del lanzamiento','En vivo'],
+  'pt-BR': ['Pré-onboarding','Primeiros passos','Design e configuração','Integração','Preparação para lançamento','Ao vivo'],
+  'de-DE': ['Vorbereitungen','Erste Schritte','Design & Einrichtung','Integration','Startvorbereitung','Live'],
+  'fr-FR': ['Pré-onboarding','Premiers pas','Conception & configuration','Intégration','Préparation au lancement','En ligne'],
+  'nl-NL': ['Voorbereiding','Eerste stappen','Ontwerp & inrichting','Integratie','Lanceringsvoorbereiding','Live'],
+  'it-IT': ['Pre-onboarding','Primi passi','Design e configurazione','Integrazione','Preparazione al lancio','Live'],
+  'he-IL': ['טרום-קליטה','צעדים ראשונים','עיצוב והגדרה','אינטגרציה','הכנה להשקה','בשידור חי'],
+  'ja-JP': ['事前準備','最初のステップ','設計・セットアップ','インテグレーション','ローンチ準備','稼働中'],
+};
+
+// Derive client theme colours from brand colour
+function makeClientTheme(hex) {
+  const h = (hex||'#FB673E').replace('#','');
+  const r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+  const lum = (0.299*r + 0.587*g + 0.114*b)/255;
+  const textColor = lum > 0.6 ? '#14141A' : '#FFFFFF';
+  // Generate a soft version: mix 18% toward white
+  const mix = (x) => Math.round(x + (255-x)*0.82);
+  const soft = '#' + [r,g,b].map(x=>mix(x).toString(16).padStart(2,'0')).join('');
+  // Ink version: darken by 30%
+  const darken = (x) => Math.round(x*0.55);
+  const ink = '#' + [r,g,b].map(x=>darken(x).toString(16).padStart(2,'0')).join('');
+  return { accent:hex, soft, ink, textColor };
+}
+
+// Compute onboarding confidence status
+function getConfidence(steps, client) {
+  const today = 28;
+  const blocked = steps.filter(s=>s.status==='blocked'||s.status==='at_risk').length;
+  const overdue = steps.filter(s=>s.status!=='done'&&s.status!=='skip'&&s.status!=='na'&&s.due<today).length;
+  const clientPending = steps.filter(s=>(s.owner.includes('Client')||s.owner==='Both')&&s.status!=='done'&&s.status!=='skip'&&s.status!=='na').length;
+  const dudaPending = steps.filter(s=>s.owner.includes('Duda')&&!s.owner.includes('Client')&&s.status==='progress').length;
+  if(blocked>0||overdue>2) return 'blocked';
+  if(clientPending>0) return 'needs-input';
+  if(dudaPending>0) return 'waiting';
+  return 'on-track';
+}
+
+// ClientView — rebuilt as action-first hub
+function ClientView({client, steps, onOpenPlan, isPreview, onExitPreview}){
+  const lang = client.language || 'en-US';
+  const dir = client.dir || 'ltr';
+  const [tab,setTab] = React.useState('overview');
+
+  const theme = React.useMemo(()=>makeClientTheme(client.color),[client.color]);
+  const pi = PHASES.findIndex(p=>p.id===client.phase);
+  const pct = client.progress.total>0 ? client.progress.done/client.progress.total : 0;
+  const stepCounts = getStepCounts(steps);
+  const cc = stepCounts[client.phase]||{done:0,total:1};
+  const curPhaseProgress = cc.total>0 ? cc.done/cc.total : 0;
+
+  const clientTasks = steps.filter(s=>(s.owner.includes('Client')||s.owner==='Both')&&s.status!=='done'&&s.status!=='skip'&&s.status!=='na');
+  const dudaActiveTasks = steps.filter(s=>s.owner.includes('Duda')&&!s.owner.includes('Client')&&(s.status==='progress'||s.status==='not')).slice(0,2);
+  const nextClientTask = clientTasks[0]||null;
+  const nextDudaTask = dudaActiveTasks[0]||null;
+  const confidence = getConfidence(steps, client);
+  const phaseLabels = PHASE_LABELS[lang] || PHASE_LABELS['en-US'];
+  const phaseFriendly = phaseLabels[Math.max(0,pi)] || PHASES[pi]?.name;
+  const firstContact = client.contacts[0];
+  const amFirst = client.am.split(' ')[0];
+
+  const CONF_CONFIG = {
+    'on-track':    {cls:'on-track',    labelKey:'onTrack',    msgKey:'onTrackMsg'},
+    'needs-input': {cls:'needs-input', labelKey:'needsInput', msgKey:'needsInputMsg'},
+    'blocked':     {cls:'blocked',     labelKey:'blocked',    msgKey:'blockedMsg'},
+    'waiting':     {cls:'waiting',     labelKey:'waiting',    msgKey:'waitingMsg'},
+  };
+  const conf = CONF_CONFIG[confidence] || CONF_CONFIG['on-track'];
+
+  const tabLabels = [
+    {k:'overview', l:t(lang,'overview')},
+    {k:'tasks',    l:t(lang,'yourTasks'), cnt:clientTasks.length},
+    {k:'resources',l:t(lang,'resources')},
+    {k:'plan',     l:t(lang,'milestones')},
+  ];
 
   return(
-    <div className="client-shell">
-      <section className="client-mast">
+    <div className="client-shell" lang={lang} dir={dir}
+      style={{'--client-accent':theme.accent,'--client-accent-soft':theme.soft,'--client-accent-ink':theme.ink}}>
+
+      {/* Preview banner — shown when AM is previewing client view */}
+      {isPreview&&(
+        <div className="preview-banner">
+          <div className="flex items-center gap-3">
+            <span className="pb-badge">Preview</span>
+            <span>{t(lang,'previewingAs')} · {client.name}</span>
+          </div>
+          <button type="button" className="btn sm" style={{background:'rgba(255,255,255,.15)',border:'none',color:'#fff'}} onClick={onExitPreview}>
+            {I.arrowL} {t(lang,'backToAM')}
+          </button>
+        </div>
+      )}
+
+      {/* Masthead */}
+      <section className="client-mast" style={{paddingTop: isPreview ? 96 : undefined}}>
         <div className="container">
-          <p style={{fontSize:13,color:'var(--ink-muted)',fontWeight:600}}>Welcome back, {client.contacts[0].name.split(' ')[0]} —</p>
-          <h1 className="client-title">Your <em>onboarding</em>,<br/>day <span className="num" style={{fontWeight:500}}>{client.dayIn}</span> of <span className="num" style={{fontWeight:500}}>180</span>.</h1>
-          <p style={{fontSize:18,lineHeight:1.55,fontWeight:400,color:'var(--ink-muted)',maxWidth:600,marginTop:20}}>"{phaseCopy}"</p>
-          <div className="client-progress">
-            <ProgressRing pct={pct}/>
-            <div className="cp-meta">
-              <div className="cp-label">You are here</div>
-              <div className="cp-value">{PHASES[pi]?.name}</div>
-              <div className="cp-sub">{client.progress.done} of {client.progress.total} tasks complete · {client.am}</div>
+          <p style={{fontSize:13,color:'var(--ink-muted)',fontWeight:600}}>
+            {t(lang,'welcomeBack')}, {firstContact.name.split(' ')[0]} —
+          </p>
+          <h1 className="client-title">
+            {t(lang,'yourOnboarding')},<br/>
+            <span className="num" style={{fontWeight:500}}>{t(lang,'dayOf',{day:client.dayIn,total:180})}</span>.
+          </h1>
+
+          {/* Confidence badge */}
+          <div style={{marginTop:16}}>
+            <span className={`conf-badge ${conf.cls}`}>{t(lang,conf.labelKey)}</span>
+            <p style={{fontSize:14,color:'var(--ink-muted)',marginTop:8,maxWidth:520,lineHeight:1.5}}>
+              {t(lang,conf.msgKey)}
+            </p>
+          </div>
+
+          {/* Three hero cards */}
+          <div className="hero-cards">
+            {/* Card 1 — Current stage */}
+            <div className="hero-card card-stage">
+              <div className="hc-label">{t(lang,'youAreHere')}</div>
+              <div className="hc-title">{phaseFriendly}</div>
+              <div className="hc-sub">
+                {t(lang,'stepProgress',{done:client.progress.done,total:client.progress.total})}
+              </div>
+              <div style={{marginTop:12}}>
+                <ProgressRing pct={pct}/>
+              </div>
             </div>
-            <div style={{textAlign:'right'}}>
-              <div style={{fontSize:10,textTransform:'uppercase',letterSpacing:'0.14em',color:'var(--ink-muted)',fontWeight:600}}>Next task</div>
-              <div style={{fontSize:20,marginTop:4,fontWeight:600}}>{next?next.title:'Plan review'}</div>
-              <div className="muted text-sm">{next?`Expected by ${dayLabel(next.due)}`:'No open tasks'}</div>
+
+            {/* Card 2 — Next client action */}
+            <div className="hero-card card-action">
+              <div className="hc-label">{t(lang,'nextTask')}</div>
+              {nextClientTask
+                ? <>
+                    <div className="hc-title">{nextClientTask.title}</div>
+                    <div className="hc-sub">{nextClientTask.why}</div>
+                    <div className="hc-action flex gap-2 items-center">
+                      <Pill kind={nextClientTask.status}/>
+                      <span className="muted text-xs">{dayLabel(nextClientTask.due)}</span>
+                    </div>
+                  </>
+                : <>
+                    <div className="hc-title" style={{color:'var(--ink-muted)'}}>{t(lang,'noNextTask')}</div>
+                    <div className="hc-sub">{t(lang,'waitingMsg')}</div>
+                  </>
+              }
+            </div>
+
+            {/* Card 3 — Duda is working on */}
+            <div className="hero-card card-duda">
+              <div className="hc-label">{t(lang,'dudaWorking')}</div>
+              {nextDudaTask
+                ? <>
+                    <div className="hc-title">{nextDudaTask.title}</div>
+                    <div className="hc-sub">{nextDudaTask.why}</div>
+                    <div className="hc-action"><Pill kind={nextDudaTask.status}/></div>
+                  </>
+                : <div className="hc-title" style={{color:'var(--ink-muted)',fontSize:14}}>{t(lang,'noNextTask')}</div>
+              }
             </div>
           </div>
         </div>
       </section>
 
-      <section style={{padding:'48px 64px',maxWidth:1100,margin:'0 auto'}}>
-        <div className="tab-row">
-          <button type="button" className={tab==='overview'?'on':''} onClick={()=>setTab('overview')}>Overview</button>
-          <button type="button" className={tab==='tasks'?'on':''} onClick={()=>setTab('tasks')}>Your tasks <span className="badge">{clientTasks.length}</span></button>
-          <button type="button" className={tab==='resources'?'on':''} onClick={()=>setTab('resources')}>Resources</button>
-          <button type="button" className={tab==='plan'?'on':''} onClick={()=>{setTab('plan');onOpenPlan();}}>60·90·180 plan</button>
+      {/* Body */}
+      <section style={{padding:'40px 64px',maxWidth:1100,margin:'0 auto'}}>
+        <div className="tab-row" role="tablist">
+          {tabLabels.map(tb=>(
+            <button key={tb.k} type="button" role="tab" aria-selected={tab===tb.k}
+              className={tab===tb.k?'on':''} onClick={()=>{ if(tb.k==='plan'){setTab('plan');onOpenPlan();}else setTab(tb.k); }}>
+              {tb.l}{tb.cnt!=null&&<span className="badge">{tb.cnt}</span>}
+            </button>
+          ))}
         </div>
 
+        {/* Overview tab */}
         {tab==='overview'&&(
           <div className="rail">
             <div>
-              <div className="eyebrow" style={{marginBottom:12}}>Your journey</div>
-              <h2 className="h1" style={{marginBottom:20}}>{PHASES.length} phases, written down.</h2>
+              <div className="eyebrow" style={{marginBottom:12}}>{t(lang,'yourJourney')}</div>
+              <h2 className="h1" style={{marginBottom:20}}>{PHASES.length} {t(lang,'phases')}.</h2>
               <JourneyStrip phaseIdx={pi} phaseProgress={curPhaseProgress} stepCounts={stepCounts}/>
+
+              {/* Open client tasks preview */}
               {clientTasks.length>0&&(
                 <div style={{marginTop:32}}>
-                  <div className="eyebrow" style={{marginBottom:12}}>What we need from you</div>
+                  <div className="flex items-center justify-between" style={{marginBottom:12}}>
+                    <div className="eyebrow">{t(lang,'yourTasks')}</div>
+                    <button type="button" className="btn sm ghost" onClick={()=>setTab('tasks')}>{I.arrow}</button>
+                  </div>
                   <div className="card" style={{overflow:'hidden'}}>
-                    {clientTasks.map(s=>(
+                    {clientTasks.slice(0,3).map(s=>(
                       <div key={s.id} className="step-row" style={{padding:'14px 20px',gridTemplateColumns:'28px 1fr auto auto',cursor:'default'}}>
-                        <span className="step-check" style={{cursor:'default'}}/>
+                        <span className="step-check" style={{cursor:'default'}}>{s.status==='done'&&I.check}</span>
                         <div className="step-title"><b>{s.title}</b><div className="s-why">{s.why}</div></div>
                         <span className="step-due">{dayLabel(s.due)}</span>
                         <Pill kind={s.status}/>
                       </div>
                     ))}
+                    {clientTasks.length>3&&(
+                      <div style={{padding:'12px 20px',borderTop:'1px solid var(--hairline-soft)'}}>
+                        <button type="button" className="btn ghost sm" onClick={()=>setTab('tasks')}>
+                          +{clientTasks.length-3} more tasks {I.arrow}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
-              <div style={{marginTop:36,paddingTop:28,borderTop:'1px solid var(--hairline)'}}>
-                <div className="eyebrow" style={{marginBottom:8}}>Have a question?</div>
-                <h3 className="h2" style={{marginBottom:8}}>Ask anywhere, anytime.</h3>
-                <p className="muted text-md" style={{maxWidth:440,marginBottom:14}}>Tap the speech bubble on any task. Your AM gets notified and replies in the same thread.</p>
-                <button type="button" className="btn">Ask {client.am.split(' ')[0]} {I.arrow}</button>
-              </div>
+              {clientTasks.length===0&&(
+                <div className="card card-pad" style={{marginTop:32,textAlign:'center',color:'var(--ink-muted)',fontStyle:'italic'}}>
+                  {t(lang,'noTasks')}
+                </div>
+              )}
             </div>
             <aside>
               <div className="rail-card">
-                <div className="eyebrow">Your Duda team</div>
+                <div className="eyebrow">{t(lang,'yourTeam')}</div>
                 <div className="flex items-center gap-3" style={{marginTop:14}}>
-                  <span className="avatar" style={{width:42,height:42,fontSize:14,background:'var(--ink)'}}>ML</span>
-                  <div><div style={{fontSize:17,fontWeight:600}}>{client.am}</div><div className="muted text-xs">AM · responds within 4 hrs</div></div>
+                  <span className="avatar" style={{width:42,height:42,fontSize:14,background:'var(--ink)'}}>
+                    {ini(client.am)}
+                  </span>
+                  <div>
+                    <div style={{fontSize:17,fontWeight:600}}>{client.am}</div>
+                    <div className="muted text-xs">{t(lang,'responds')}</div>
+                  </div>
                 </div>
                 <div style={{marginTop:16,paddingTop:14,borderTop:'1px solid var(--hairline-soft)'}}>
                   <div className="text-xs muted">maya@duda.co</div>
                   <div className="text-xs muted" style={{marginTop:4}}>+1 (415) 555-0142</div>
                 </div>
+                <button type="button" className="btn" style={{marginTop:16,width:'100%',justifyContent:'center'}}>
+                  {t(lang,'askBtn',{am:amFirst})} {I.arrow}
+                </button>
               </div>
-              <div className="rail-card" style={{marginTop:0}}>
-                <div className="eyebrow">This page</div>
-                <p style={{fontStyle:'italic',fontSize:14,lineHeight:1.55,marginTop:8,color:'var(--ink-2)'}}>Bookmark this — it updates automatically. No login. Only people with the link can see it.</p>
+              <div className="rail-card">
+                <div className="eyebrow">{t(lang,'yourJourney')}</div>
+                <p style={{fontStyle:'italic',fontSize:13.5,lineHeight:1.55,marginTop:8,color:'var(--ink-2)'}}>
+                  {t(lang,'bookmark')}
+                </p>
               </div>
             </aside>
           </div>
         )}
 
+        {/* Tasks tab */}
         {tab==='tasks'&&(
           <div>
-            <div style={{marginBottom:16}}>
-              <div className="eyebrow" style={{marginBottom:6}}>What we need from you</div>
-              <p className="muted text-sm">Tasks assigned to your team, across all phases.</p>
+            <div style={{marginBottom:20}}>
+              <div className="eyebrow" style={{marginBottom:6}}>{t(lang,'stepsTodo')}</div>
+              <p className="muted text-sm">All tasks assigned to your team, across every phase.</p>
             </div>
-            {steps.filter(s=>s.owner.includes('Client')||s.owner==='Both').length===0
-              ?<div className="card card-pad" style={{textAlign:'center',color:'var(--ink-muted)'}}>No tasks assigned to your team yet.</div>
+            {clientTasks.length===0
+              ?<div className="card card-pad" style={{textAlign:'center',color:'var(--ink-muted)'}}>{t(lang,'noTasks')}</div>
               :PHASES.map(p=>{
                 const ps=steps.filter(s=>s.phase===p.id&&(s.owner.includes('Client')||s.owner==='Both'));
                 if(!ps.length)return null;
+                const pLabel = (PHASE_LABELS[lang]||PHASE_LABELS['en-US'])[PHASES.indexOf(p)]||p.name;
                 return(
                   <div key={p.id} className="phase-group">
-                    <div className="phase-head"><span className="ph-num">{p.num}</span><h2 className="h2 ph-h2">{p.name}</h2></div>
+                    <div className="phase-head">
+                      <span className="ph-num">{p.num}</span>
+                      <h2 className="h2 ph-h2">{pLabel}</h2>
+                    </div>
                     {ps.map(s=>(
                       <div key={s.id} className="step-row" style={{cursor:'default',gridTemplateColumns:'28px 1fr auto auto'}}>
                         <span className="step-check" style={{cursor:'default'}}>{s.status==='done'&&I.check}</span>
@@ -1375,21 +1797,30 @@ function ClientView({client,steps,onOpenPlan}){
           </div>
         )}
 
+        {/* Resources tab */}
         {tab==='resources'&&(
           <ResourcesPanel
             resources={CLIENT_RESOURCES}
-            title="Resources for your team"
-            subtitle="Training, guides, and checklists to help you succeed on Duda."
+            title={t(lang,'resources')}
+            subtitle="Training, guides, and checklists to help your team succeed on Duda."
             clientIcp={client.icp}
             clientFlow={client.flow}
           />
         )}
       </section>
 
-      <footer style={{padding:'28px 64px',borderTop:'1px solid var(--hairline)',color:'var(--ink-muted)',fontSize:12}}>
+      {/* Sticky help CTA */}
+      <div className="sticky-help">
+        <button type="button" className="sh-inner" onClick={()=>setTab('overview')}>
+          <span style={{fontSize:16}}>💬</span>
+          {t(lang,'askQuestion')} · {amFirst}
+        </button>
+      </div>
+
+      <footer style={{padding:'28px 64px 72px',borderTop:'1px solid var(--hairline)',color:'var(--ink-muted)',fontSize:12}}>
         <div style={{maxWidth:1100,margin:'0 auto',display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
-          <span>{client.name} · Onboarding · powered by <b style={{color:'var(--ink)'}}>Duda</b></span>
-          <span className="num">Last updated 2 hours ago</span>
+          <span>{client.name} · {t(lang,'poweredBy')} <b style={{color:'var(--ink)'}}>Duda</b></span>
+          <span className="num">{t(lang,'lastUpdated')}</span>
         </div>
       </footer>
     </div>
@@ -1517,6 +1948,7 @@ function EditClientModal({client,onClose,onSave,onDelete}){
   const [am,setAm]=React.useState(client.am);
   const [color,setColor]=React.useState(client.color);
   const [kickoff,setKickoff]=React.useState(client.kickoff);
+  const [language,setLanguage]=React.useState(client.language||'en-US');
   const [status,setStatus]=React.useState(client.status||'active');
   const [phase,setPhase]=React.useState(client.phase);
   // Contact 0
@@ -1536,8 +1968,9 @@ function EditClientModal({client,onClose,onSave,onDelete}){
   function handleSave(){
     if(!name.trim()){alert('Name is required.');return;}
     const mono=name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2)||'??';
+    const dir=language==='he-IL'?'rtl':'ltr';
     const updated={
-      ...client, name:name.trim(), icp, flow, touch, am, color, kickoff, status, phase, mono,
+      ...client, name:name.trim(), icp, flow, touch, am, color, kickoff, status, phase, mono, language, dir,
       contacts:[{name:cName,role:cRole,email:cEmail},...client.contacts.slice(1)],
     };
     onSave(updated);
@@ -1632,6 +2065,16 @@ function EditClientModal({client,onClose,onSave,onDelete}){
 
         {tab==='brand'&&(
           <div className="flex-col gap-5">
+            <div className="field">
+              <label>Client language</label>
+              <select className="input" value={language} onChange={e=>setLanguage(e.target.value)}>
+                {[{c:'en-US',l:'English (US)'},{c:'en-GB',l:'English (UK)'},{c:'es-ES',l:'Español'},{c:'pt-BR',l:'Português'},{c:'de-DE',l:'Deutsch'},{c:'fr-FR',l:'Français'},{c:'nl-NL',l:'Nederlands'},{c:'it-IT',l:'Italiano'},{c:'he-IL',l:'עברית (RTL)'},{c:'ja-JP',l:'日本語'}].map(({c,l})=>
+                  <option key={c} value={c}>{l}</option>
+                )}
+              </select>
+              <p className="muted text-xs" style={{marginTop:4}}>Sets the language of the client-facing portal for this account.</p>
+            </div>
+            <div className="rule rule-soft" style={{margin:'4px 0'}}/>
             <div className="eyebrow">Brand colour</div>
             <div className="flex gap-3" style={{flexWrap:'wrap',alignItems:'center'}}>
               {COLORS.map(c=><button key={c} type="button" onClick={()=>setColor(c)} style={{width:40,height:40,borderRadius:999,background:c,border:color===c?'2px solid var(--ink)':'1px solid var(--hairline)',outline:color===c?'2px solid var(--paper)':'none',outlineOffset:'-3px'}} aria-label={c}/>)}
@@ -1669,6 +2112,7 @@ function AddClientModal({onClose,onSave}){
   const [cRole,setCRole]=React.useState('');
   const [cEmail,setCEmail]=React.useState('');
   const [country,setCountry]=React.useState('🇺🇸 United States');
+  const [language,setLanguage]=React.useState('en-US');
   const [am,setAm]=React.useState('Maya Levin');
 
   const COUNTRIES=['🇺🇸 United States','🇬🇧 United Kingdom','🇨🇦 Canada','🇦🇺 Australia','🇩🇪 Germany','🇫🇷 France','🇳🇱 Netherlands','🇧🇪 Belgium','🇨🇭 Switzerland','🇦🇹 Austria','🇪🇸 Spain','🇮🇹 Italy','🇵🇹 Portugal','🇸🇪 Sweden','🇩🇰 Denmark','🇳🇴 Norway','🇫🇮 Finland','🇵🇱 Poland','🇧🇷 Brazil','🇲🇽 Mexico','🇦🇷 Argentina','🇨🇴 Colombia','🇨🇱 Chile','🇮🇱 Israel','🇦🇪 UAE','🇸🇦 Saudi Arabia','🇹🇷 Turkey','🇯🇵 Japan','🇰🇷 South Korea','🇮🇳 India','🇸🇬 Singapore','🇿🇦 South Africa','🇳🇬 Nigeria','🇰🇪 Kenya'];
@@ -2040,14 +2484,7 @@ function App(){
   return(
     <>
       {!isClient&&<Topbar view={view} setView={handleSetView} screen={screen} setScreen={handleSetScreen} client={client}/>}
-      {isClient&&(
-        <div style={{position:'fixed',top:16,right:16,zIndex:300}}>
-          <div className="view-toggle" style={{boxShadow:'0 4px 16px rgba(20,20,26,.1)'}}>
-            <button type="button" className={view==='am'?'on':''} onClick={()=>handleSetView('am')}>AM view</button>
-            <button type="button" className={view==='client'?'on':''} onClick={()=>handleSetView('client')}>Client view</button>
-          </div>
-        </div>
-      )}
+
 
       {screen.kind==='dashboard'&&<Dashboard clients={clients} setScreen={handleSetScreen} onAddClient={()=>setModal({kind:'addClient'})} onEditClient={c=>{ if(c._delete||c._quickStatus){saveClient(c);}else setModal({kind:'editClient',client:c}); }}/>}
       {screen.kind==='tracker'&&client&&(
@@ -2058,7 +2495,7 @@ function App(){
           onEditClient={c=>{ if(c._delete||c._quickStatus){saveClient(c);}else setModal({kind:'editClient',client:c}); }}/>
       )}
       {screen.kind==='plan'&&client&&<PlanView client={client} editable={view==='am'}/>}
-      {screen.kind==='client'&&client&&<ClientView client={client} steps={steps} onOpenPlan={()=>handleSetScreen({kind:'plan',clientId:client.id})}/>}
+      {screen.kind==='client'&&client&&<ClientView client={client} steps={steps} onOpenPlan={()=>handleSetScreen({kind:'plan',clientId:client.id})} isPreview={true} onExitPreview={()=>handleSetView('am')}/>}
       {screen.kind==='team'&&<TeamPage team={team} onAdd={()=>setModal({kind:'addTeam'})} onDeleteMember={deleteMember}/>}
 
       {modal?.kind==='addClient'&&<AddClientModal onClose={()=>setModal(null)} onSave={addClient}/>}
