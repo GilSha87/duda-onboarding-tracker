@@ -1779,6 +1779,19 @@ function createEmptyContact() {
   return { name: '', role: '', email: '', dudaRoles: [] };
 }
 
+function createEmptyCustomStep(phase = 'p1') {
+  return {
+    localId: `custom-${uid()}`,
+    phase,
+    title: '',
+    why: '',
+    owner: 'Both',
+    prio: 'med',
+    start: 0,
+    due: 7,
+  };
+}
+
 function normalizeContact(contact) {
   const dudaRoles = Array.isArray(contact?.dudaRoles)
     ? contact.dudaRoles.filter((value, index, array) => CONTACT_TAGS.includes(value) && array.indexOf(value) === index)
@@ -1854,13 +1867,37 @@ function inferTemplateStatus(template, templateIndex, client, progressAssignedRe
 
 function buildStepsForClient(client) {
   const progressAssignedRef = { current: false };
-  return STEP_TEMPLATES.map((template, index) => ({
-    ...template,
-    id: `${client.id}__${template.id}`,
-    templateId: template.id,
+  const disabledTemplateIds = new Set(client.disabledStepTemplateIds || []);
+  const templateSteps = STEP_TEMPLATES
+    .filter((template) => !disabledTemplateIds.has(template.id))
+    .map((template, index) => ({
+      ...template,
+      id: `${client.id}__${template.id}`,
+      templateId: template.id,
+      clientId: client.id,
+      status: inferTemplateStatus(template, index, client, progressAssignedRef),
+    }));
+  const customSteps = (client.customSteps || []).map((step, index) => ({
+    ...step,
+    id: `${client.id}__custom__${step.localId || uid()}`,
+    templateId: null,
     clientId: client.id,
-    status: inferTemplateStatus(template, index, client, progressAssignedRef),
+    status: step.status || 'not',
+    owner: step.owner || 'Both',
+    prio: step.prio || 'med',
+    start: Number.isFinite(Number(step.start)) ? Number(step.start) : 0,
+    due: Number.isFinite(Number(step.due)) ? Number(step.due) : 7,
+    phase: step.phase || 'p1',
+    title: step.title || `Custom step ${index + 1}`,
+    why: step.why || 'Custom onboarding task for this client.',
+    isCustom: true,
+    localId: step.localId || `custom-${uid()}`,
   }));
+  return [...templateSteps, ...customSteps].sort((a, b) => {
+    const phaseDelta = getPhaseIndex(a.phase) - getPhaseIndex(b.phase);
+    if (phaseDelta !== 0) return phaseDelta;
+    return Number(a.start || 0) - Number(b.start || 0);
+  });
 }
 
 function getStepsForClient(steps, clientId) {
@@ -2272,7 +2309,7 @@ function Dashboard({ clients, steps, setScreen, onAddClient }) {
   );
 }
 
-function Tracker({ client, steps, resources, questions, note, setScreen, onPlanEdit, onStep, onStepMore, onClientActions, onRespondQuestion, onSaveNote, onOpenResource, onManageContacts }) {
+function Tracker({ client, steps, resources, questions, note, setScreen, onPlanEdit, onStep, onStepMore, onClientActions, onRespondQuestion, onSaveNote, onOpenResource, onManageContacts, onAddStep }) {
   const [tab, setTab] = React.useState('journey');
   const clientSteps = React.useMemo(() => getStepsForClient(steps, client.id), [steps, client.id]);
   const stepCounts = React.useMemo(() => getStepCountsForClient(steps, client.id), [steps, client.id]);
@@ -2377,6 +2414,11 @@ function Tracker({ client, steps, resources, questions, note, setScreen, onPlanE
       )}
       {tab === 'steps' && (
         <div>
+          <div className="flex justify-end" style={{ marginBottom: 16 }}>
+            <button type="button" className="btn primary" onClick={() => onAddStep(client)}>
+              {ICONS.plus} Add custom step
+            </button>
+          </div>
           {PHASES.map((phase) => {
             const phaseSteps = clientSteps.filter((step) => step.phase === phase.id);
             return phaseSteps.length ? <PhaseGroup key={phase.id} phase={phase} steps={phaseSteps} onStep={onStep} onStepMore={onStepMore} /> : null;
@@ -2716,6 +2758,8 @@ function AddClientModal({ team, onClose, onSave }) {
   const [touch, setTouch] = React.useState('High-Touch');
   const [am, setAm] = React.useState(team.find((member) => member.role === 'Staff')?.name || 'Maya Levin');
   const [contacts, setContacts] = React.useState([createEmptyContact()]);
+  const [enabledTemplateIds, setEnabledTemplateIds] = React.useState(() => STEP_TEMPLATES.map((step) => step.id));
+  const [customSteps, setCustomSteps] = React.useState([]);
   const [error, setError] = React.useState('');
 
   const updateContact = (index, key, value) => {
@@ -2743,6 +2787,25 @@ function AddClientModal({ team, onClose, onSave }) {
     }));
   };
 
+  const toggleTemplateStep = (stepId) => {
+    setEnabledTemplateIds((current) => current.includes(stepId)
+      ? current.filter((value) => value !== stepId)
+      : [...current, stepId]
+    );
+  };
+
+  const addCustomStep = () => {
+    setCustomSteps((current) => [...current, createEmptyCustomStep()]);
+  };
+
+  const updateCustomStep = (localId, key, value) => {
+    setCustomSteps((current) => current.map((step) => step.localId === localId ? { ...step, [key]: value } : step));
+  };
+
+  const removeCustomStep = (localId) => {
+    setCustomSteps((current) => current.filter((step) => step.localId !== localId));
+  };
+
   const saveClient = () => {
     if (!companyName.trim()) {
       setError('Company name is required.');
@@ -2764,6 +2827,15 @@ function AddClientModal({ team, onClose, onSave }) {
       return;
     }
     const id = `c${Date.now()}`;
+    const cleanedCustomSteps = customSteps
+      .map((step) => ({
+        ...step,
+        title: step.title.trim(),
+        why: step.why.trim(),
+        start: Number(step.start),
+        due: Number(step.due),
+      }))
+      .filter((step) => step.title);
     const newClient = {
       id,
       name: companyName.trim(),
@@ -2779,8 +2851,10 @@ function AddClientModal({ team, onClose, onSave }) {
       am,
       dayIn: 1,
       phase: 'pre',
-      progress: { done: 0, total: STEP_TEMPLATES.length },
+      progress: { done: 0, total: enabledTemplateIds.length + cleanedCustomSteps.length },
       contacts: validContacts,
+      disabledStepTemplateIds: STEP_TEMPLATES.filter((step) => !enabledTemplateIds.includes(step.id)).map((step) => step.id),
+      customSteps: cleanedCustomSteps,
     };
     onSave(newClient);
   };
@@ -2865,8 +2939,9 @@ function AddClientModal({ team, onClose, onSave }) {
             <div className="flex items-center justify-between" style={{ marginBottom: 16 }}>
               <div>
                 <div className="eyebrow">Onboarding template</div>
-                <p className="muted text-sm" style={{ marginTop: 4 }}>Starting from <b>{icp} · {flow}</b>. {STEP_TEMPLATES.length} steps will be created for this client.</p>
+                <p className="muted text-sm" style={{ marginTop: 4 }}>Starting from <b>{icp} · {flow}</b>. Uncheck any standard step to skip it, or add custom steps for this client.</p>
               </div>
+              <button type="button" className="btn sm" onClick={addCustomStep}>{ICONS.plus} Custom step</button>
             </div>
             <div style={{ maxHeight: 360, overflow: 'auto', border: '1px solid var(--hairline)', borderRadius: 8, background: 'var(--surface-2)' }}>
               {PHASES.map((phase) => {
@@ -2875,16 +2950,65 @@ function AddClientModal({ team, onClose, onSave }) {
                   <div key={phase.id}>
                     <div style={{ padding: '10px 16px', background: 'var(--paper)', borderBottom: '1px solid var(--hairline-soft)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--ink-muted)', fontWeight: 500 }}>Phase {phase.num} · {phase.name} ({phaseSteps.length})</div>
                     {phaseSteps.map((step) => (
-                      <div key={step.id} style={{ display: 'flex', padding: '10px 16px', gap: 10, borderBottom: '1px solid var(--hairline-soft)', alignItems: 'center' }}>
-                        <span className="step-check"></span>
+                      <label key={step.id} style={{ display: 'flex', padding: '10px 16px', gap: 10, borderBottom: '1px solid var(--hairline-soft)', alignItems: 'center', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={enabledTemplateIds.includes(step.id)} onChange={() => toggleTemplateStep(step.id)} />
                         <div style={{ flex: 1, fontSize: 13 }}>{step.title}</div>
                         <PrioPill prio={step.prio} />
                         <span className="text-xs muted" style={{ width: 70, textAlign: 'right' }}>{step.owner}</span>
-                      </div>
+                      </label>
                     ))}
                   </div>
                 );
               })}
+            </div>
+            <div className="flex items-center justify-between" style={{ marginTop: 18, marginBottom: 12 }}>
+              <div>
+                <div className="eyebrow">Custom steps</div>
+                <p className="muted text-sm" style={{ marginTop: 4 }}>These are added only for this client and can be edited later from the tracker.</p>
+              </div>
+            </div>
+            {customSteps.length === 0 && <div className="card card-pad" style={{ color: 'var(--ink-muted)' }}>No custom steps yet.</div>}
+            <div className="flex flex-col gap-3">
+              {customSteps.map((step, index) => (
+                <div key={step.localId} className="card card-pad" style={{ padding: 16 }}>
+                  <div className="flex items-center justify-between" style={{ marginBottom: 12 }}>
+                    <div className="text-sm semibold">Custom step {index + 1}</div>
+                    <button type="button" className="btn sm ghost" onClick={() => removeCustomStep(step.localId)}>Remove</button>
+                  </div>
+                  <div className="field" style={{ marginBottom: 12 }}>
+                    <label>Title</label>
+                    <input className="input" placeholder="e.g. Security review workshop" value={step.title} onChange={(event) => updateCustomStep(step.localId, 'title', event.target.value)} />
+                  </div>
+                  <div className="field" style={{ marginBottom: 12 }}>
+                    <label>Why it matters</label>
+                    <textarea className="input" placeholder="Explain why this matters for the client." value={step.why} onChange={(event) => updateCustomStep(step.localId, 'why', event.target.value)} />
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+                    <div className="field">
+                      <label>Phase</label>
+                      <select className="input" value={step.phase} onChange={(event) => updateCustomStep(step.localId, 'phase', event.target.value)}>
+                        {PHASES.map((phase) => <option key={phase.id} value={phase.id}>{phase.num} {phase.short}</option>)}
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>Owner</label>
+                      <select className="input" value={step.owner} onChange={(event) => updateCustomStep(step.localId, 'owner', event.target.value)}>
+                        <option value="Duda">Duda</option>
+                        <option value="Client">Client</option>
+                        <option value="Both">Both</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>Start day</label>
+                      <input className="input" type="number" value={step.start} onChange={(event) => updateCustomStep(step.localId, 'start', event.target.value)} />
+                    </div>
+                    <div className="field">
+                      <label>Due day</label>
+                      <input className="input" type="number" value={step.due} onChange={(event) => updateCustomStep(step.localId, 'due', event.target.value)} />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -3065,6 +3189,89 @@ function EditStepModal({ step, onClose, onSave, onDelete }) {
         <div className="flex gap-2">
           <button type="button" className="btn" onClick={onClose}>Cancel</button>
           <button type="button" className="btn primary" onClick={handleSave}>Save step</button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function AddStepModal({ client, onClose, onSave }) {
+  const [title, setTitle] = React.useState('');
+  const [why, setWhy] = React.useState('');
+  const [phase, setPhase] = React.useState(client.phase || 'p1');
+  const [owner, setOwner] = React.useState('Both');
+  const [prio, setPrio] = React.useState('med');
+  const [start, setStart] = React.useState(String(Math.max(0, client.dayIn || 0)));
+  const [due, setDue] = React.useState(String(Math.max(7, (client.dayIn || 0) + 7)));
+
+  const handleSave = () => {
+    if (!title.trim()) return;
+    onSave({
+      id: `${client.id}__custom__${uid()}`,
+      clientId: client.id,
+      templateId: null,
+      isCustom: true,
+      phase,
+      title: title.trim(),
+      why: why.trim() || 'Custom onboarding step for this client.',
+      owner,
+      prio,
+      start: Number(start),
+      due: Number(due),
+      status: 'not',
+    });
+  };
+
+  return (
+    <Modal size="md" onClose={onClose}>
+      <ModalHead title={`Add step for ${client.name}`} eyebrow="Custom onboarding step" onClose={onClose} />
+      <div className="modal-body" style={{ background: 'var(--paper-soft)' }}>
+        <div className="field" style={{ marginBottom: 18 }}>
+          <label>Title</label>
+          <input className="input" value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Legal security review" />
+        </div>
+        <div className="field" style={{ marginBottom: 18 }}>
+          <label>Why it matters</label>
+          <textarea className="input" value={why} onChange={(event) => setWhy(event.target.value)} placeholder="Explain what this step unlocks." />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 18 }}>
+          <div className="field">
+            <label>Phase</label>
+            <select className="input" value={phase} onChange={(event) => setPhase(event.target.value)}>
+              {PHASES.map((item) => <option key={item.id} value={item.id}>{item.num} {item.name}</option>)}
+            </select>
+          </div>
+          <div className="field">
+            <label>Priority</label>
+            <select className="input" value={prio} onChange={(event) => setPrio(event.target.value)}>
+              {Object.keys(PRIO).map((key) => <option key={key} value={key}>{PRIO[key].label}</option>)}
+            </select>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+          <div className="field">
+            <label>Owner</label>
+            <select className="input" value={owner} onChange={(event) => setOwner(event.target.value)}>
+              <option value="Duda">Duda</option>
+              <option value="Client">Client</option>
+              <option value="Both">Both</option>
+            </select>
+          </div>
+          <div className="field">
+            <label>Start day</label>
+            <input className="input" type="number" value={start} onChange={(event) => setStart(event.target.value)} />
+          </div>
+          <div className="field">
+            <label>Due day</label>
+            <input className="input" type="number" value={due} onChange={(event) => setDue(event.target.value)} />
+          </div>
+        </div>
+      </div>
+      <div className="modal-foot">
+        <span className="muted text-xs">Custom steps appear immediately in both the tracker and progress rollups.</span>
+        <div className="flex gap-2">
+          <button type="button" className="btn" onClick={onClose}>Cancel</button>
+          <button type="button" className="btn primary" onClick={handleSave}>Add step</button>
         </div>
       </div>
     </Modal>
@@ -3316,6 +3523,11 @@ function App() {
     setModal(null);
   };
 
+  const addStep = (newStep) => {
+    setSteps((current) => [...current, newStep]);
+    setModal(null);
+  };
+
   const deleteStep = (stepId) => {
     setSteps((current) => current.filter((step) => step.id !== stepId));
     setModal(null);
@@ -3379,6 +3591,7 @@ function App() {
             onSaveNote={(note) => saveNote(client.id, note)}
             onOpenResource={(resource) => setModal({ kind: 'resource', resource })}
             onManageContacts={(targetClient) => setModal({ kind: 'manageContacts', client: targetClient })}
+            onAddStep={(targetClient) => setModal({ kind: 'addStep', client: targetClient })}
           />
         )}
         {screen.kind === 'plan' && client && <PlanView client={client} editable={view === 'am'} onExport={exportPlan} />}
@@ -3388,6 +3601,7 @@ function App() {
 
       {modal?.kind === 'addClient' && <AddClientModal team={team} onClose={() => setModal(null)} onSave={saveClient} />}
       {modal?.kind === 'manageContacts' && <ManageContactsModal client={modal.client} onClose={() => setModal(null)} onSave={updateClient} />}
+      {modal?.kind === 'addStep' && <AddStepModal client={modal.client} onClose={() => setModal(null)} onSave={addStep} />}
       {modal?.kind === 'editStep' && <EditStepModal step={modal.step} onClose={() => setModal(null)} onSave={updateStep} onDelete={deleteStep} />}
       {modal?.kind === 'addTeam' && <AddTeamModal onClose={() => setModal(null)} onSave={saveMember} />}
       {modal?.kind === 'resource' && <ResourceModal resource={modal.resource} onClose={() => setModal(null)} />}
@@ -3399,6 +3613,7 @@ function App() {
             { label: 'Edit step', onClick: () => setModal({ kind: 'editStep', step: modal.step }) },
             { label: 'Mark done', onClick: () => updateStep({ ...modal.step, status: 'done' }) },
             { label: 'Mark in progress', onClick: () => updateStep({ ...modal.step, status: 'progress' }) },
+            { label: 'Skip step', onClick: () => updateStep({ ...modal.step, status: 'skip' }) },
             { label: 'Delete step', onClick: () => deleteStep(modal.step.id), danger: true },
           ]}
         />
